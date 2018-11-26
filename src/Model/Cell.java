@@ -19,7 +19,7 @@ public class Cell {
 
 
     public boolean collect(){
-        
+
     }
 
 
@@ -44,4 +44,6 @@ public class Cell {
 
 
     }
+
+
 }

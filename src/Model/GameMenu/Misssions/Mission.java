@@ -1,4 +1,4 @@
-package controller;
+package Model.GameMenu.Misssions;
 
 public class Mission {
     String goal;
