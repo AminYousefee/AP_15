@@ -3,13 +3,15 @@ package Model.Factories;
 import Model.Item;
 
 public class Process {
-    Item inputItems;
-    Item outputItems;
-    int remainedNeededTerms;
+    private Item inputItems;
+    private Item outputItems;
+    private int remainedNeededTerms;
 
 
     public boolean turn() {
-        return false;
+        setRemainedNeededTerms(getRemainedNeededTerms()-1);
+
+        return isFinished();
     }
 
 
@@ -36,4 +38,12 @@ public class Process {
     public void setRemainedNeededTerms(int remainedNeededTerms) {
         this.remainedNeededTerms = remainedNeededTerms;
     }
+
+
+    private boolean isFinished(){
+        return false;
+    }
+
+
+
 }
