@@ -17,9 +17,12 @@ public class Well {
     public int getRemainedWater() {
         return remainedWater;
     }
+    public boolean useWater(){
+        return true;
 
-    public void setRemainedWater(int remainedWater) {
-        this.remainedWater = remainedWater;
+    }
+    public boolean makeFull(){
+        return true;
     }
 
     public int getMaxCapacity(){
