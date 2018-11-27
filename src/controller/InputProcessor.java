@@ -1,7 +1,6 @@
 package controller;
 
 public class InputProcessor {
-    String string;
 
 
 
@@ -10,39 +9,33 @@ public class InputProcessor {
 
 
     }
-    private boolean pickup(){
-
-    }
-    private boolean plant(){
-
-    }
-    private boolean buyAnimal(){
-
-    }
-    private boolean VehicleGo(){
-
-    }
-    private boolean printInfo(){
+    private boolean pickup(String input){
 
     }
 
-    private boolean cage(){
+    private boolean VehicleGo(String input){
+
+    }
+    private boolean print(String input){
+
+    }
+
+    private boolean cage(String input){
 
 
     }
-    private boolean makeWellFull(){
+    private boolean makeWellFull(String input){
+
 
     }
-    private boolean upgrade(){
+    private boolean upgrade(String input){
 
     }
-    private boolean runGame(){
 
-    }private boolean loadGame(){
+    private boolean startFactory(String input){
 
-    }private boolean loadCustom(){
-
-    }private boolean saveGame(){
+    }
+    private boolean addToVehicle(String input){
 
     }
 

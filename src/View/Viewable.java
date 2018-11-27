@@ -1,9 +1,12 @@
 package View;
 
-public class Viewable {
+public interface Viewable
+{
     String name;
 
-public void existence(){
 
-}
+    public void existence();
+
+
+
 }
