@@ -1,4 +1,4 @@
-package Model;
+package Model.GameMenu;
 
 public class GameMenu {
     public void run(){

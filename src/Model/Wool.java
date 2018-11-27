@@ -1,4 +1,7 @@
 package Model;
 
-public class Wool  extends  Item{
+public class Wool  extends Model.ItemView {
+    public void view(){
+
+    }
 }

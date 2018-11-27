@@ -1,4 +1,4 @@
-package Model;
+package Model.Positions;
 
 public class Position {
 }

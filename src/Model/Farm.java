@@ -1,14 +1,14 @@
 package Model;
-import Model.Animals.Animal;
 import Model.Factories.Factory;
-
-import java.util.ArrayList;
+import Model.Positions.Position;
 
 public class Farm{
+    public static final int POSSIBLE_NUMBER_OF_FACTORIES;
+    Map map;
+    Vehicle vehicle;
+    Well well;
 
-    private static Farm myInstance =this.Farm()
-    private ArrayList<Animal> = new ArrayList<>(0);
-    private ArrayList<Factory> = new ArrayList<>(0);
+    private Factory[] factories= new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
     private Warehouse = Warehouse.getInstanse();
     private Truck truck=Truck.getInstance();
     private Helicopter helicopter=Helicopter.getInstance();
@@ -17,11 +17,11 @@ public class Farm{
 
 
     }
-    public static Farm getInstanse(){
-	return this.myInstance;
-    }
-    
 
+    
+    public void save(){
+
+    }
 
 
 
@@ -69,7 +69,7 @@ public class Farm{
 
     //methods start from here
 
-    public buyAnimal(){
+    public void buyAnimal(){
 
 
 

@@ -1,13 +1,9 @@
 package Model.Animals;
 
-public class ProductiveAnimal extends FarmAnimal{
-    public double getSatisfiction() {
-        return satisfiction;
-    }
+public abstract class ProductiveAnimal extends FarmAnimal{
 
-    public void setSatisfiction(double satisfiction) {
-        this.satisfiction = satisfiction;
-    }
+
+
 
     private double satisfiction;
 

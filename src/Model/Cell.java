@@ -1,10 +1,12 @@
 package Model;
 
+import Model.Positions.Position;
+
 import java.util.ArrayList;
 
 public class Cell {
     Position position;
-    ArrayList<Item> items =new ArrayList<>(0);
+    ArrayList<Model.ItemView> items =new ArrayList<>(0);
 
 
 
@@ -27,7 +29,7 @@ public class Cell {
         return position;
     }
 
-    public ArrayList<Item> getItems() {
+    public ArrayList<Model.ItemView> getItems() {
         return items;
     }
 
@@ -38,7 +40,7 @@ public class Cell {
 
 
 
-    public void addItem(Item item){
+    public void addItem(Model.ItemView item){
 
 
 
