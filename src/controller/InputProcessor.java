@@ -1,7 +1,11 @@
 package controller;
 
-public class InputProcessor {
+import Model.Farm;
+import Model.GameMenu.Game;
 
+public class InputProcessor {
+    Farm farm;
+    Game game;
 
 
 
