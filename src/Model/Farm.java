@@ -1,4 +1,5 @@
 package Model;
+import Model.Animals.Animal;
 import Model.Factories.Factory;
 import Model.Positions.Position;
 
@@ -67,9 +68,7 @@ public class Farm{
 
 
 
-    //methods start from here
-
-    public void buyAnimal(){
+    public void buyAnimal(Animal.AnimalInfo animalInfo){
 
 
 

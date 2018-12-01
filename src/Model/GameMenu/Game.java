@@ -8,7 +8,7 @@ public class Game implements Printable {
 
 
     Mission mission;
-    Farm farm =new Farm();
+    Farm farm ;
 
 
 
@@ -22,8 +22,7 @@ public class Game implements Printable {
 
     }
 
-    
-
-
-
+    public Farm getFarm() {
+        return farm;
+    }
 }

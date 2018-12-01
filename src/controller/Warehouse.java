@@ -1,6 +1,7 @@
 package controller;
 
 public class Warehouse {
+
     public boolean go(){
 
     }

@@ -1,12 +1,13 @@
 package View.VehicleView;
 
+import Model.Upgradable;
+
 public abstract class Vehicle implements Upgradable {
-    int level;
+    transient int level;
     int Capacity;
     int remiainedTime(){
 
     }
-
 
 
     public void go(){
