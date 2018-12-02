@@ -36,8 +36,20 @@ public class Farm{
     }
 
 
-    public boolean cage(){
+    public boolean cage(Position position){
         return false;
+    }
+
+
+
+    public Well getWell(){
+        return this.well;
+    }
+
+
+    public void turn(){
+
+
     }
 
 

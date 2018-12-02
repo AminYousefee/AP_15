@@ -1,15 +1,15 @@
 package controller;
 
 import Model.Animals.Animal;
-import Model.Farm;
 import Model.GameMenu.Game;
 import Model.Positions.Position;
-import org.omg.CORBA.MARSHAL;
+import org.omg.CORBA.TRANSACTION_MODE;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class InputProcessor {
+
     Game game;
 
 
@@ -23,7 +23,7 @@ public class InputProcessor {
     }
     public boolean buyAnimal(String input){
         Matcher matcher;
-        String regex = "buy\\s+(\\S+)\\s+";
+        String regex = "buy\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex,input))!=null){
             Animal.AnimalInfo animalInfo = Animal.findAnimalType(matcher.group(1));
             if (animalInfo==null){
@@ -40,7 +40,7 @@ public class InputProcessor {
 
     private boolean pickup(String input){
         Matcher matcher
-        String regex = "pickup\\s+(\\S+)\\s+(\\S+)\\s+";
+        String regex = "pickup\\s+(\\S+)\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex,input))!=null){
             try {
                 int x = Integer.parseInt(matcher.group(1));
@@ -71,21 +71,59 @@ public class InputProcessor {
 
     private boolean cage(String input){
         Matcher matcher;
-        String regex = "\\s+cage\\s+(\\S+)\\s+(\\S+)\\s+";
+        String regex = "\\s+cage\\s+(\\S+)\\s+(\\S+)\\s*";
         if ((matcher=getMatched(regex,input))!=null){
-            int x = Integer.parseInt(matcher.group(1));
-            int y = Integer.parseInt(matcher.group(2));
-            Position position = new Position(x, y);
-            game.getFarm().cage(position);
-        }
+            try {
 
+                int x = Integer.parseInt(matcher.group(1));
+                int y = Integer.parseInt(matcher.group(2));
+                Position position = new Position(x, y);
+                game.getFarm().cage(position);
+            }catch (NumberFormatException e){
+                //todo
+            }
+            return true;
+        }
+        return false;
 
     }
     private boolean makeWellFull(String input){
+        Matcher matcher;
+        String regex ="\\s+well\\s*";
+        if ((matcher=getMatched(regex,input))!=null){
+            game.getFarm().getWell().makeFull();
+        }
+
 
 
     }
     private boolean upgrade(String input){
+        Matcher matcher;
+        String regex = "\\s+upgrade\\s+(\\.*)\\s*";
+        if ((matcher=getMatched(regex,input))!=null){
+            if (matcher.group(1).equalsIgnoreCase("well")){
+
+
+
+
+                return true
+            }
+            if (matcher.group(1).matches("cat")){
+
+                return true;
+            }
+
+
+
+
+
+
+
+
+
+            return true;
+        }
+        return false;
 
     }
 
@@ -105,6 +143,28 @@ public class InputProcessor {
             return null;
         return matcher;
     }
+    private boolean turn(String input){
+        Matcher matcher;
+        String regex = "\\s+turn\\s+(\\S+)\\s+";
+        if ((matcher=getMatched(regex,input))!=null){
+            try {
+
+                int n= Integer.parseInt(matcher.group(1));
+                game.getFarm().turn(n);
+            }catch (NumberFormatException e){
+                //todo
+            }
+            return true;
+
+
+
+        }
+        return false;
+
+
+
+    }
+
 
 
 
