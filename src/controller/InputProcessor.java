@@ -3,32 +3,33 @@ package controller;
 import Model.Animals.Animal;
 import Model.Farm;
 import Model.GameMenu.Game;
+import Model.Positions.Position;
+import org.omg.CORBA.MARSHAL;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class InputProcessor {
-    Farm farm;
     Game game;
 
 
 
     public boolean process(String input){
+        if (buyAnimal(input)){
+            return true;
+        }
 
 
     }
-    public boolean buyAnimal(String string){
+    public boolean buyAnimal(String input){
         Matcher matcher;
         String regex = "buy\\s+(\\S+)\\s+";
-        if ((matcher = getMatched(regex,string))!=null){
+        if ((matcher = getMatched(regex,input))!=null){
             Animal.AnimalInfo animalInfo = Animal.findAnimalType(matcher.group(1));
-
+            if (animalInfo==null){
+                throw AnimalTypeNotFoundException;
+            }
             game.getFarm().buyAnimal(animalInfo);
-
-
-
-
-
         }
         return false;
 
@@ -38,6 +39,26 @@ public class InputProcessor {
 
 
     private boolean pickup(String input){
+        Matcher matcher
+        String regex = "pickup\\s+(\\S+)\\s+(\\S+)\\s+";
+        if ((matcher = getMatched(regex,input))!=null){
+            try {
+                int x = Integer.parseInt(matcher.group(1));
+                int y = Integer.parseInt(matcher.group(2));
+                Position position = new Position(x, y);
+
+                game.getFarm().pickUp(position);
+            }catch (NumberFormatException e){
+                //todo
+            }
+
+
+
+
+            return true;
+        }
+        return false;
+
 
     }
 
@@ -49,6 +70,14 @@ public class InputProcessor {
     }
 
     private boolean cage(String input){
+        Matcher matcher;
+        String regex = "\\s+cage\\s+(\\S+)\\s+(\\S+)\\s+";
+        if ((matcher=getMatched(regex,input))!=null){
+            int x = Integer.parseInt(matcher.group(1));
+            int y = Integer.parseInt(matcher.group(2));
+            Position position = new Position(x, y);
+            game.getFarm().cage(position);
+        }
 
 
     }

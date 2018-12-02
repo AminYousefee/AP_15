@@ -36,6 +36,11 @@ public class Farm{
     }
 
 
+    public boolean cage(){
+        return false;
+    }
+
+
 
 
 
