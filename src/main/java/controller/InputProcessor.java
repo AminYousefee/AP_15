@@ -1,8 +1,10 @@
 package controller;
 
 import Model.Animals.Animal;
+import Model.Factories.Factory;
 import Model.GameMenu.Game;
 import Model.Positions.Position;
+import org.junit.jupiter.api.Test;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +24,14 @@ public class InputProcessor {
         if (buyAnimal(input)) {
             return true;
         }
+
+    }
+
+
+    @Test
+    public boolean processTest() {
+        InputProcessor inputProcessor = new InputProcessor();
+        inputProcessor.process()
 
     }
 
@@ -63,8 +73,23 @@ public class InputProcessor {
     }
 
     private boolean VehicleGo(String input) {
+        Matcher matcher;
+        String regex = "\\s*(.*)\\s+go\\s*";
+        if ((matcher = getMatched(regex, input)) != null) {
+            if (matcher.group(1).equalsIgnoreCase("Helicopter")) {
+                game.getFarm().getHelicopter().go();
 
+
+            } else if (matcher.group(1).equalsIgnoreCase("Truck")) {
+                game.getFarm().getTruck().go();
+
+            }
+            return true;
+        }
+        return false;
     }
+
+}
 
     private boolean print(String input) {
 
@@ -106,22 +131,41 @@ public class InputProcessor {
             if (matcher.group(1).equalsIgnoreCase("well")) {
 
 
-                return true
+                return true;
             }
             if (matcher.group(1).matches("cat")) {
 
                 return true;
             }
-            if (matcher.group(1).matches())
+            if (matcher.group(1).matches()) {
 
 
                 return true;
+            }
         }
         return false;
 
     }
 
     private boolean startFactory(String input) {
+        Matcher matcher;
+        String regex = "\\s*start\\s+(.+)\\s*";
+        if ((matcher = getMatched(regex, input)) != null) {
+            String string = matcher.group(1);
+
+            Factory factory = game.getFarm().findFactory(string);
+            if (factory == null) {
+                //todo
+                throw FactoryNotFoundException;
+            } else {
+                factory.process();
+            }
+
+
+            return true;
+        }
+        return false;
+
 
     }
 
@@ -147,6 +191,24 @@ public class InputProcessor {
         return false;
 
 
+    }
+
+
+    private boolean clearVehicle(String input) {
+        Matcher matcher;
+        String regex = "\\s*(.*)\\s+clear\\s*";
+        if ((matcher = getMatched(regex, input)) != null) {
+            if (matcher.group(1).equalsIgnoreCase("Helicopter")) {
+                game.getFarm().getHelicopter().clear();
+
+
+            } else if (matcher.group(1).equalsIgnoreCase("Truck")) {
+                game.getFarm().getTruck().clear();
+
+            }
+            return true;
+        }
+        return false;
     }
 
 

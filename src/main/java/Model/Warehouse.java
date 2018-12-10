@@ -5,13 +5,9 @@ import java.util.ArrayList;
 public class Warehouse {
 
 
-    static Warehouse ourInstanse = new Warehouse();
     int capacity;
     ArrayList<Item> items = new ArrayList<>(0);
 
-    public static Warehouse getOurInstanse() {
-        return ourInstanse;
-    }
 
     public int getCapacity() {
         return capacity;

@@ -6,7 +6,25 @@ import Model.Positions.Position;
 public class Farm{
     public static final int POSSIBLE_NUMBER_OF_FACTORIES;
     Map map;
-    Vehicle vehicle;
+    Truck truck;
+
+    public Truck getTruck() {
+        return truck;
+    }
+
+    public void setTruck(Truck truck) {
+        this.truck = truck;
+    }
+
+    public Helicopter getHelicopter() {
+        return helicopter;
+    }
+
+    public void setHelicopter(Helicopter helicopter) {
+        this.helicopter = helicopter;
+    }
+
+    Helicopter helicopter;
     Well well;
 
     private Factory[] factories= new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
@@ -48,6 +66,12 @@ public class Farm{
 
 
     public void turn(){
+
+
+    }
+
+
+    public Factory findFactory(String string){
 
 
     }

@@ -1,5 +1,8 @@
 package View.Farmys;
 
+import Model.Item;
+import Model.Positions.Position;
+
 import java.util.ArrayList;
 
 public class Cell {

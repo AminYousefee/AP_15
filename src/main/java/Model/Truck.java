@@ -15,6 +15,7 @@ public class Truck extends Vehicle {
 
     public static public static Truck getInstance() {
         return ourInstance;
+        
     }
 
 }
