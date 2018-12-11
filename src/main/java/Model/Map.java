@@ -1,5 +1,7 @@
 package Model;
 
+import Model.Positions.Position;
+
 import java.util.ArrayList;
 
 public class Map implements Printable{
@@ -7,9 +9,7 @@ public class Map implements Printable{
 
 
 
-    Grass grass;
 
-    private static Map ourInstance =new Map();
     private static final int Num_Of_CELLS_IN_ROW=5;
     private static final int Num_Of_CELLS_IN_COLOUM=5;
     Cell[][] cells =new Cell[Num_Of_CELLS_IN_COLOUM][Num_Of_CELLS_IN_ROW];
@@ -17,9 +17,7 @@ public class Map implements Printable{
     private Map() {
         this.cells = cells;
     }
-    public static public static Map getInstance() {
-        return ourInstance;
-    }
+
 
     public ArrayList<Cell> getAjacentCells(Cell cell){
 
@@ -33,6 +31,11 @@ public class Map implements Printable{
 
     public void turn(){
 
+
+    }
+
+
+    public void printMap(){
 
     }
 

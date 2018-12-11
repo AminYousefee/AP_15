@@ -1,4 +1,4 @@
 package Model;
 
-public class Milk extends ItemView {
+public class Milk extends Item {
 }

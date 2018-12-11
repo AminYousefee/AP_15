@@ -1,5 +1,5 @@
 package Model;
-public class Product extends Model.ItemView {
+public class Product extends Model.Item {
 
 
 

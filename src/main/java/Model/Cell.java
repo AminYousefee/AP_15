@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Cell {
     Position position;
-    ArrayList<Model.ItemView> items =new ArrayList<>(0);
+    ArrayList<Model.Item> items =new ArrayList<>(0);
 
 
 
@@ -29,7 +29,7 @@ public class Cell {
         return position;
     }
 
-    public ArrayList<Model.ItemView> getItems() {
+    public ArrayList<Model.Item> getItems() {
         return items;
     }
 
@@ -40,7 +40,7 @@ public class Cell {
 
 
 
-    public void addItem(Model.ItemView item){
+    public void addItem(Model.Item item){
 
 
 

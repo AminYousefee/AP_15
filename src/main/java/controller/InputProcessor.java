@@ -3,14 +3,17 @@ package controller;
 import Model.Animals.Animal;
 import Model.Factories.Factory;
 import Model.GameMenu.Game;
+import Model.Helicopter;
 import Model.Positions.Position;
+import controller.Exceptions.AnimalTypeNotFoundException;
+import controller.Exceptions.HelicopterNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class InputProcessor {
-    Game game;
+    private Game game;
 
     public static Matcher getMatched(String regex, String string) {
         Pattern pattern = Pattern.compile(regex);
@@ -24,6 +27,20 @@ public class InputProcessor {
         if (buyAnimal(input)) {
             return true;
         }
+        if (pickup(input)){
+            return true;
+        }
+        if (VehicleGo(input)){
+            return true;
+        }if ((input)){
+            return true;
+        }if (pickup(input)){
+            return true;
+        }if (pickup(input)){
+            return true;
+        }if (pickup(input)){
+            return true;
+        }
 
     }
 
@@ -31,7 +48,7 @@ public class InputProcessor {
     @Test
     public boolean processTest() {
         InputProcessor inputProcessor = new InputProcessor();
-        inputProcessor.process()
+        inputProcessor.process();
 
     }
 
@@ -41,7 +58,7 @@ public class InputProcessor {
         if ((matcher = getMatched(regex, input)) != null) {
             Animal.AnimalInfo animalInfo = Animal.findAnimalType(matcher.group(1));
             if (animalInfo == null) {
-                throw AnimalTypeNotFoundException;
+                throw new AnimalTypeNotFoundException();
             }
             game.getFarm().buyAnimal(animalInfo);
         }
@@ -51,7 +68,7 @@ public class InputProcessor {
     }
 
     private boolean pickup(String input) {
-        Matcher matcher
+        Matcher matcher;
         String regex = "pickup\\s+(\\S+)\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
             try {
@@ -89,9 +106,43 @@ public class InputProcessor {
         return false;
     }
 
-}
 
     private boolean print(String input) {
+        Matcher matcher;
+        String regex = "print\\s+(.+)";
+        if ((matcher = getMatched(regex, input)) != null) {
+            Factory factory;
+            String string = matcher.group(1);
+            if (string.equalsIgnoreCase("info")) {
+                game.printInfo();
+            } else if (string.equalsIgnoreCase("map")) {
+                game.getFarm().getMap().printMap();
+            } else if (string.equalsIgnoreCase("levels")) {
+
+            } else if (string.equalsIgnoreCase("warehouse")) {
+
+            } else if (string.equalsIgnoreCase("well")) {
+                game.getFarm().getWell().printWell();
+
+            } else if (string.equalsIgnoreCase("truck")) {
+                game.getFarm().getTruck().printTruck();
+            } else if (string.equalsIgnoreCase("helicopter")) {
+                Helicopter helicopter = game.getFarm().getHelicopter();
+                if (helicopter == null) {
+                    throw new HelicopterNotFoundException();
+
+                } else {
+                    helicopter.printHelicopter();
+                }
+            } else if (string.equalsIgnoreCase("workshops")) {
+                game.getFarm().printWorkshops();
+
+            } else {
+                //todo Statement Not Legal
+
+            }
+        }
+
 
     }
 

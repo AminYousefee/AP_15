@@ -4,9 +4,8 @@ import Model.Factories.Factory;
 import Model.Positions.Position;
 
 public class Farm{
-    public static final int POSSIBLE_NUMBER_OF_FACTORIES;
+    public static final int POSSIBLE_NUMBER_OF_FACTORIES = 6;
     Map map;
-    Truck truck;
 
     public Truck getTruck() {
         return truck;
@@ -24,13 +23,14 @@ public class Farm{
         this.helicopter = helicopter;
     }
 
-    Helicopter helicopter;
+
     Well well;
 
     private Factory[] factories= new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
-    private Warehouse = Warehouse.getInstanse();
-    private Truck truck=Truck.getInstance();
-    private Helicopter helicopter=Helicopter.getInstance();
+
+
+    private Truck truck;
+    private Helicopter helicopter;
     private Farm(){
 
 
@@ -77,37 +77,9 @@ public class Farm{
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public Map getMap() {
+        return map;
+    }
 
     public void buyAnimal(Animal.AnimalInfo animalInfo){
 
@@ -118,5 +90,7 @@ public class Farm{
     }
 
 
+    public void printWorkshops() {
 
+    }
 }

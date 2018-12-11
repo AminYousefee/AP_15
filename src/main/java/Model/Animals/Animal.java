@@ -1,19 +1,24 @@
 package Model.Animals;
 
 import Model.Item;
-import Model.ItemView;
+import View.ItemView;
 import Model.Upgradable;
 
 public abstract class Animal extends Item implements Upgradable {
 
     int fullness;
     int level;
-    public static final AnimalInfo Cat_Info
+    public static final AnimalInfo Cat_Info;
     public static final AnimalInfo Dog_Info ;
+    static{
+        Cat_Info =new AnimalInfo();
+        //todo make these better
+        Dog_Info = new AnimalInfo();
+    }
 
 
 
-    public class AnimalInfo{
+    public static class AnimalInfo{
         int id;
         String name;
         int ProductId;

@@ -9,13 +9,18 @@ public class Truck extends Vehicle {
 
 
 
-    private static Truck ourInstance=new Truck();
+    public void printTruck(){
 
 
-
-    public static public static Truck getInstance() {
-        return ourInstance;
-        
     }
 
+    @Override
+    public boolean upgrade() {
+        return false;
+    }
+
+    @Override
+    public boolean getUpgradeCost() {
+        return false;
+    }
 }

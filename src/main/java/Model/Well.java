@@ -25,7 +25,10 @@ public class Well {
     public int getMaxCapacity(){
         return 0;
     }
+    public void printWell(){
 
+
+    }
 
 
 }

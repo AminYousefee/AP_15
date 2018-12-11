@@ -25,12 +25,12 @@ public class Game implements Printable {
             FileReader fileReader = new FileReader(file);
             JsonReader jsonReader = new JsonReader(fileReader);
             Gson gson = new Gson();
-            Game game = gson.fromJson(jsonReader, this.getClass())
+            Game game = gson.fromJson(jsonReader, this.getClass());
         } catch (IOException e) {
             //todo something in view
-        } catch (JsonIOException) {
+        } catch (JsonIOException e) {
             //todo the file is not Json
-        } catch (JsonSyntaxException) {
+        } catch (JsonSyntaxException e) {
             //todo Syntax Error in Json File
         }
 
@@ -55,5 +55,10 @@ public class Game implements Printable {
 
     public Farm getFarm() {
         return farm;
+    }
+
+
+    public void printInfo(){
+
     }
 }
