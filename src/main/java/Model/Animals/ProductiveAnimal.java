@@ -19,8 +19,7 @@ public abstract class ProductiveAnimal extends FarmAnimal{
     public abstract boolean die();
     
     
-    
-    @Override
+
     public static AnimalInfo findAnimalType(String name){
         for (Map.Entry<Integer,AnimalInfo> entry:PossibleProducts.entrySet()) {
             if (entry.getValue().getName().equals(name)){

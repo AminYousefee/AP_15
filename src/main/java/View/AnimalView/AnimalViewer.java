@@ -11,6 +11,7 @@ public abstract class AnimalViewer extends ItemView {
 
 
     private boolean eatView(){
+        return false;
 
     }
 

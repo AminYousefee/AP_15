@@ -7,8 +7,8 @@ import java.util.ArrayList;
 public class MapView implements Viewable {
 
 
+    @Override
+    public void existence() {
 
-
-
-
+    }
 }

@@ -4,7 +4,7 @@ import Model.Positions.Position;
 
 import java.util.ArrayList;
 
-public class Map implements Printable{
+public class Map{
 
 
 
@@ -20,7 +20,7 @@ public class Map implements Printable{
 
 
     public ArrayList<Cell> getAjacentCells(Cell cell){
-
+        return null;
     }
 
 

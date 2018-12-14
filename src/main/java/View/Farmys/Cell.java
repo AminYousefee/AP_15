@@ -22,7 +22,7 @@ public class Cell {
 
 
     public boolean collect(){
-
+        return false;
     }
 
 
