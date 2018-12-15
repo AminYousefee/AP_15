@@ -1,9 +1,8 @@
 package Model.Animals;
 
-import Model.Cell;
-import Model.Item;
+import Model.*;
 import Model.Positions.Position;
-import Model.Upgradable;
+
 import java.util.Random;
 
 public abstract class Animal extends Item implements Upgradable {
@@ -20,6 +19,7 @@ public abstract class Animal extends Item implements Upgradable {
 
     private int fullness;
     private int level;
+    private int speed;
 
     public static AnimalInfo findAnimalType(String name) {
         if (name.equalsIgnoreCase("cat")) {
@@ -76,7 +76,8 @@ public abstract class Animal extends Item implements Upgradable {
     private int[] nearestGrass() {
         int myX = this.cell.getPosition().getX();
         int myY = this.cell.getPosition().getY();
-
+        int maxX = Map.getMaxX();
+        int maxY = Map.getMaxY();
     }
 
     public void move(){
@@ -122,8 +123,8 @@ public abstract class Animal extends Item implements Upgradable {
 
 
 
-    private boolean getSpeed() {
-        return false;
+    private int getSpeed() {
+        return this.speed;
 
     }
 
@@ -135,8 +136,16 @@ public abstract class Animal extends Item implements Upgradable {
         this.cell = cell;
     }
 
-    private boolean eat() {
-        return false;
+    public void eat() {
+        Grass grass = this.cell.getGrass();
+        if (grass != null) {
+            if (grass.getQuantity() > 0) {
+                grass.setQuantity(grass.getQuantity() - 10);
+            }
+        } else {
+            System.out.println("no grass is here");
+
+        }
     }
 
     public int getFullness() {
