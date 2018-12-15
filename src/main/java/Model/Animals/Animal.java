@@ -87,7 +87,7 @@ public abstract class Animal extends Item implements Upgradable {
             this.goTo(xTarget,yTarget);
         } else {
             Random random = new Random();
-            int direct = random.nextInt(5);
+            int direct = random.nextInt(9);
             switch (direct) {
                 case 1:
                     this.moveVertical(true);
@@ -100,6 +100,22 @@ public abstract class Animal extends Item implements Upgradable {
                     break;
                 case 4:
                     this.moveHorizontal(false);
+                    break;
+                case 5:
+                    this.moveHorizontal(true);
+                    this.moveVertical(true);
+                    break;
+                case 6:
+                    this.moveHorizontal(true);
+                    this.moveVertical(false);
+                    break;
+                case 7:
+                    this.moveHorizontal(false);
+                    this.moveVertical(true);
+                    break;
+                case 8:
+                    this.moveHorizontal(false);
+                    this.moveVertical(false);
             }
         }
     }
