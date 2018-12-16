@@ -1,8 +1,12 @@
 package Model.Animals;
 
-public class Cat extends NonProductiveFarmAnimal {
+public class Cat extends NonWildAnimal {
 
 
 
 
+    @Override
+    public int getUpgradeCost() {
+        //todo
+    }
 }

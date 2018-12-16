@@ -1,6 +1,6 @@
 package Model.Animals;
 
-public class Dog extends NonProductiveFarmAnimal {
+public class Dog extends NonWildAnimal {
 
 
     @Override

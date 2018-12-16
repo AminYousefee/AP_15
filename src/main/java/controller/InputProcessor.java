@@ -122,7 +122,7 @@ public class InputProcessor {
             } else if (string.equalsIgnoreCase("warehouse")) {
 
             } else if (string.equalsIgnoreCase("well")) {
-                game.getFarm().getWell().printWell();
+                game.getFarm().getBucket().printBucket();
 
             } else if (string.equalsIgnoreCase("truck")) {
                 game.getFarm().getTruck().printTruck();
@@ -169,7 +169,7 @@ public class InputProcessor {
         Matcher matcher;
         String regex = "\\s+well\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
-            game.getFarm().getWell().makeFull();
+            game.getFarm().getBucket().fill();
         }
 
 

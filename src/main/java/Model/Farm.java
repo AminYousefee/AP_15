@@ -6,6 +6,7 @@ import Model.Positions.Position;
 public class Farm{
     public static final int POSSIBLE_NUMBER_OF_FACTORIES = 6;
     Map map;
+    Integer CurrentMoney;
 
     public Truck getTruck() {
         return truck;
@@ -24,7 +25,7 @@ public class Farm{
     }
 
 
-    Well well;
+    Bucket bucket;
 
     private Factory[] factories= new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
 
@@ -60,8 +61,8 @@ public class Farm{
 
 
 
-    public Well getWell(){
-        return this.well;
+    public Bucket getBucket(){
+        return this.bucket;
     }
 
 
