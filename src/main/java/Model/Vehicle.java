@@ -16,8 +16,14 @@ public abstract class Vehicle implements Upgradable {
     }
     public void clear(){
 
-    } public boolean addItem(){
-        return true;
+    }
+
+
+
+
+
+    public boolean addItem(){
+
     }
     private boolean getSpeed(){
         return true;

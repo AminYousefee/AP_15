@@ -1,9 +1,13 @@
 package Model.Animals;
 
+import Model.Farm;
 import Model.Item;
 import Model.Upgradable;
 
 public abstract class Animal extends Item implements Upgradable {
+
+
+
 
     public static final int CAT_VOLUME;
     public static final AnimalInfo Cat_Info = new AnimalInfo("cat", CAT_VOLUME);
@@ -38,7 +42,7 @@ public abstract class Animal extends Item implements Upgradable {
 
     public abstract boolean move();
 
-    private boolean getSpeed() {
+    int getSpeed() {
         return false;
 
     }

@@ -6,12 +6,11 @@ import Model.Positions.Position;
 import java.util.ArrayList;
 
 public abstract class Item {
+
     protected ItemInfo itemInfo;
     Position position;
-    int Volume;
     int ID;
     int lifeTime;
-    double price;
 
 
     public static Item getInstance(String name) {
@@ -32,11 +31,11 @@ public abstract class Item {
     }
 
     public int getVolume() {
-        return Volume;
+        return itemInfo.Volume;
     }
 
     public void setVolume(int volume) {
-        Volume = volume;
+        itemInfo.Volume = volume;
     }
 
     public int getID() {
@@ -56,11 +55,11 @@ public abstract class Item {
     }
 
     public double getPrice() {
-        return price;
+        return itemInfo.price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setPrice(int price) {
+        itemInfo.price = price;
     }
 
     public void anihilate() {
@@ -83,10 +82,17 @@ public abstract class Item {
 
     }
 
+    public void Print() {
+        System.out.println(itemInfo.getItemName()+":");
+        System.out.println("Price = "+itemInfo.price);
+        System.out.println("Volume = "+ itemInfo.getVolume());
+    }
+
     public static class ItemInfo {
         String ItemName;
         int Volume;
-
+        int price;
+        public boolean isCatCollecable;
         public ItemInfo(String name, int volume) {
             ItemName =name;
             Volume = volume;

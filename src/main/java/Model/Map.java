@@ -39,4 +39,23 @@ public class Map{
 
     }
 
+    public Item getCatCollectableItem() {
+        for (Cell cellColumn[]:cells){
+            for (Cell cell:cellColumn){
+                Item res = cell.getCatCollectableItem();
+                if (res!=null){
+                    return res;
+                }
+            }
+        }
+        return null;
+    }
+
+
+
+    public Cell getCell(Position position){
+        int x = position.getX();
+        int y = position.getY();
+        return cells[x][y];
+    }
 }
