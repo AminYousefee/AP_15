@@ -1,4 +1,4 @@
 package Model;
 
-public class Egg extends NonAnimalItems {
+public class Egg extends NonAnimalItem {
 }

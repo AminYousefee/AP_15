@@ -1,20 +1,20 @@
 package Model;
 
 import Model.Animals.Animal;
+import Model.Positions.MapPosition;
 import Model.Positions.Position;
 
-import java.util.ArrayList;
-
 public abstract class Item {
+    protected transient Map map;
 
     protected ItemInfo itemInfo;
-    Position position;
+    protected MapPosition mapPosition;
     int ID;
     int lifeTime;
 
 
-    public static Item getInstance(String name) {
-        Item result = NonAnimalItems.getInstance(name);
+    public static Item getInstance(String name, Position outputPosition) {
+        Item result = NonAnimalItem.getInstance(name);
         if (result!=null){
             return result;
         }
@@ -22,12 +22,12 @@ public abstract class Item {
 
     }
 
-    public Position getPosition() {
-        return position;
+    public MapPosition getMapPosition() {
+        return mapPosition;
     }
 
-    public void setPosition(Position position) {
-        this.position = position;
+    public void setMapPosition(Position mapPosition) {
+        this.mapPosition = mapPosition;
     }
 
     public int getVolume() {
@@ -64,6 +64,7 @@ public abstract class Item {
 
     public void anihilate() {
 
+
     }
 
     private void create() {
@@ -71,16 +72,9 @@ public abstract class Item {
     }
 
     public void turn() {
-
+        lifeTime++;
     }
 
-    public void toWarehouse() {
-
-    }
-
-    public void view() {
-
-    }
 
     public void Print() {
         System.out.println(itemInfo.getItemName()+":");
@@ -89,13 +83,14 @@ public abstract class Item {
     }
 
     public static class ItemInfo {
-        String ItemName;
-        int Volume;
-        int price;
+        protected String ItemName;
+        protected int Volume;
+        protected int price;
         public boolean isCatCollecable;
-        public ItemInfo(String name, int volume) {
+        public ItemInfo(String name, int volume,int price) {
             ItemName =name;
             Volume = volume;
+            this.price = price;
         }
 
         public String getItemName() {

@@ -7,31 +7,21 @@ import java.util.ArrayList;
 
 public class Cell {
     Position position;
-    ArrayList<Item> items =new ArrayList<>(0);
 
 
-
-
-
-    public boolean cage(){
+    public boolean cage() {
 
         return true;
     }
 
 
-
-
-    public boolean collect(){
+    public boolean collect() {
         return false;
     }
 
 
     public Position getPosition() {
         return position;
-    }
-
-    public ArrayList<Item> getItems() {
-        return items;
     }
 
     public void setPosition(Position position) {
@@ -41,12 +31,12 @@ public class Cell {
 
 
 
-    public void addItem(Item item){
 
-
-
-
+    public static void PrintCell(ArrayList<Item> items) {
+        System.out.println("Cell " + getPosition().getX() + "," + getPosition().getY());
+        for (Item item : items) {
+            System.out.println("\t");
+            item.Print();
+        }
     }
-
-
 }

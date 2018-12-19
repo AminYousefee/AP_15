@@ -4,11 +4,17 @@ import Model.Animals.Animal;
 import Model.Factories.Factory;
 import Model.GameMenu.Game;
 import Model.Helicopter;
+import Model.Positions.MapPosition;
 import Model.Positions.Position;
-import controller.Exceptions.AnimalTypeNotFoundException;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import controller.Exceptions.HelicopterNotFoundException;
 import org.junit.jupiter.api.Test;
 
+import javax.tools.DiagnosticListener;
+import java.io.*;
+import java.util.Dictionary;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,22 +29,131 @@ public class InputProcessor {
         return matcher;
     }
 
+    public static void GameNotSpecifiedMode() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String string = scanner.nextLine();
+            boolean flag = false;
+            if (loadGame(string)) {
+                flag = true;
+            }
+            if (runNewGame(string)) {
+                flag = true;
+            }
+            if (loadCustom(string)) {
+                flag = true;
+            }
+            if (!flag){
+                System.out.println("Undefined Statment");
+                //todo make it to do something else if the statement is valid in normal mode
+            }
+
+        }
+    }
+
+    private boolean loadGame(String string) {
+        Matcher matcher;
+        String regex = "\\s*load\\s+game\\s+(\\S+)\\s*";
+        if ((matcher=getMatched(regex,string))!=null){
+            String path  = matcher.group(1);
+            if (path.endsWith(".json")){
+                Gson gson = new Gson();
+                try {
+                    FileReader fileReader=new FileReader(path);
+                    this.game = gson.fromJson(fileReader,Game.class);
+
+                } catch (FileNotFoundException e) {
+                    System.out.println("File Not Found");
+                }catch (JsonSyntaxException){
+                    System.out.println("Syntax Error In Json File");
+                }
+
+            }else {
+
+
+                System.out.println("Json File Needed");
+            }
+
+
+
+            return true;
+        }
+        return false;
+
+    }
+
+
+
+    private boolean saveGame(String string){
+        Matcher matcher;
+        Gson gson=new Gson();
+        String regex = "\\s*save\\s+game\\s+(\\S+)\\s*";
+        if ((matcher=getMatched(regex,string))!=null){
+            String path =matcher.group(1);
+            if (path.endsWith(".json")) {
+
+                try {
+                    FileWriter fileWriter = new FileWriter(path);
+                    gson.toJson(game, fileWriter);
+                } catch (IOException e) {
+                    System.out.println("Unable To Write To  the Specified File");
+                }
+            }else {
+                System.out.println("Path should be in the form *.json");
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+
+    private boolean loadCustom(String string) {
+        Matcher matcher;
+        String regex = "\\s*load\\s+custom\\s+(\\S+)\\s*";
+        if ((matcher=getMatched(regex,string))!=null){
+            String path  = matcher.group(1);
+            File file = new File(path);
+            if (file.isDirectory()){
+                File[] files = file.listFiles();
+                //todo
+            }else {
+                System.out.println();
+            }
+
+
+
+            return true;
+        }
+        return false;
+    }
+
+
+
+
+
+
+
     public boolean process(String input) {
         if (buyAnimal(input)) {
             return true;
         }
-        if (pickup(input)){
+        if (pickup(input)) {
             return true;
         }
-        if (VehicleGo(input)){
+        if (VehicleGo(input)) {
             return true;
-        }if ((input)){
+        }
+        if ((input)) {
             return true;
-        }if (pickup(input)){
+        }
+        if (pickup(input)) {
             return true;
-        }if (pickup(input)){
+        }
+        if (pickup(input)) {
             return true;
-        }if (pickup(input)){
+        }
+        if (pickup(input)) {
             return true;
         }
 
@@ -56,11 +171,11 @@ public class InputProcessor {
         Matcher matcher;
         String regex = "buy\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
-            Animal.AnimalInfo animalInfo = Animal.findAnimalType(matcher.group(1));
-            if (animalInfo == null) {
-                throw new AnimalTypeNotFoundException();
+            Animal animal = Animal.getInstance(matcher.group(1));
+            if (animal == null) {
+                System.out.println("Animal Type Not Found");
             }
-            game.getFarm().buyAnimal(animalInfo);
+            game.getFarm().buyAnimal(animal);
         }
         return false;
 
@@ -74,11 +189,10 @@ public class InputProcessor {
             try {
                 int x = Integer.parseInt(matcher.group(1));
                 int y = Integer.parseInt(matcher.group(2));
-                Position position = new Position(x, y);
-
-                game.getFarm().pickUp(position);
+                MapPosition mapPosition = new MapPosition(x, y);
+                game.getFarm().pickUp(mapPosition);
             } catch (NumberFormatException e) {
-                //todo
+                System.out.println("Undefined Action");
             }
 
 
@@ -154,10 +268,11 @@ public class InputProcessor {
 
                 int x = Integer.parseInt(matcher.group(1));
                 int y = Integer.parseInt(matcher.group(2));
-                Position position = new Position(x, y);
-                game.getFarm().cage(position);
+                MapPosition MapPosition = new MapPosition(x, y);
+                game.getFarm().cage(MapPosition);
             } catch (NumberFormatException e) {
                 //todo
+                System.out.println("Undefined Parameters for Statement Cage");
             }
             return true;
         }
@@ -169,9 +284,10 @@ public class InputProcessor {
         Matcher matcher;
         String regex = "\\s+well\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
-            game.getFarm().getBucket().fill();
+            game.getFarm().getBucket().fill(game.getFarm().getCurrentMoney());
+            return true;
         }
-
+        return false;
 
     }
 
@@ -207,7 +323,8 @@ public class InputProcessor {
             Factory factory = game.getFarm().findFactory(string);
             if (factory == null) {
                 //todo
-                throw FactoryNotFoundException;
+                System.out.println("Factory Not Found");
+                ;
             } else {
                 factory.process();
             }
@@ -224,25 +341,6 @@ public class InputProcessor {
 
     }
 
-    private boolean turn(String input) {
-        Matcher matcher;
-        String regex = "\\s+turn\\s+(\\S+)\\s+";
-        if ((matcher = getMatched(regex, input)) != null) {
-            try {
-
-                int n = Integer.parseInt(matcher.group(1));
-                game.getFarm().turn(n);
-            } catch (NumberFormatException e) {
-                //todo
-            }
-            return true;
-
-
-        }
-        return false;
-
-
-    }
 
 
     private boolean clearVehicle(String input) {
@@ -261,6 +359,36 @@ public class InputProcessor {
         }
         return false;
     }
+
+
+    private boolean plant(String input) {
+        Matcher matcher;
+        String regex = "plant\\s+(\\d+)\\s+(\\d+)\\s+";
+        if ((matcher = getMatched(regex, input)) != null) {
+            int x = Integer.parseInt(matcher.group(1));
+            int y = Integer.parseInt(matcher.group(2));
+            MapPosition mapPosition = new MapPosition(x, y);
+            game.getFarm().plant(mapPosition);
+        }
+
+
+        return false;
+    }
+
+
+    public boolean turn(String input) {
+        Matcher matcher;
+        String regex = "\\s*turn\\s+(\\d+)\\*";
+        if ((matcher = getMatched(regex, input)) != null) {
+            game.turn();
+            return true;
+        }
+
+        return false;
+    }
+
+
+
 
 
 }

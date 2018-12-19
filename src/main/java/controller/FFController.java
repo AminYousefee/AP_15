@@ -16,14 +16,12 @@ public class FFController {
     File NonAnimalItemsConfigFile;
     File WildAnimalConfigFile;
     File ProductiveAnimalConfigFile;
-    public static final String MissionsConfigFilePath = "./MissionsConfigFile.json";
+
 
     public static final String NonAnimalItemsConfigFilePath = "./NonAnimalItemsConfigFile.json";
     public static final String WildAnimalConfigFilePath  = "./WildAnimalConfigFile.json";
-    public static final String ProductiveAnimalConfigFilePath = "./ProductiveAnimalConfigFile.json";
-    private FFController() {
-        MissionsConfigFile = new File(MissionsConfigFilePath);
-    }
+
+
 
     public static FFController getInstance() {
         return ourInstance;

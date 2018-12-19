@@ -1,9 +1,14 @@
 package Model.Positions;
 
 public class MapPosition extends Position {
-    int x;
-    int y;
 
+
+    int x, y;
+
+    public MapPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
     public int getX() {
         return x;

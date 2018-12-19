@@ -4,8 +4,12 @@ import View.Farmys.BucketView;
 
 public class Bucket implements Upgradable {
     int Level;
-
+    Integer farmMoney;
     private int CurrentWater;
+
+    public Bucket(Integer currentMoney) {
+        farmMoney =currentMoney;
+    }
 
 
     //Finished
@@ -65,5 +69,9 @@ public class Bucket implements Upgradable {
     @Override
     public int getUpgradeCost() {
         //todo
+    }
+
+    public boolean hasEnoughWater() {
+        return CurrentWater>=1;
     }
 }

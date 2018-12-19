@@ -1,13 +1,14 @@
 package Model.Animals;
 
-import Model.Cell;
 import Model.Item;
 import Model.Map;
+import Model.NonAnimalItem;
+import Model.Positions.MapPosition;
 import Model.Positions.Position;
 
 public class Cat extends NonWildAnimal {
 
-    transient Map map;
+
     Item goalItem;
 
 
@@ -28,21 +29,21 @@ public class Cat extends NonWildAnimal {
         if (goalItem==null){
             super.move();
         }else {
-            Position goalItemPosition = goalItem.getPosition();
-            Position CurrentPosition = this.getPosition();
+            MapPosition goalItemPosition = goalItem.getMapPosition();
+            MapPosition CurrentPosition = this.getMapPosition();
             if (goalItemPosition.equals(CurrentPosition)){
                 this.collect(goalItem);
             }else {
-                double deltaX = goalItemPosition.getX()-this.getPosition().getX();
-                double deltaY = goalItemPosition.getY()-this.getPosition().getY();
+                double deltaX = goalItemPosition.getX()-this.getMapPosition().getX();
+                double deltaY = goalItemPosition.getY()-this.getMapPosition().getY();
                 if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())){
                     moveToPosition(goalItemPosition);
 
                 }else {
                     double amplifier= Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
-                    int x = (int) (amplifier*deltaX +getPosition().getX());
-                    int y = (int) (amplifier*deltaY +getPosition().getY());
-                    Position position=new Position(x,y);
+                    int x = (int) (amplifier*deltaX + getMapPosition().getX());
+                    int y = (int) (amplifier*deltaY + getMapPosition().getY());
+                    Position position=new MapPosition(x,y);
                     moveToPosition(position);
                 }
             }
@@ -51,13 +52,6 @@ public class Cat extends NonWildAnimal {
 
     }
 
-    private void moveToPosition(Position position) {
-        Cell goalCell = map.getCell(position);
-        Cell CurrentCell = map.getCell(this.getPosition());
-        CurrentCell.getItems().remove(this);
-        goalCell.getItems().add(this);
-
-    }
 
     @Override
     public int getUpgradeCost() {
@@ -67,6 +61,9 @@ public class Cat extends NonWildAnimal {
 
 
     private boolean collect(Item item){
+        ((NonAnimalItem)item).getCollected();
+        map.getCell(item.getMapPosition()).removeItem(item);
+        
 
     }
 }

@@ -5,18 +5,8 @@ import View.VehicleView.TruckView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Truck {
-    int Level;
-    int Capacity;
-    int RemainingTurns;
-    int Price;
-    ArrayList<Item> items = new ArrayList<>(0);
-    Integer FarmMoney;
+public class Truck extends Vehicle{
 
-    {
-
-
-    }
 
 
     public Truck(Integer FarmMoney) {
@@ -27,7 +17,7 @@ public class Truck {
         //todo
     }
 
-    private void turn() {
+    public void turn() {
         if (RemainingTurns > 1) {
             RemainingTurns -= 1;
         } else if (RemainingTurns == 1) {
@@ -51,11 +41,7 @@ public class Truck {
     }
 
 
-    public boolean goTravel(){
-        RemainingTurns = getTravelTurns();
-        Price = getPrice();
 
-    }
 
 
 
@@ -96,6 +82,18 @@ public class Truck {
 
     public void addItem(Item item) {
         items.add(item);
+    }
+
+
+
+    @Override
+    public boolean go() {
+        if (this.isInTravel()){
+            System.out.println("Truck in Travel");
+            return false;
+        }else {
+            this.goTravel();
+        }
     }
 
 

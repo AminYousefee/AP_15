@@ -1,13 +1,12 @@
 package View.VehicleView;
 
-public class Helicopter extends Vehicle {
-    @Override
-    public boolean upgrade() {
-        return false;
-    }
+import Model.Animals.Animal;
+import Model.Item;
+import Model.Vehicle;
 
-    @Override
-    public boolean getUpgradeCost() {
-        return false;
-    }
+import java.util.ArrayList;
+
+public class Helicopter  {
+
+
 }

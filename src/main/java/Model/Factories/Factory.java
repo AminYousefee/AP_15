@@ -2,7 +2,7 @@ package Model.Factories;
 
 import Model.Item;
 import Model.Positions.Position;
-import Model.NonAnimalItems;
+import Model.NonAnimalItem;
 import View.Factories.FactoryView;
 
 import java.io.File;
@@ -53,7 +53,10 @@ public class Factory {
     }
 
     private void finishProcess() {
-        Item outputItem = new
+
+        Item outputItem = Item.getInstance(factoryType.OutputItem.getItemName(),outputPosition);
+
+
 
 
     }
@@ -102,8 +105,8 @@ public class Factory {
     }
 
     private class FactoryType {
-        Item OutputItem;
-        Item InputItem;
+        Item.ItemInfo OutputItem;
+        Item.ItemInfo InputItem;
         int numberOfInputItems;
         int numberOfOutputItems;
         int ProcessTurns;
@@ -148,21 +151,11 @@ public class Factory {
             ProcessTurns = processTurns;
         }
 
-        class InputOrOutputType {
 
 
-        }
-
-        class AnimalInputOrOutputType extends InputOrOutputType {
-            Class animalClass;
-            public
-        }
-
-        class NonAnimalInputOrOutputType extends InputOrOutputType {
-            NonAnimalItems.ProductType productType;
 
 
-        }
+
 
 
         //todo Item input 
