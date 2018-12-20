@@ -5,6 +5,7 @@ import Model.Map;
 import Model.NonAnimalItem;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
+import controller.InputProcessor;
 
 public class Cat extends NonWildAnimal {
 
@@ -13,13 +14,13 @@ public class Cat extends NonWildAnimal {
 
 
     public Cat(Map map) {
-        super(Animal.Cat_Info);
+        super(Animal.Cat_Info, InputProcessor.game.getFarm().getMap());
         this.map = map;
     }
 
     @Override
     public boolean move() {
-        if (getPosition() instanceof NonMapPosition){
+        if (getPosition() instanceof NonMapPosition) {
             return false;
         }
         if (goalItem != null) {
@@ -28,7 +29,7 @@ public class Cat extends NonWildAnimal {
             if (this.Level == 1) {
                 goalItem = map.getCatCollectableItem();
 
-            }else {
+            } else {
                 goalItem = map.getNearestCatCollectableItem(this.map.getCellByPosition((MapPosition) this.getPosition()));
             }
         }
@@ -42,15 +43,15 @@ public class Cat extends NonWildAnimal {
             if (goalItemPosition.equals(CurrentPosition)) {
                 this.collect(goalItem);
             } else {
-                double deltaX = goalItemPosition.getX() - ((MapPosition)this.getPosition()).getX();
-                double deltaY = goalItemPosition.getY() - ((MapPosition)this.getPosition()).getY();
+                double deltaX = goalItemPosition.getX() - ((MapPosition) this.getPosition()).getX();
+                double deltaY = goalItemPosition.getY() - ((MapPosition) this.getPosition()).getY();
                 if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
                     moveToPosition(goalItemPosition);
 
                 } else {
                     double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
-                    int x = (int) (amplifier * deltaX + ((MapPosition)this.getPosition()).getX());
-                    int y = (int) (amplifier * deltaY + ((MapPosition)this.getPosition()).getY());
+                    int x = (int) (amplifier * deltaX + ((MapPosition) this.getPosition()).getX());
+                    int y = (int) (amplifier * deltaY + ((MapPosition) this.getPosition()).getY());
                     MapPosition position = new MapPosition(x, y);
                     moveToPosition(position);
                 }
@@ -64,6 +65,7 @@ public class Cat extends NonWildAnimal {
 
     @Override
     public int getUpgradeCost() {
+        return 0;
         //todo
     }
 
@@ -72,6 +74,6 @@ public class Cat extends NonWildAnimal {
         ((NonAnimalItem) item).getCollected();
         map.getCell((MapPosition) item.getPosition()).removeItem(item);
 
-
+        return true;
     }
 }

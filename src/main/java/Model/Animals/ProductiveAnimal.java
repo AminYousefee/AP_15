@@ -1,10 +1,12 @@
 package Model.Animals;
 
 import Model.Item;
+import Model.Map;
 import Model.Positions.MapPosition;
 import View.AnimalView.ProductiveAnimalViewer;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import controller.InputProcessor;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -32,14 +34,14 @@ public class ProductiveAnimal extends NonWildAnimal {
         }
     }
 
-    public ProductiveAnimal(ProductiveAnimalInfo animalInfo) {
-        super(animalInfo);
+    public ProductiveAnimal(ProductiveAnimalInfo animalInfo, Map map) {
+        super(animalInfo,map);
     }
 
     public static ProductiveAnimal getInstance(String name) {
         for (ProductiveAnimalInfo productiveAnimalInfo : productiveAnimalInfos) {
             if (productiveAnimalInfo.getItemName().equalsIgnoreCase(name)) {
-                return new ProductiveAnimal(productiveAnimalInfo);
+                return new ProductiveAnimal(productiveAnimalInfo, InputProcessor.game.getFarm().getMap());
             }
         }
         return null;

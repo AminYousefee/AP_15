@@ -4,13 +4,14 @@ import Model.Cell;
 import Model.Map;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
+import controller.InputProcessor;
 
 public class Dog extends NonWildAnimal {
 
 
 
     public Dog( Map map) {
-        super(Animal.Dog_Info);
+        super(Animal.Dog_Info, InputProcessor.game.getFarm().getMap());
     }
 
     @Override

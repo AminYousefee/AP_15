@@ -22,6 +22,7 @@ public class Truck extends Vehicle{
         if (RemainingTurns > 1) {
             RemainingTurns -= 1;
         } else if (RemainingTurns == 1) {
+            RemainingTurns -= 1;
             FarmMoney = FarmMoney + Price;
             Price = 0;
         } else {
@@ -89,5 +90,14 @@ public class Truck extends Vehicle{
         }
     }
 
+
+
+    public boolean goTravel(){
+        RemainingTurns = getTravelTurns();
+        Price = getPrice();
+
+        return true;
+
+    }
 
 }

@@ -113,7 +113,7 @@ public class Cell {
 
     public Item getCatCollectableItem() {
         for (Item item : items) {
-            if (item.itemInfo.isCatCollecable) {
+            if (item.itemInfo instanceof NonAnimalItem.NonAnimalItemInfo) {
                 return item;
             }
         }

@@ -99,7 +99,6 @@ public abstract class Item {
         protected String ItemName;
         protected int Volume;
         protected int price;
-        public boolean isCatCollecable;
         public ItemInfo(String name, int volume,int price) {
             ItemName =name;
             Volume = volume;

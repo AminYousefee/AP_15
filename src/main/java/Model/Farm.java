@@ -13,13 +13,24 @@ import java.util.List;
 
 public class Farm {
     public static final int POSSIBLE_NUMBER_OF_FACTORIES = 6;
+    long turnsWent;
     Map map;
+    String name;
     Integer CurrentMoney;
     Warehouse warehouse;
     Bucket bucket;
     private Factory[] factories = new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
     private Truck truck;
     private Helicopter helicopter=null;
+
+    public static Farm findLoadedFarm(String farmName) {
+        for (Farm farm:loadedFarms){
+            if (farm.name.equalsIgnoreCase(farmName)){
+                return farm;
+            }
+        }
+        return null;
+    }
 
 
     public Warehouse getWarehouse() {
@@ -185,4 +196,16 @@ public class Farm {
         }
 
     }
+
+
+
+
+
+
+    public  static ArrayList<Farm> loadedFarms = new ArrayList<>(0);
+
+
+
+
+
 }

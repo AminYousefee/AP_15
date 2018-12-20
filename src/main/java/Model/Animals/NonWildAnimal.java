@@ -14,8 +14,8 @@ import java.util.Scanner;
 public class NonWildAnimal extends Animal{
 
 
-    public NonWildAnimal(NonWildAnimalInfo animalInfo) {
-        super(animalInfo);
+    public NonWildAnimal(NonWildAnimalInfo animalInfo,Map map) {
+        super(animalInfo,map);
     }
 
     public static NonWildAnimal getInstance(String name, Map map) {

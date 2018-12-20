@@ -1,9 +1,11 @@
 package Model;
 
 import Model.Animals.Animal;
+import Model.Animals.WildAnimal;
 import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import View.Farmys.MapView;
+import org.junit.jupiter.api.Test;
 
 import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Map {
+    Integer lifeTime ;
 
 
     public static final int Num_Of_CELLS_IN_ROW = 5;
@@ -37,6 +40,22 @@ public class Map {
                 cell1.turn();
             }
         }
+        lifeTime++;
+        if (lifeTime%200 == 199){
+            Random random =new Random();
+            if (random.nextBoolean()){
+
+                this.addItemInRandom(WildAnimal.getInstance("Lion"));
+                this.addItemInRandom(WildAnimal.getInstance("Lion"));
+            }else {
+                this.addItemInRandom(WildAnimal.getInstance("Bear"));
+                this.addItemInRandom(WildAnimal.getInstance("bear"));
+            }
+
+        }
+
+
+
 
 
     }
@@ -182,4 +201,18 @@ public class Map {
         }
         return res;
     }
+
+    public void addItemInRandom(Item item) {
+        Random random=new Random();
+        int x = random.nextInt()%Map.Num_Of_CELLS_IN_COLOUM;
+        int y = random.nextInt()%Map.Num_Of_CELLS_IN_ROW;
+        MapPosition mapPosition =new MapPosition(x,y);
+        item.setPosition(mapPosition);
+        this.cells[x][y].addItem(item);
+    }
+
+
+
+
+
 }

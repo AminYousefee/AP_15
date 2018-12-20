@@ -80,4 +80,8 @@ public class Warehouse implements Upgradable {
     public void remove(Item toBeAddedItem) {
         items.remove(toBeAddedItem);
     }
+
+    public void addItem(Item item) {
+        items.add(item);
+    }
 }

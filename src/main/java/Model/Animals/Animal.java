@@ -3,11 +3,14 @@ package Model.Animals;
 import Model.*;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
+import controller.InputProcessor;
+import org.junit.jupiter.api.Test;
 
 import javax.print.attribute.standard.MediaPrintableArea;
 import java.util.Random;
 
 public abstract class Animal extends Item implements Upgradable {
+
     MapPosition goalPosition;
 
 
@@ -19,8 +22,9 @@ public abstract class Animal extends Item implements Upgradable {
     int Level;
 
     //Finished
-    public Animal(AnimalInfo animalInfo) {
+    public Animal(AnimalInfo animalInfo,Map map) {
         itemInfo = animalInfo;
+        this.map =map;
     }
 
 /*    public static AnimalInfo findAnimalType(String name) {
@@ -149,5 +153,9 @@ public abstract class Animal extends Item implements Upgradable {
         goalCell.getItems().add(this);
 
     }
+
+
+
+
 
 }

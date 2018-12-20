@@ -1,13 +1,16 @@
 package controller;
 
-import Model.*;
+
 import Model.Animals.Animal;
+import Model.Animals.NonWildAnimal;
 import Model.Factories.Factory;
+import Model.*;
 import Model.GameMenu.Game;
 import Model.Positions.MapPosition;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import controller.Exceptions.HelicopterNotFoundException;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,8 +19,10 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class InputProcessor {
-    private Game game;
+    public static Game game;
 
     public static Matcher getMatched(String regex, String string) {
         Pattern pattern = Pattern.compile(regex);
@@ -26,6 +31,7 @@ public class InputProcessor {
             return null;
         return matcher;
     }
+
 
     public static void GameNotSpecifiedMode() {
         Scanner scanner = new Scanner(System.in);
@@ -41,15 +47,36 @@ public class InputProcessor {
             if (loadCustom(string)) {
                 flag = true;
             }
+            if (endStatemet(string)) {
+                flag = true;
+            }
             if (!flag) {
-                System.out.println("Undefined Statment");
+                System.out.println("Undefined Statement");
                 //todo make it to do something else if the statement is valid in normal mode
+            }
+
+            if (game != null) {
+                break;
             }
 
         }
     }
 
-    private boolean loadGame(String string) {
+    private static boolean runNewGame(String string) {
+        Matcher matcher;
+        String regex = "\\s*run\\s+(\\S+)\\s+";
+        if ((matcher = getMatched(regex, string)) != null) {
+            Farm farm = Farm.findLoadedFarm(matcher.group(1));
+            if (farm == null) {
+                System.out.println("The Specified Farm Not Found");
+            }
+            game.setFarm(farm);
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean loadGame(String string) {
         Matcher matcher;
         String regex = "\\s*load\\s+game\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, string)) != null) {
@@ -58,7 +85,7 @@ public class InputProcessor {
                 Gson gson = new Gson();
                 try {
                     FileReader fileReader = new FileReader(path);
-                    this.game = gson.fromJson(fileReader, Game.class);
+                    game = gson.fromJson(fileReader, Game.class);
 
                 } catch (FileNotFoundException e) {
                     System.out.println("File Not Found");
@@ -79,6 +106,108 @@ public class InputProcessor {
 
     }
 
+    public static boolean clearVehicle(String string) {
+        Matcher matcher;
+        String regex = "\\s*(\\S+)\\s+clear\\s*";
+        if ((matcher = getMatched(regex, string)) != null) {
+            if (matcher.group(1).equalsIgnoreCase("truck")) {
+                Truck truck = game.getFarm().getTruck();
+                if (truck == null) {
+                    System.out.println("Truck not Found");
+                }
+                int Volume = 0;
+                for (Item item : truck.getItems()) {
+                    if (item instanceof NonWildAnimal) {
+                        game.getFarm().getMap().addItemInRandom(item);
+                    } else if (item instanceof NonAnimalItem) {
+                        Volume += item.getItemInfo().getVolume();
+                    }
+
+
+                }
+                if (Volume > game.getFarm().getWarehouse().getCapacity()) {
+                    System.out.println("Not Enough Space in the wareHouse");
+                }
+                for (Item item : truck.getItems()) {
+                    if (!(item instanceof NonWildAnimal)) {
+                        game.getFarm().getWarehouse().addItem(item);
+                    }
+                    game.getFarm().getTruck().clear();
+
+
+                }
+
+
+            } else if (matcher.group(1).equalsIgnoreCase("helicopter")) {
+                Helicopter helicopter = game.getFarm().getHelicopter();
+                if (helicopter == null) {
+                    System.out.println("Helicopter Not Found");
+                } else {
+                    game.getFarm().getHelicopter().clear();
+
+
+                }
+
+
+            } else {
+                System.out.println("I don't know what to clear");
+            }
+            return true;
+        }
+        return false;
+
+    }
+
+    private static boolean loadCustom(String string) {
+        Matcher matcher;
+        String regex = "\\s*load\\s+custom\\s+(\\S+)\\s*";
+        if ((matcher = getMatched(regex, string)) != null) {
+            String path = matcher.group(1);
+            File file = new File(path);
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                for (File file1 : files) {
+                    if (file1.getAbsolutePath().endsWith(".json")) {
+                        try {
+                            FileReader fileReader = new FileReader(file1.getAbsoluteFile());
+                            Gson gson = new Gson();
+                            try {
+                                Farm farm = gson.fromJson(fileReader, Farm.class);
+                                Farm.loadedFarms.add(farm);
+                            } catch (JsonParseException e) {
+                                Factory.FactoryType factoryType = gson.fromJson(fileReader, Factory.FactoryType.class);
+                                Factory.factoryTypeArrayList.add(factoryType);
+                            }
+
+                        } catch (FileNotFoundException e) {
+                            System.out.println("file couldn't be read " + file1.getAbsolutePath());
+                        }
+                    } else {
+                        System.out.println("not json file found but ignored");
+                    }
+
+
+                }
+                //todo
+            } else {
+                System.out.println("There must be a bug shouldn't the path be a directory");
+            }
+
+
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean endStatemet(String string) {
+        Matcher matcher;
+        String regex = "\\s*end\\s*";
+        if ((matcher = getMatched(regex, string)) != null) {
+            System.exit(0);
+            return true;
+        }
+        return false;
+    }
 
     private boolean saveGame(String string) {
         Matcher matcher;
@@ -102,54 +231,52 @@ public class InputProcessor {
         return false;
     }
 
+    public static boolean process(String input) {
+        if (startFactory(input)) {
+            return true;
+        }
+        if (upgrade(input)) {
+            return true;
+        }
+        if (buyAnimal(input)) {
+            return true;
+        }
 
-    private boolean loadCustom(String string) {
-        Matcher matcher;
-        String regex = "\\s*load\\s+custom\\s+(\\S+)\\s*";
-        if ((matcher = getMatched(regex, string)) != null) {
-            String path = matcher.group(1);
-            File file = new File(path);
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                //todo
-            } else {
-                System.out.println();
-            }
+        if (VehicleGo(input)) {
+            return true;
+        }
+        if (addToVehicle(input)) {
+            return true;
+        }
 
-
+        if (pickup(input)) {
+            return true;
+        }
+        if (cage(input)) {
+            return true;
+        }
+        if (makeWellFull(input)) {
+            return true;
+        }
+        if (plant(input)){
+            return true;
+        }
+        if (loadGame(input)) {
+            return true;
+        }
+        if (runNewGame(input)) {
+            return true;
+        }
+        if (loadCustom(input)) {
+            return true;
+        }
+        if (endStatemet(input)) {
             return true;
         }
         return false;
     }
 
-
-    public boolean process(String input) {
-        if (buyAnimal(input)) {
-            return true;
-        }
-        if (pickup(input)) {
-            return true;
-        }
-        if (VehicleGo(input)) {
-            return true;
-        }
-        if ((input)) {
-            return true;
-        }
-        if (pickup(input)) {
-            return true;
-        }
-        if (pickup(input)) {
-            return true;
-        }
-        if (pickup(input)) {
-            return true;
-        }
-
-    }
-
-
-    public boolean buyAnimal(String input) {
+    public static boolean buyAnimal(String input) {
         Matcher matcher;
         String regex = "buy\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -164,7 +291,7 @@ public class InputProcessor {
 
     }
 
-    private boolean pickup(String input) {
+    private static boolean pickup(String input) {
         Matcher matcher;
         String regex = "pickup\\s+(\\S+)\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -185,7 +312,7 @@ public class InputProcessor {
 
     }
 
-    private boolean VehicleGo(String input) {
+    private static boolean VehicleGo(String input) {
         Matcher matcher;
         String regex = "\\s*(.*)\\s+go\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -201,7 +328,6 @@ public class InputProcessor {
         }
         return false;
     }
-
 
     private boolean print(String input) {
         Matcher matcher;
@@ -225,7 +351,7 @@ public class InputProcessor {
             } else if (string.equalsIgnoreCase("helicopter")) {
                 Helicopter helicopter = game.getFarm().getHelicopter();
                 if (helicopter == null) {
-                    throw new HelicopterNotFoundException();
+                    System.out.println("Helicopter Not Found");
 
                 } else {
                     helicopter.printHelicopter();
@@ -239,10 +365,11 @@ public class InputProcessor {
             }
         }
 
+        return false;
 
     }
 
-    private boolean cage(String input) {
+    private static boolean cage(String input) {
         Matcher matcher;
         String regex = "\\s+cage\\s+(\\S+)\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -262,7 +389,7 @@ public class InputProcessor {
 
     }
 
-    private boolean makeWellFull(String input) {
+    private static boolean makeWellFull(String input) {
         Matcher matcher;
         String regex = "\\s+well\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -273,7 +400,7 @@ public class InputProcessor {
 
     }
 
-    private boolean upgrade(String input) {
+    private static boolean upgrade(String input) {
         Matcher matcher;
         String regex = "\\s+upgrade\\s+(\\.*)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -326,7 +453,7 @@ public class InputProcessor {
 
     }
 
-    private boolean startFactory(String input) {
+    private static boolean startFactory(String input) {
         Matcher matcher;
         String regex = "\\s*start\\s+(.+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -338,7 +465,7 @@ public class InputProcessor {
                 System.out.println("Factory Not Found");
                 ;
             } else {
-                factory.process();
+                factory.startProcess(game.getFarm().getWarehouse());
             }
 
 
@@ -349,7 +476,7 @@ public class InputProcessor {
 
     }
 
-    private boolean addToVehicle(String input) {
+    private static boolean addToVehicle(String input) {
         Matcher matcher;
         String regex = "\\s*(\\S+)\\s+add(\\S+)\\s+(\\d+)";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -357,11 +484,11 @@ public class InputProcessor {
             int count = Integer.parseInt(matcher.group(3));
             if (matcher.group(1).equalsIgnoreCase("helicopter")) {
                 Item.ItemInfo itemInfo = Helicopter.findItem(itemName);
-                if (itemInfo==null){
+                if (itemInfo == null) {
                     System.out.println("Item not buyable");
                     return true;
-                }else {
-                    for (int i=0;i<count;i++){
+                } else {
+                    for (int i = 0; i < count; i++) {
                         game.getFarm().getHelicopter().addItem(Item.getInstance(itemName));
                     }
                 }
@@ -370,7 +497,7 @@ public class InputProcessor {
             } else if (matcher.group(1).equalsIgnoreCase("truck")) {
 
                 Item item = Item.getInstance(itemName);
-                if (item==null){
+                if (item == null) {
                     System.out.println("Item doesn't exits");
                     return true;
                 }
@@ -396,14 +523,14 @@ public class InputProcessor {
 
                 } else {
                     Map map = game.getFarm().getMap();
-                    List<Item> toBeAddedItems =map.getItemOfSpecifiedType(itemName);
+                    List<Item> toBeAddedItems = map.getItemOfSpecifiedType(itemName);
                     if (toBeAddedItems.size() < count) {
                         System.out.println("Not Enough Number Of " + itemName);
                     } else if (count * item.getItemInfo().getVolume() > game.getFarm().getWarehouse().getCapacity()) {
                         System.out.println("Not Enough Space in the WareHouse");
                     } else {
                         for (Item toBeAddedItem : toBeAddedItems) {
-                            map.getCellByPosition(toBeAddedItem.getPosition()).removeItem(toBeAddedItem);
+                            map.getCellByPosition((MapPosition) toBeAddedItem.getPosition()).removeItem(toBeAddedItem);
                             game.getFarm().getTruck().addItem(toBeAddedItem);
                         }
                     }
@@ -419,26 +546,24 @@ public class InputProcessor {
         return false;
     }
 
-
-    private boolean clearVehicle(String input) {
-        Matcher matcher;
-        String regex = "\\s*(.*)\\s+clear\\s*";
-        if ((matcher = getMatched(regex, input)) != null) {
-            if (matcher.group(1).equalsIgnoreCase("Helicopter")) {
-                game.getFarm().getHelicopter().clear();
-
-
-            } else if (matcher.group(1).equalsIgnoreCase("Truck")) {
-                game.getFarm().getTruck().clear();
-
-            }
-            return true;
-        }
-        return false;
-    }
+    /* private boolean clearVehicle(String input) {
+         Matcher matcher;
+         String regex = "\\s*(.*)\\s+clear\\s*";
+         if ((matcher = getMatched(regex, input)) != null) {
+             if (matcher.group(1).equalsIgnoreCase("Helicopter")) {
+                 game.getFarm().getHelicopter().clear();
 
 
-    private boolean plant(String input) {
+             } else if (matcher.group(1).equalsIgnoreCase("Truck")) {
+                 game.getFarm().getTruck().clear();
+
+             }
+             return true;
+         }
+         return false;
+     }
+ */
+    private static boolean plant(String input) {
         Matcher matcher;
         String regex = "plant\\s+(\\d+)\\s+(\\d+)\\s+";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -452,7 +577,6 @@ public class InputProcessor {
         return false;
     }
 
-
     public boolean turn(String input) {
         Matcher matcher;
         String regex = "\\s*turn\\s+(\\d+)\\*";
@@ -464,5 +588,14 @@ public class InputProcessor {
         return false;
     }
 
-
+    @Test
+    public void processTest() {
+        InputProcessor inputProcessor = new InputProcessor();
+        if (game == null) {
+            assertTrue(true);
+        } else {
+            assertTrue(true);
+        }
+        System.exit(0);
+    }
 }

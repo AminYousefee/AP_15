@@ -3,6 +3,7 @@ package Model.Factories;
 import Model.Item;
 import Model.Positions.MapPosition;
 import Model.Upgradable;
+import Model.Warehouse;
 import View.Factories.FactoryView;
 
 import java.io.File;
@@ -10,11 +11,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Factory implements Upgradable {
     public static final String FactoriesConfigFilePath = "./FactoriesConfigFile.json";
-    public static ArrayList<FactoryType> factoryTypeArrayList =new ArrayList<>(0);
+    public static ArrayList<FactoryType> factoryTypeArrayList = new ArrayList<>(0);
 
     static {
         File file = new File(FactoriesConfigFilePath);
@@ -22,7 +24,7 @@ public class Factory implements Upgradable {
             boolean t = file.createNewFile();
             FileReader fileReader = new FileReader(file);
             //todo in this we add the files to the hashmap
-            Scanner scanner =new Scanner(fileReader);
+            Scanner scanner = new Scanner(fileReader);
 
         } catch (FileNotFoundException e) {
             FactoryView.permissionDeniedToReadFactoriesConfigFile();
@@ -34,6 +36,19 @@ public class Factory implements Upgradable {
 
     }
 
+    FactoryType factoryType;
+    MapPosition outputPosition;
+    Process process;
+
+    public static FactoryType findFactoryType(String name) {
+        for (FactoryType factoryType : factoryTypeArrayList) {
+            if (factoryType.getName().equalsIgnoreCase(name)) {
+                return factoryType;
+            }
+        }
+        return null;
+    }
+
     public FactoryType getFactoryType() {
         return factoryType;
     }
@@ -41,10 +56,6 @@ public class Factory implements Upgradable {
     public void setFactoryType(FactoryType factoryType) {
         this.factoryType = factoryType;
     }
-
-    FactoryType factoryType;
-    MapPosition outputPosition;
-    Process process;
 
     public boolean turn() {
         if (process.getRemainedTurns() > 1) {
@@ -66,15 +77,35 @@ public class Factory implements Upgradable {
         outputItem.setPosition(outputPosition);
 
 
+    }
 
+    public boolean startProcess(Warehouse warehouse) {
+        List<Item> items  =warehouse.getItems();
+        int min=1000;
+        if (process!=null){
+            return false;
+        }
 
+        for (FactoryType.Isp isp:this.getFactoryType().InputItems){
 
+            int num=0;
+            for (Item item:items){
+                if (item.getItemInfo().equals(isp.itemInfo)){
+                    num+=1;
+                }
+
+            }
+
+            min =Math.min(min,num/isp.weight);
+        }
+        process = new Process(getNeededTurns(),min);
+        return true;
 
 
     }
 
-    public boolean process() {
-        return true;
+    private int getNeededTurns() {
+        return 0;
     }
 
     private boolean isFinished() {
@@ -91,11 +122,15 @@ public class Factory implements Upgradable {
         return 0;
     }
 
-
     private static class Process {
         int remainedTurns;
         int numberOfInputs;
         int numberOfOutputs;
+
+        public Process(int remainedTurns, int numberOfOutputs) {
+            this.remainedTurns = remainedTurns;
+            this.numberOfOutputs = numberOfOutputs;
+        }
 
         public void reduceRemainedTurnsByOne() {
             setRemainedTurns(getRemainedTurns() - 1);
@@ -126,11 +161,17 @@ public class Factory implements Upgradable {
         }
     }
 
-    public class FactoryType {
+    public static class FactoryType {
         String name;
         Item.ItemInfo OutputItem;
-        Item.ItemInfo InputItem;
+        ArrayList<Isp> InputItems;
         int numberOfInputItems;
+        int numberOfOutputItems;
+        int ProcessTurns;
+        static class Isp {
+            Integer weight;
+            Item.ItemInfo itemInfo;
+        }
 
         public String getName() {
             return name;
@@ -140,9 +181,6 @@ public class Factory implements Upgradable {
             this.name = name;
         }
 
-        int numberOfOutputItems;
-        int ProcessTurns;
-
         public Item.ItemInfo getOutputItem() {
             return OutputItem;
         }
@@ -151,13 +189,6 @@ public class Factory implements Upgradable {
             OutputItem = outputItem;
         }
 
-        public Item.ItemInfo getInputItem() {
-            return InputItem;
-        }
-
-        public void setInputItem(Item.ItemInfo inputItem) {
-            InputItem = inputItem;
-        }
 
         public int getNumberOfInputItems() {
             return numberOfInputItems;
@@ -184,23 +215,6 @@ public class Factory implements Upgradable {
         }
 
 
-
-
-
-
-
-
-        //todo Item input 
-    }
-
-
-
-    public static FactoryType findFactoryType(String name){
-        for (FactoryType factoryType:factoryTypeArrayList){
-            if (factoryType.getName().equalsIgnoreCase(name)){
-                return factoryType;
-            }
-        }
-        return null;
+        //todo Item input
     }
 }

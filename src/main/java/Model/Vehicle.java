@@ -6,6 +6,7 @@ public abstract class Vehicle implements Upgradable {
     int Level;
     int Capacity;
     int RemainingTurns;
+    transient Farm farm;
     int Price;
     ArrayList<Item> items = new ArrayList<>(0);
     Integer FarmMoney;
@@ -28,6 +29,7 @@ public abstract class Vehicle implements Upgradable {
 
     public abstract void turn();
     public void clear(){
+        items =new ArrayList<>( 0 );
 
     }
 
@@ -96,12 +98,7 @@ public abstract class Vehicle implements Upgradable {
 
 
 
-    public boolean goTravel(){
-        RemainingTurns = getTravelTurns();
-        Price = getPrice();
-        return true;
 
-    }
 
     protected abstract int getTravelTurns();
 

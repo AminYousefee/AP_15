@@ -5,6 +5,7 @@ import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
+import controller.InputProcessor;
 
 import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
@@ -26,8 +27,8 @@ public class WildAnimal extends Animal {
     public static HashSet<WildAnimalInfo> wildAnimalInfos = new HashSet<>(0);
 
     //Finished
-    public WildAnimal(WildAnimalInfo wildAnimalInfo) {
-        super(wildAnimalInfo);
+    public WildAnimal(WildAnimalInfo wildAnimalInfo,Map map) {
+        super(wildAnimalInfo,map);
     }
 
     //Finished
@@ -35,7 +36,7 @@ public class WildAnimal extends Animal {
         for (WildAnimalInfo wildAnimalInfo :
                 wildAnimalInfos) {
             if (wildAnimalInfo.getItemName().equalsIgnoreCase(name)) {
-                return new WildAnimal(wildAnimalInfo);
+                return new WildAnimal(wildAnimalInfo, InputProcessor.game.getFarm().getMap());
             }
 
         }

@@ -1,5 +1,7 @@
 package Model;
 
+import controller.Print;
+
 import java.util.ArrayList;
 
 public class Helicopter extends Vehicle {
@@ -38,7 +40,12 @@ public class Helicopter extends Vehicle {
         if (getRemainingTurns() > 1) {
             setRemainingTurns(getRemainingTurns() - 1);
         } else if (getRemainingTurns() == 1) {
-            setFarmMoney(getFarmMoney() - getPrice());
+            setRemainingTurns(getRemainingTurns() - 1);
+            for (Item item:items){
+                farm.getMap().addItemInRandom(item);
+            }
+            items.clear();
+
             setPrice(0);
         } else {
             // do nothing
@@ -66,4 +73,15 @@ public class Helicopter extends Vehicle {
         return 50;
     }
 
+
+
+
+    public boolean goTravel(){
+        RemainingTurns = getTravelTurns();
+        Price = getPrice();
+        setFarmMoney(getFarmMoney()- Price);
+
+        return true;
+
+    }
 }
