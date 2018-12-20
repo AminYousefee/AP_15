@@ -58,7 +58,7 @@ public class Map {
     }
 
 
-    public Cell getCell(Position position) {
+    public Cell getCell(MapPosition position) {
         int x = position.getX();
         int y = position.getY();
         return cells[x][y];

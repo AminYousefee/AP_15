@@ -12,14 +12,15 @@ public class Helicopter extends Vehicle {
     public void printHelicopter() {
     }
 
+
     @Override
-    public boolean upgrade() {
+    public boolean upgrade(Integer CurrentMoney) {
         return false;
     }
 
     @Override
-    public boolean getUpgradeCost() {
-        return false;
+    public int getUpgradeCost() {
+        return 0;
     }
 
     public void turn() {
@@ -45,6 +46,13 @@ public class Helicopter extends Vehicle {
             return false;
         } else {
             this.goTravel();
+            return true;
         }
+    }
+
+    @Override
+    protected int getTravelTurns() {
+
+        return 50;
     }
 }

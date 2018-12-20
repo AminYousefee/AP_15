@@ -15,6 +15,7 @@ public class Truck extends Vehicle{
 
     private int getMaxCapacity() {
         //todo
+        return getLevel()*50;
     }
 
     public void turn() {
@@ -48,6 +49,7 @@ public class Truck extends Vehicle{
 
     public int getTravelTurns(){
         //todo
+        return 100-10*getLevel();
     }
 
     public int getPrice(){
@@ -59,10 +61,6 @@ public class Truck extends Vehicle{
 
     }
 
-    @Override
-    public boolean upgrade() {
-        return false;
-    }
 
     @Override
     public boolean upgrade(Integer CurrentMoney) {
@@ -77,6 +75,7 @@ public class Truck extends Vehicle{
 
     @Override
     public int getUpgradeCost() {
+        return 0;
         //todo
     }
 
@@ -93,6 +92,7 @@ public class Truck extends Vehicle{
             return false;
         }else {
             this.goTravel();
+            return true;
         }
     }
 

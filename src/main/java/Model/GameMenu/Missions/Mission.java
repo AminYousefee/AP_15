@@ -52,7 +52,7 @@ public class Mission {
 
 
 
-    public static boolean findMission(int ID){
+    public static Mission findMission(int ID){
         for (Mission mission:missions){
             if (mission.getID()==ID){
                 return mission;

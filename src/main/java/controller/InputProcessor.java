@@ -5,15 +5,13 @@ import Model.Factories.Factory;
 import Model.GameMenu.Game;
 import Model.Helicopter;
 import Model.Positions.MapPosition;
-import Model.Positions.Position;
+import Model.Truck;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import controller.Exceptions.HelicopterNotFoundException;
 import org.junit.jupiter.api.Test;
 
-import javax.tools.DiagnosticListener;
 import java.io.*;
-import java.util.Dictionary;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,7 +41,7 @@ public class InputProcessor {
             if (loadCustom(string)) {
                 flag = true;
             }
-            if (!flag){
+            if (!flag) {
                 System.out.println("Undefined Statment");
                 //todo make it to do something else if the statement is valid in normal mode
             }
@@ -54,26 +52,25 @@ public class InputProcessor {
     private boolean loadGame(String string) {
         Matcher matcher;
         String regex = "\\s*load\\s+game\\s+(\\S+)\\s*";
-        if ((matcher=getMatched(regex,string))!=null){
-            String path  = matcher.group(1);
-            if (path.endsWith(".json")){
+        if ((matcher = getMatched(regex, string)) != null) {
+            String path = matcher.group(1);
+            if (path.endsWith(".json")) {
                 Gson gson = new Gson();
                 try {
-                    FileReader fileReader=new FileReader(path);
-                    this.game = gson.fromJson(fileReader,Game.class);
+                    FileReader fileReader = new FileReader(path);
+                    this.game = gson.fromJson(fileReader, Game.class);
 
                 } catch (FileNotFoundException e) {
                     System.out.println("File Not Found");
-                }catch (JsonSyntaxException){
+                } catch (JsonSyntaxException e) {
                     System.out.println("Syntax Error In Json File");
                 }
 
-            }else {
+            } else {
 
 
                 System.out.println("Json File Needed");
             }
-
 
 
             return true;
@@ -83,13 +80,12 @@ public class InputProcessor {
     }
 
 
-
-    private boolean saveGame(String string){
+    private boolean saveGame(String string) {
         Matcher matcher;
-        Gson gson=new Gson();
+        Gson gson = new Gson();
         String regex = "\\s*save\\s+game\\s+(\\S+)\\s*";
-        if ((matcher=getMatched(regex,string))!=null){
-            String path =matcher.group(1);
+        if ((matcher = getMatched(regex, string)) != null) {
+            String path = matcher.group(1);
             if (path.endsWith(".json")) {
 
                 try {
@@ -98,7 +94,7 @@ public class InputProcessor {
                 } catch (IOException e) {
                     System.out.println("Unable To Write To  the Specified File");
                 }
-            }else {
+            } else {
                 System.out.println("Path should be in the form *.json");
             }
             return true;
@@ -107,31 +103,24 @@ public class InputProcessor {
     }
 
 
-
     private boolean loadCustom(String string) {
         Matcher matcher;
         String regex = "\\s*load\\s+custom\\s+(\\S+)\\s*";
-        if ((matcher=getMatched(regex,string))!=null){
-            String path  = matcher.group(1);
+        if ((matcher = getMatched(regex, string)) != null) {
+            String path = matcher.group(1);
             File file = new File(path);
-            if (file.isDirectory()){
+            if (file.isDirectory()) {
                 File[] files = file.listFiles();
                 //todo
-            }else {
+            } else {
                 System.out.println();
             }
-
 
 
             return true;
         }
         return false;
     }
-
-
-
-
-
 
 
     public boolean process(String input) {
@@ -296,19 +285,50 @@ public class InputProcessor {
         String regex = "\\s+upgrade\\s+(\\.*)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
             if (matcher.group(1).equalsIgnoreCase("well")) {
+                game.getFarm().getBucket().upgrade(game.getFarm().getCurrentMoney());
+
+                return true;
+            }
+            if (matcher.group(1).equalsIgnoreCase("cat")) {
+                game.getFarm().UpgradeCats();
+
+                return true;
+            }
+            if (matcher.group(1).equalsIgnoreCase("truck")) {
+                Truck truck = game.getFarm().getTruck();
+                if (truck != null) {
+                    truck.upgrade(game.getFarm().getCurrentMoney());
+                } else {
+                    System.out.println("Truck Not Found");
+                }
+
+                return true;
+            }
+            if (matcher.group(1).equalsIgnoreCase("helicopter")) {
+                Helicopter helicopter = game.getFarm().getHelicopter();
+                if (helicopter != null) {
+                    helicopter.upgrade(game.getFarm().getCurrentMoney());
+                }else {
+                    System.out.println("Helicopter Not Found");
+                }
+                return true;
+            }
+            if (matcher.group(1).equalsIgnoreCase("wareHouse")){
+                game.getFarm().getWarehouse().upgrade(game.getFarm().getCurrentMoney());
+
 
 
                 return true;
             }
-            if (matcher.group(1).matches("cat")) {
+            Factory factory = game.getFarm().findFactory(matcher.group(1));
 
+            if (factory!=null){
+                factory.upgrade(game.getFarm().getCurrentMoney());
                 return true;
             }
-            if (matcher.group(1).matches()) {
 
+            return true;
 
-                return true;
-            }
         }
         return false;
 
@@ -340,7 +360,6 @@ public class InputProcessor {
     private boolean addToVehicle(String input) {
 
     }
-
 
 
     private boolean clearVehicle(String input) {
@@ -386,9 +405,6 @@ public class InputProcessor {
 
         return false;
     }
-
-
-
 
 
 }

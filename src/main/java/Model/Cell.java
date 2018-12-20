@@ -39,7 +39,7 @@ public class Cell {
     public boolean collect() {
 
         // Priority NonAnimal WildAnimal ProductiveAnimal Dog Cat
-        Item toBeCollectedItem;
+        Item toBeCollectedItem=null;
         for (Item item:items){
             if (item instanceof NonAnimalItem){
                 toBeCollectedItem= item;
@@ -93,7 +93,7 @@ public class Cell {
         return mapPosition;
     }
 
-    public void setMapPosition(Position mapPosition) {
+    public void setMapPosition(MapPosition mapPosition) {
         this.mapPosition = mapPosition;
     }
 
@@ -121,7 +121,7 @@ public class Cell {
     }
 
     public void PrintCell() {
-        View.Farmys.Cell.PrintCell();
+        View.Farmys.Cell.PrintCell(items);
     }
 
     public void turn() {

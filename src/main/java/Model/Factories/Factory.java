@@ -1,8 +1,10 @@
 package Model.Factories;
 
 import Model.Item;
+import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import Model.NonAnimalItem;
+import Model.Upgradable;
 import View.Factories.FactoryView;
 
 import java.io.File;
@@ -12,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Factory {
+public class Factory implements Upgradable {
     public static final String FactoriesConfigFilePath = "./FactoriesConfigFile.json";
     public static ArrayList<FactoryType> factoryTypeArrayList =new ArrayList<>(0);
 
@@ -34,9 +36,16 @@ public class Factory {
 
     }
 
-    ArrayList<FactoryType> factoryTypeArrayList;
-    Position outputPosition;
+    public FactoryType getFactoryType() {
+        return factoryType;
+    }
+
+    public void setFactoryType(FactoryType factoryType) {
+        this.factoryType = factoryType;
+    }
+
     FactoryType factoryType;
+    MapPosition outputPosition;
     Process process;
 
     public boolean turn() {
@@ -45,16 +54,21 @@ public class Factory {
         } else if (process.getRemainedTurns() == 1) {
             process.reduceRemainedTurnsByOne();
             finishProcess();
+            return true;
         } else {
             // doing nothing now but nothing else
         }
 
-
+        return false;
     }
 
     private void finishProcess() {
 
-        Item outputItem = Item.getInstance(factoryType.OutputItem.getItemName(),outputPosition);
+        Item outputItem = Item.getInstance(factoryType.OutputItem.getItemName());
+        outputItem.setMapPosition(outputPosition);
+
+
+
 
 
 
@@ -67,6 +81,16 @@ public class Factory {
 
     private boolean isFinished() {
         return false;
+    }
+
+    @Override
+    public boolean upgrade(Integer CurrentMoney) {
+        return false;
+    }
+
+    @Override
+    public int getUpgradeCost() {
+        return 0;
     }
 
 
@@ -104,26 +128,36 @@ public class Factory {
         }
     }
 
-    private class FactoryType {
+    public class FactoryType {
+        String name;
         Item.ItemInfo OutputItem;
         Item.ItemInfo InputItem;
         int numberOfInputItems;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
         int numberOfOutputItems;
         int ProcessTurns;
 
-        public Item getOutputItem() {
+        public Item.ItemInfo getOutputItem() {
             return OutputItem;
         }
 
-        public void setOutputItem(Item outputItem) {
+        public void setOutputItem(Item.ItemInfo outputItem) {
             OutputItem = outputItem;
         }
 
-        public Item getInputItem() {
+        public Item.ItemInfo getInputItem() {
             return InputItem;
         }
 
-        public void setInputItem(Item inputItem) {
+        public void setInputItem(Item.ItemInfo inputItem) {
             InputItem = inputItem;
         }
 
@@ -159,5 +193,16 @@ public class Factory {
 
 
         //todo Item input 
+    }
+
+
+
+    public static FactoryType findFactoryType(String name){
+        for (FactoryType factoryType:factoryTypeArrayList){
+            if (factoryType.getName().equalsIgnoreCase(name)){
+                return factoryType;
+            }
+        }
+        return null;
     }
 }

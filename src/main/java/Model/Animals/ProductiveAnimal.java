@@ -1,21 +1,18 @@
 package Model.Animals;
 
-import View.AnimalView.AnimalViewer;
+import Model.Item;
 import View.AnimalView.ProductiveAnimalViewer;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Scanner;
 
-public abstract class ProductiveAnimal extends NonWildAnimal {
+public class ProductiveAnimal extends NonWildAnimal {
     public static final String ProductiveAnimalConfigFilePath = "./ProductiveAnimalConfigFile.json";
     public static HashSet<ProductiveAnimalInfo> productiveAnimalInfos = new HashSet<>(0);
-    private static HashMap<Integer, AnimalInfo> PossibleProducts;
 
     static {
         try {
@@ -34,26 +31,48 @@ public abstract class ProductiveAnimal extends NonWildAnimal {
         }
     }
 
-    public static AnimalInfo findAnimalType(String name) {
-        for (Map.Entry<Integer, AnimalInfo> entry : PossibleProducts.entrySet()) {
-            if (entry.getValue().getName().equals(name)) {
-                return entry.getValue();
+    public ProductiveAnimal(ProductiveAnimalInfo animalInfo) {
+        super(animalInfo);
+    }
+
+    public static ProductiveAnimal getInstance(String name) {
+        for (ProductiveAnimalInfo productiveAnimalInfo : productiveAnimalInfos) {
+            if (productiveAnimalInfo.getItemName().equalsIgnoreCase(name)) {
+                return new ProductiveAnimal(productiveAnimalInfo);
             }
         }
         return null;
 
     }
 
-    public abstract boolean eat();
 
-    public abstract boolean produce();
+    public boolean produce() {
+        ProductiveAnimalInfo productiveAnimalInfo = (ProductiveAnimalInfo) this.itemInfo;
+        int ProductionTime = productiveAnimalInfo.getProductionTime();
+        if (getLifeTime() % ProductionTime == ProductionTime - 1) {
+            map.getCellByPosition(this.getMapPosition()).addItem(Item.getInstance(productiveAnimalInfo.outputItem));
+            return true;
 
-    public abstract boolean die();
+        }
+        return false;
+    }
+
 
     public static class ProductiveAnimalInfo extends NonWildAnimalInfo {
+        int ProductionTime;
+
+        String outputItem;
 
         public ProductiveAnimalInfo(String name, int Volume, int price) {
             super(name, Volume, price);
+        }
+
+        public int getProductionTime() {
+            return ProductionTime;
+        }
+
+        public void setProductionTime(int productionTime) {
+            ProductionTime = productionTime;
         }
     }
 

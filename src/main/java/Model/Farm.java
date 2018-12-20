@@ -2,6 +2,7 @@ package Model;
 
 import Model.Animals.Animal;
 import Model.Animals.Cage;
+import Model.Animals.Cat;
 import Model.Animals.WildAnimal;
 import Model.Factories.Factory;
 import Model.Positions.MapPosition;
@@ -14,13 +15,24 @@ public class Farm {
     public static final int POSSIBLE_NUMBER_OF_FACTORIES = 6;
     Map map;
     Integer CurrentMoney;
+    Warehouse warehouse;
     Bucket bucket;
     private Factory[] factories = new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
     private Truck truck;
     private Helicopter helicopter=null;
 
+
+    public Warehouse getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(Warehouse warehouse) {
+        this.warehouse = warehouse;
+    }
+
     private Farm() {
         map = new Map();
+        warehouse = new Warehouse();
         truck  = new Truck(CurrentMoney);
         helicopter = new Helicopter(CurrentMoney);
         bucket = new Bucket(CurrentMoney);
@@ -29,11 +41,7 @@ public class Farm {
 
 
     }
-    private Farm(Map map){
-        this.map = map;
-        new
 
-    }
 
     public Integer getCurrentMoney() {
         return CurrentMoney;
@@ -84,19 +92,19 @@ public class Farm {
         }
         if (wildAnimals.size() == 0) {
             System.out.println("No Wild Animal In the Specified Cell");
+            return false;
         }
-        Cage cage =cell.getCage();
-        if (cage == null) {
-            cell.setCage(new Cage());
-            cell.getCage();
-        } else {
-            cage.addCompletenesPercentage();
-        }
+
 
         for (WildAnimal wildAnimal : wildAnimals) {
-            wildAnimal.getCaged(cage);
+            if (wildAnimal.getCage()==null){
+                wildAnimal.getCaged();
+            }else {
+                wildAnimal.getCage().addCompletenesPercentage();
+            }
 
         }
+        return true;
 
     }
 
@@ -119,6 +127,11 @@ public class Farm {
 
 
     public Factory findFactory(String string) {
+        for (Factory factory:factories){
+            if (factory.getFactoryType().getName().equalsIgnoreCase(string)){
+                return factory;
+            }
+        }
         return null;
 
     }
@@ -133,7 +146,7 @@ public class Farm {
             System.out.println("Not Enough Money");
         } else {
 
-            CurrentMoney - = animal.getPrice();
+            CurrentMoney -= animal.getPrice();
             getMap().addAnimal(animal);
 
         }
@@ -159,4 +172,17 @@ public class Farm {
     }
 
 
+    public void UpgradeCats() {
+        for (Cell[] cells:getMap().cells) {
+            for (Cell cell : cells) {
+                for (Item item:cell.getItems()){
+                    if (item instanceof Cat){
+                        ((Cat) item).upgrade(this.getCurrentMoney());
+                    }
+                }
+            }
+
+        }
+
+    }
 }

@@ -11,13 +11,21 @@ import java.util.List;
 import java.util.Random;
 
 public class WildAnimal extends Animal {
+    private Cage cage;
 
+    public Cage getCage() {
+        return cage;
+    }
+
+    public void setCage(Cage cage) {
+        this.cage = cage;
+    }
 
     public static HashSet<WildAnimalInfo> wildAnimalInfos = new HashSet<>(0);
 
     //Finished
     public WildAnimal(WildAnimalInfo wildAnimalInfo) {
-        itemInfo = wildAnimalInfo;
+        super(wildAnimalInfo);
     }
 
     //Finished
@@ -29,6 +37,7 @@ public class WildAnimal extends Animal {
             }
 
         }
+        return null;
     }
 
 
@@ -48,12 +57,18 @@ public class WildAnimal extends Animal {
         if (dog != null) {
             cell.removeItem(dog);
             cell.removeItem(this);
+            return true;
 
 
         } else {
-            for (Item item : toBeKilledItems) {
-                cell.removeItem(item);
-                this.addFullness();
+            if (toBeKilledItems.size()>0) {
+                for (Item item : toBeKilledItems) {
+                    cell.removeItem(item);
+                    this.addFullness();
+                }
+                return true;
+            }else {
+                return false;
             }
         }
 
@@ -71,7 +86,8 @@ public class WildAnimal extends Animal {
         return 0;
     }
 
-    public void getCaged(Cage cage) {
+    public void getCaged() {
+        setCage(new Cage(getMapPosition().getX(),getMapPosition().getY()));
     }
 
 
@@ -88,7 +104,38 @@ public class WildAnimal extends Animal {
     public boolean move() {
         Cell cell;
         if (fullness<30&&(cell = map.findNearestCellWithFoodForWildAnimal(map.getCellByPosition(this.getMapPosition())))!=null){
-            moveToPosition(cell.getMapPosition());
+            if (cell!=null) {
+                MapPosition goalItemPosition = cell.getMapPosition();
+                MapPosition CurrentPosition = this.getMapPosition();
+                if (goalItemPosition.equals(CurrentPosition)) {
+                    //nothing here
+                } else {
+                    double deltaX = goalItemPosition.getX() - this.getMapPosition().getX();
+                    double deltaY = goalItemPosition.getY() - this.getMapPosition().getY();
+                    if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
+                        moveToPosition(goalItemPosition);
+
+                    } else {
+                        double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
+                        int x = (int) (amplifier * deltaX + getMapPosition().getX());
+                        int y = (int) (amplifier * deltaY + getMapPosition().getY());
+                        MapPosition position = new MapPosition(x, y);
+                        moveToPosition(position);
+                    }
+                }
+
+
+            }
+
+
+
+
+
+
+
+
+
+                return true;
 
         }else {
 
@@ -107,14 +154,20 @@ public class WildAnimal extends Animal {
             }
             MapPosition mapPosition = new MapPosition(x,y);
             moveToPosition(mapPosition);
+            return true;
 
         }
     }
 
     @Override
     public void turn() {
-        this.move();
-        this.eat();
+        cage.turn();
+        if (this.getCage().getCompletnessPercetage()==100){
+
+        }else {
+            this.move();
+            this.eat();
+        }
 
 
     }
@@ -123,7 +176,12 @@ public class WildAnimal extends Animal {
     @Override
     public boolean eat() {
         //this shouldn't do anything
-        this.kill();
+        return this.kill();
 
+    }
+
+    @Override
+    protected void addFullness() {
+        fullness+=20;
     }
 }

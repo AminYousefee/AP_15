@@ -80,9 +80,6 @@ public abstract class Vehicle implements Upgradable {
         FarmMoney = farmMoney;
     }
 
-    public boolean addItem(){
-
-    }
     private boolean getSpeed(){
         return true;
     }
@@ -97,6 +94,7 @@ public abstract class Vehicle implements Upgradable {
     public boolean goTravel(){
         RemainingTurns = getTravelTurns();
         Price = getPrice();
+        return true;
 
     }
 

@@ -20,7 +20,7 @@ public class Grass {
         }else {
             num-=1;
         }
-
+        return false;
 
     }
 

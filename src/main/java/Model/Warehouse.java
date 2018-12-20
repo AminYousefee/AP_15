@@ -1,5 +1,7 @@
 package Model;
 
+import View.ItemView;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -42,21 +44,23 @@ public class Warehouse implements Upgradable {
     @Override
     public int getUpgradeCost() {
         //todo
+        return 0;
     }
 
 
     private int getMaxCapacity() {
         //todo
+        return 0;
     }
 
     //finished
-    public List<Item> findSpecificItem(ItemType itemType, int MaxNumberToFind) {
+    public List<Item> findSpecificItem(Item.ItemInfo itemType, int MaxNumberToFind) {
         ArrayList<Item> methodOutput = new ArrayList<>(0);
         int numberFound = 0;
         Iterator iterator = items.iterator();
         while (iterator.hasNext()) {
             Item item = (Item) iterator;
-            if (item.itemType.equels(itemType)) {
+            if (itemType.equals(itemType)) {
                 methodOutput.add((Item) iterator);
                 iterator.remove();
             }

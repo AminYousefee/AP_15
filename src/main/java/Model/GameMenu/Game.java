@@ -40,17 +40,5 @@ public class Game {
         }
     }
 
-    private void startNewGame() {
-        Scanner scanner =new Scanner(System.in);
-        while (true){
-            String str = scanner.nextLine();
-            if (str.)
-        }
 
-
-
-
-
-        scanner.close();
-    }
 }

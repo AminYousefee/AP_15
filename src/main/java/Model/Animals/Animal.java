@@ -13,10 +13,10 @@ public abstract class Animal extends Item implements Upgradable {
     MapPosition goalPosition;
 
 
-    public static final int CAT_VOLUME;
-    public static final AnimalInfo Cat_Info = new AnimalInfo("cat", CAT_VOLUME, price);
-    public static final int DOG_VOLUME;
-    public static final AnimalInfo Dog_Info = new AnimalInfo("Dog", DOG_VOLUME, price);
+    public static final int CAT_VOLUME=10;
+    public static final NonWildAnimal.NonWildAnimalInfo Cat_Info = new NonWildAnimal.NonWildAnimalInfo("cat", CAT_VOLUME, 30);
+    public static final int DOG_VOLUME=10;
+    public static final NonWildAnimal.NonWildAnimalInfo Dog_Info = new NonWildAnimal.NonWildAnimalInfo("Dog", DOG_VOLUME, 30);
     int fullness;
     int Level;
 
@@ -25,7 +25,7 @@ public abstract class Animal extends Item implements Upgradable {
         itemInfo = animalInfo;
     }
 
-    public static AnimalInfo findAnimalType(String name) {
+/*    public static AnimalInfo findAnimalType(String name) {
         if (name.equalsIgnoreCase("cat")) {
             return Cat_Info;
         } else if (name.equalsIgnoreCase("dog")) {
@@ -35,7 +35,7 @@ public abstract class Animal extends Item implements Upgradable {
         }
 
 
-    }
+    }*/
 
     //Finished
     public static Animal getInstance(String name) {
@@ -47,13 +47,36 @@ public abstract class Animal extends Item implements Upgradable {
         if (res != null) {
             return res;
         }
+        return null;
     }
 
     public boolean move() {
         Cell cell;
         if (fullness<30&&(cell = map.findNearestCellWithGrass(map.getCellByPosition(this.getMapPosition())))!=null){
-            moveToPosition(cell.getMapPosition());
 
+
+
+            if (cell!=null) {
+                MapPosition goalItemPosition = cell.getMapPosition();
+                MapPosition CurrentPosition = this.getMapPosition();
+                if (goalItemPosition.equals(CurrentPosition)) {
+                    //nothing here
+                } else {
+                    double deltaX = goalItemPosition.getX() - this.getMapPosition().getX();
+                    double deltaY = goalItemPosition.getY() - this.getMapPosition().getY();
+                    if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
+                        moveToPosition(goalItemPosition);
+
+                    } else {
+                        double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
+                        int x = (int) (amplifier * deltaX + getMapPosition().getX());
+                        int y = (int) (amplifier * deltaY + getMapPosition().getY());
+                        MapPosition position = new MapPosition(x, y);
+                        moveToPosition(position);
+                    }
+                }
+
+            }
         }else {
 
             Random random = new Random();
@@ -73,11 +96,12 @@ public abstract class Animal extends Item implements Upgradable {
             moveToPosition(mapPosition);
 
         }
+        return true;
 
     }
 
-    int getSpeed() {
-        return false;
+    public int getSpeed() {
+        return 5;
 
     }
 
@@ -109,7 +133,7 @@ public abstract class Animal extends Item implements Upgradable {
         }
     }
 
-    public void moveToPosition(Position position) {
+    public void moveToPosition(MapPosition position) {
         Cell goalCell = map.getCell(position);
         Cell CurrentCell = map.getCell(this.getMapPosition());
         CurrentCell.getItems().remove(this);

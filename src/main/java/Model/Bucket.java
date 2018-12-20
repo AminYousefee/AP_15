@@ -22,6 +22,7 @@ public class Bucket implements Upgradable {
             return false;
         } else {
             CurrentWater -= 1;
+            return true;
         }
 
     }
@@ -40,10 +41,12 @@ public class Bucket implements Upgradable {
 
 
     private int getFillingCost() {
+        return 0;
         //todo
     }
 
     public int getMaxCapacity() {
+        return 0;
         //todo
     }
 
@@ -68,6 +71,7 @@ public class Bucket implements Upgradable {
 
     @Override
     public int getUpgradeCost() {
+        return 0;
         //todo
     }
 

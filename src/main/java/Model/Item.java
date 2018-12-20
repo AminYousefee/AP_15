@@ -13,12 +13,16 @@ public abstract class Item {
     int lifeTime;
 
 
-    public static Item getInstance(String name, Position outputPosition) {
+    public static Item getInstance(String name) {
         Item result = NonAnimalItem.getInstance(name);
         if (result!=null){
             return result;
         }
         result = Animal.getInstance(name);
+        if (result!=null){
+            return result;
+        }
+        return null;
 
     }
 
@@ -26,7 +30,7 @@ public abstract class Item {
         return mapPosition;
     }
 
-    public void setMapPosition(Position mapPosition) {
+    public void setMapPosition(MapPosition mapPosition) {
         this.mapPosition = mapPosition;
     }
 
@@ -54,7 +58,7 @@ public abstract class Item {
         this.lifeTime = lifeTime;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return itemInfo.price;
     }
 
