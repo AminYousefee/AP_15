@@ -20,4 +20,14 @@ public class TruckView extends Vehicle {
             item.Print();
         }
     }
+
+    @Override
+    public boolean upgrade(Integer CurrentMoney) {
+        return false;
+    }
+
+    @Override
+    public int getUpgradeCost() {
+        return 0;
+    }
 }

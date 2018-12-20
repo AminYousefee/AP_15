@@ -56,8 +56,13 @@ public abstract class Vehicle implements Upgradable {
         RemainingTurns = remainingTurns;
     }
 
-    public int getPrice() {
-        return Price;
+    public int getPrice(){
+        int price=0;
+        for (Item item:items){
+            price+=item.getPrice();
+        }
+        return price;
+
     }
 
     public void setPrice(int price) {

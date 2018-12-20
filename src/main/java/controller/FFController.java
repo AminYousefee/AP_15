@@ -48,7 +48,7 @@ public class FFController {
 
     public boolean saveGame(String filename) {
         Gson gson = new Gson();
-        String Json = gson.toJson(this.game);
+        String Json = gson.toJson(this.currentGame);
         try {
 
             FileWriter fileWriter = new FileWriter(filename);

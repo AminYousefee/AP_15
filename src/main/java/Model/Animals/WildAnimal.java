@@ -4,7 +4,9 @@ import Model.Cell;
 import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
+import Model.Positions.NonMapPosition;
 
+import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +44,7 @@ public class WildAnimal extends Animal {
 
 
     public boolean kill() {
-        Cell cell = map.getCellByPosition(this.getMapPosition());
+        Cell cell = map.getCellByPosition((MapPosition) this.getPosition());
         List<Item> items = cell.getItems();
         ArrayList<Item> toBeKilledItems = new ArrayList<>(0);
         Dog dog=null;
@@ -87,7 +89,7 @@ public class WildAnimal extends Animal {
     }
 
     public void getCaged() {
-        setCage(new Cage(getMapPosition().getX(),getMapPosition().getY()));
+        setCage(new Cage(((MapPosition)getPosition()).getX(), ((MapPosition)getPosition()).getY()));
     }
 
 
@@ -102,23 +104,26 @@ public class WildAnimal extends Animal {
 
     @Override
     public boolean move() {
+        if (getPosition() instanceof NonMapPosition){
+            return false;
+        }
         Cell cell;
-        if (fullness<30&&(cell = map.findNearestCellWithFoodForWildAnimal(map.getCellByPosition(this.getMapPosition())))!=null){
+        if (fullness<30&&(cell = map.findNearestCellWithFoodForWildAnimal(map.getCellByPosition((MapPosition) this.getPosition())))!=null){
             if (cell!=null) {
                 MapPosition goalItemPosition = cell.getMapPosition();
-                MapPosition CurrentPosition = this.getMapPosition();
+                MapPosition CurrentPosition = (MapPosition) this.getPosition();
                 if (goalItemPosition.equals(CurrentPosition)) {
                     //nothing here
                 } else {
-                    double deltaX = goalItemPosition.getX() - this.getMapPosition().getX();
-                    double deltaY = goalItemPosition.getY() - this.getMapPosition().getY();
+                    double deltaX = goalItemPosition.getX() - ((MapPosition)this.getPosition()).getX();
+                    double deltaY = goalItemPosition.getY() - ((MapPosition)this.getPosition()).getY();
                     if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
                         moveToPosition(goalItemPosition);
 
                     } else {
                         double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
-                        int x = (int) (amplifier * deltaX + getMapPosition().getX());
-                        int y = (int) (amplifier * deltaY + getMapPosition().getY());
+                        int x = (int) (amplifier * deltaX + ((MapPosition)this.getPosition()).getX());
+                        int y = (int) (amplifier * deltaY + ((MapPosition)this.getPosition()).getY());
                         MapPosition position = new MapPosition(x, y);
                         moveToPosition(position);
                     }
@@ -144,8 +149,8 @@ public class WildAnimal extends Animal {
             int y = random.nextInt();
             x = x % 3 - 1;
             y = y % 3 - 1;
-            x += getMapPosition().getX();
-            y += getMapPosition().getY();
+            x += ((MapPosition)this.getPosition()).getX();
+            y += ((MapPosition)this.getPosition()).getX();
             if (x >= Map.Num_Of_CELLS_IN_ROW) {
                 x = Map.Num_Of_CELLS_IN_ROW - 1;
             }

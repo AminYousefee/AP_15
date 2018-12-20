@@ -52,14 +52,7 @@ public class Truck extends Vehicle{
         return 100-10*getLevel();
     }
 
-    public int getPrice(){
-        int price=0;
-        for (Item item:items){
-            price+=item.getPrice();
-        }
-        return price;
 
-    }
 
 
     @Override

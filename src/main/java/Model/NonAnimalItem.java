@@ -33,6 +33,7 @@ public class NonAnimalItem extends Model.Item {
 
             }
         }
+        return null;
 
 
     }
@@ -60,26 +61,30 @@ public class NonAnimalItem extends Model.Item {
     }
 
     public void getCollected() {
-        this.setMapPosition(NonMapPosition.getInstance());
+        this.setPosition(NonMapPosition.getInstance());
+        //todo Now I am here
 
     }
 
     @Override
     public void anihilate() {
-        this.map.getCell(this.getMapPosition()).items.remove(this);
+        this.map.getCell((MapPosition) this.getPosition()).items.remove(this);
     }
 
 
     public static class NonAnimalItemInfo extends ItemInfo {
 
 
+        public NonAnimalItemInfo(String name, int volume, int price) {
+            super(name, volume, price);
+        }
     }
 
 
     @Override
     public void turn() {
         super.turn();
-        if (mapPosition instanceof MapPosition && lifeTime>MaxLifeTimeInMap){
+        if (Position instanceof MapPosition && lifeTime>MaxLifeTimeInMap){
             this.anihilate();
         }
     }

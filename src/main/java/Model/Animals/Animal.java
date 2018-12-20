@@ -1,12 +1,10 @@
 package Model.Animals;
 
-import Model.Cell;
-import Model.Item;
-import Model.Map;
+import Model.*;
 import Model.Positions.MapPosition;
-import Model.Positions.Position;
-import Model.Upgradable;
+import Model.Positions.NonMapPosition;
 
+import javax.print.attribute.standard.MediaPrintableArea;
 import java.util.Random;
 
 public abstract class Animal extends Item implements Upgradable {
@@ -51,26 +49,30 @@ public abstract class Animal extends Item implements Upgradable {
     }
 
     public boolean move() {
+        if (getPosition() instanceof NonMapPosition){
+            return false;
+            //it doesn't move in this way
+        }
         Cell cell;
-        if (fullness<30&&(cell = map.findNearestCellWithGrass(map.getCellByPosition(this.getMapPosition())))!=null){
+        if (fullness<30&&(cell = map.findNearestCellWithGrass(map.getCellByPosition((MapPosition) this.getPosition())))!=null){
 
 
 
             if (cell!=null) {
                 MapPosition goalItemPosition = cell.getMapPosition();
-                MapPosition CurrentPosition = this.getMapPosition();
+                MapPosition CurrentPosition = (MapPosition) this.getPosition();
                 if (goalItemPosition.equals(CurrentPosition)) {
                     //nothing here
                 } else {
-                    double deltaX = goalItemPosition.getX() - this.getMapPosition().getX();
-                    double deltaY = goalItemPosition.getY() - this.getMapPosition().getY();
+                    double deltaX = goalItemPosition.getX() - ((MapPosition)this.getPosition()).getX();
+                    double deltaY = goalItemPosition.getY() - ((MapPosition)this.getPosition()).getY();
                     if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
                         moveToPosition(goalItemPosition);
 
                     } else {
                         double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
-                        int x = (int) (amplifier * deltaX + getMapPosition().getX());
-                        int y = (int) (amplifier * deltaY + getMapPosition().getY());
+                        int x = (int) (amplifier * deltaX + ((MapPosition)getPosition()).getX());
+                        int y = (int) (amplifier * deltaY + ((MapPosition)getPosition()).getY());
                         MapPosition position = new MapPosition(x, y);
                         moveToPosition(position);
                     }
@@ -84,8 +86,8 @@ public abstract class Animal extends Item implements Upgradable {
             int y = random.nextInt();
             x = x % 3 - 1;
             y = y % 3 - 1;
-            x += getMapPosition().getX();
-            y += getMapPosition().getY();
+            x += ((MapPosition)getPosition()).getX();
+            y += ((MapPosition)getPosition()).getY();
             if (x >= Map.Num_Of_CELLS_IN_ROW) {
                 x = Map.Num_Of_CELLS_IN_ROW - 1;
             }
@@ -106,7 +108,11 @@ public abstract class Animal extends Item implements Upgradable {
     }
 
     public boolean eat() {
-        Cell cell = map.getCellByPosition(getMapPosition());
+        if (getPosition() instanceof NonMapPosition){
+            return false;
+            //do nothing in this case
+        }
+        Cell cell = map.getCellByPosition((MapPosition) getPosition());
         if (cell.getGrass().getNum()>0&&fullness<70){
              cell.getGrass().getEaten();
             this.addFullness();
@@ -131,11 +137,14 @@ public abstract class Animal extends Item implements Upgradable {
         }else {
             move();
         }
+        if (this instanceof ProductiveAnimal){
+            ((ProductiveAnimal) this).produce();
+        }
     }
 
     public void moveToPosition(MapPosition position) {
         Cell goalCell = map.getCell(position);
-        Cell CurrentCell = map.getCell(this.getMapPosition());
+        Cell CurrentCell = map.getCell((MapPosition) this.getPosition());
         CurrentCell.getItems().remove(this);
         goalCell.getItems().add(this);
 

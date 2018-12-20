@@ -5,7 +5,9 @@ import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import View.Farmys.MapView;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Map {
@@ -46,15 +48,18 @@ public class Map {
     }
 
     public Item getCatCollectableItem() {
+        ArrayList<Item> collectable = new ArrayList<>(0);
         for (Cell cellColumn[] : cells) {
             for (Cell cell : cellColumn) {
                 Item res = cell.getCatCollectableItem();
                 if (res != null) {
-                    return res;
+                    collectable.add(res);
                 }
             }
         }
-        return null;
+        Random random =new Random();
+        int wow = random.nextInt()%collectable.size();
+        return collectable.get(wow);
     }
 
 
@@ -141,5 +146,40 @@ public class Map {
             }
         }
         return getCellByPosition(minDistanceMapPosition);
+    }
+
+    public Item getNearestCatCollectableItem(Cell targetCell) {
+        double minDistance=1000;
+        MapPosition minDistanceMapPosition = null;
+
+        for (Cell[] cells : this.cells) {
+            for (Cell cell : cells) {
+                if (cell.getCatCollectableItem()!=null) {
+                    double x = targetCell.getMapPosition().getX() - cell.getMapPosition().getX();
+                    double y = targetCell.getMapPosition().getY() - cell.getMapPosition().getY();
+                    double distance = x * x + y * y;
+                    if (distance<minDistance){
+                        minDistance = distance;
+                        minDistanceMapPosition =cell.getMapPosition();
+                    }
+                }
+
+            }
+        }
+        return this.getCellByPosition(minDistanceMapPosition).getCatCollectableItem();
+    }
+
+    public List<Item> getItemOfSpecifiedType(String itemName) {
+        ArrayList<Item> res=new ArrayList<>(0);
+        for (Cell[] cells1:cells){
+            for (Cell cell : cells1) {
+                for (Item item: cell.getItems()){
+                    if (item.getItemInfo().getItemName().equalsIgnoreCase(itemName)){
+                        res.add(item);
+                    }
+                }
+            }
+        }
+        return res;
     }
 }

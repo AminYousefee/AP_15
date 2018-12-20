@@ -1,7 +1,9 @@
 package Model.Animals;
 
-public class NonProductiveNonWildAnimal extends NonWildAnimal {
+public abstract class NonProductiveNonWildAnimal extends NonWildAnimal {
 
 
-
+    public NonProductiveNonWildAnimal(NonWildAnimalInfo animalInfo) {
+        super(animalInfo);
+    }
 }

@@ -29,6 +29,7 @@ public class NonWildAnimal extends Animal{
         } else if (name.equalsIgnoreCase("dog")) {
             return new Dog(map);
         }
+        return null;
     }
 
     @Override

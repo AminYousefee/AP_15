@@ -1,14 +1,23 @@
 package Model;
 
 import Model.Animals.Animal;
-import Model.Positions.MapPosition;
 import Model.Positions.Position;
 
 public abstract class Item {
     protected transient Map map;
 
+
+
+    public ItemInfo getItemInfo() {
+        return itemInfo;
+    }
+
+    public void setItemInfo(ItemInfo itemInfo) {
+        this.itemInfo = itemInfo;
+    }
+
     protected ItemInfo itemInfo;
-    protected MapPosition mapPosition;
+    protected Position Position;
     int ID;
     int lifeTime;
 
@@ -26,12 +35,12 @@ public abstract class Item {
 
     }
 
-    public MapPosition getMapPosition() {
-        return mapPosition;
+    public Position getPosition() {
+        return Position;
     }
 
-    public void setMapPosition(MapPosition mapPosition) {
-        this.mapPosition = mapPosition;
+    public void setPosition(Position position) {
+        this.Position = position;
     }
 
     public int getVolume() {

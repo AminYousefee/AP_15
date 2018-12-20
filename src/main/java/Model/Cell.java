@@ -121,7 +121,7 @@ public class Cell {
     }
 
     public void PrintCell() {
-        View.Farmys.Cell.PrintCell(items);
+        View.Farmys.Cell.PrintCell(items,this.getMapPosition());
     }
 
     public void turn() {

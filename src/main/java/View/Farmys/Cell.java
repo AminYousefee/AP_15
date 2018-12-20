@@ -1,9 +1,11 @@
 package View.Farmys;
 
 import Model.Item;
+import Model.Positions.MapPosition;
 import Model.Positions.Position;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
 public class Cell {
     Position position;
@@ -32,8 +34,8 @@ public class Cell {
 
 
 
-    public static void PrintCell(ArrayList<Item> items) {
-        System.out.println("Cell " + getPosition().getX() + "," + getPosition().getY());
+    public static void PrintCell(ArrayList<Item> items, MapPosition mapPosition) {
+        System.out.println("Cell " + mapPosition.getX() + "," + mapPosition.getY());
         for (Item item : items) {
             System.out.println("\t");
             item.Print();

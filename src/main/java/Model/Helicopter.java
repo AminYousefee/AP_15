@@ -5,13 +5,24 @@ import java.util.ArrayList;
 public class Helicopter extends Vehicle {
 
 
+    public static ArrayList<Item.ItemInfo> buyableItems = new ArrayList<>(0);
+
     public Helicopter(Integer currentMoney) {
 
     }
 
-    public void printHelicopter() {
+    public static Item.ItemInfo findItem(String itemName) {
+        for (Item.ItemInfo itemInfo:buyableItems) {
+            if (itemName.equalsIgnoreCase(itemInfo.getItemName())){
+                return itemInfo;
+            }
+
+        }
+        return null;
     }
 
+    public void printHelicopter() {
+    }
 
     @Override
     public boolean upgrade(Integer CurrentMoney) {
@@ -38,7 +49,6 @@ public class Helicopter extends Vehicle {
         items.add(item);
     }
 
-
     @Override
     public boolean go() {
         if (this.isInTravel()) {
@@ -55,4 +65,5 @@ public class Helicopter extends Vehicle {
 
         return 50;
     }
+
 }

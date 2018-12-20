@@ -1,6 +1,7 @@
 package Model.Animals;
 
 import Model.Item;
+import Model.Positions.MapPosition;
 import View.AnimalView.ProductiveAnimalViewer;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -50,7 +51,7 @@ public class ProductiveAnimal extends NonWildAnimal {
         ProductiveAnimalInfo productiveAnimalInfo = (ProductiveAnimalInfo) this.itemInfo;
         int ProductionTime = productiveAnimalInfo.getProductionTime();
         if (getLifeTime() % ProductionTime == ProductionTime - 1) {
-            map.getCellByPosition(this.getMapPosition()).addItem(Item.getInstance(productiveAnimalInfo.outputItem));
+            map.getCellByPosition((MapPosition) this.getPosition()).addItem(Item.getInstance(productiveAnimalInfo.outputItem));
             return true;
 
         }

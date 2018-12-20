@@ -2,8 +2,6 @@ package Model.Factories;
 
 import Model.Item;
 import Model.Positions.MapPosition;
-import Model.Positions.Position;
-import Model.NonAnimalItem;
 import Model.Upgradable;
 import View.Factories.FactoryView;
 
@@ -65,7 +63,7 @@ public class Factory implements Upgradable {
     private void finishProcess() {
 
         Item outputItem = Item.getInstance(factoryType.OutputItem.getItemName());
-        outputItem.setMapPosition(outputPosition);
+        outputItem.setPosition(outputPosition);
 
 
 

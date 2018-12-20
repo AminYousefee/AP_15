@@ -1,17 +1,17 @@
 package controller;
 
+import Model.*;
 import Model.Animals.Animal;
 import Model.Factories.Factory;
 import Model.GameMenu.Game;
-import Model.Helicopter;
 import Model.Positions.MapPosition;
-import Model.Truck;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import controller.Exceptions.HelicopterNotFoundException;
-import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -148,13 +148,6 @@ public class InputProcessor {
 
     }
 
-
-    @Test
-    public boolean processTest() {
-        InputProcessor inputProcessor = new InputProcessor();
-        inputProcessor.process();
-
-    }
 
     public boolean buyAnimal(String input) {
         Matcher matcher;
@@ -308,21 +301,20 @@ public class InputProcessor {
                 Helicopter helicopter = game.getFarm().getHelicopter();
                 if (helicopter != null) {
                     helicopter.upgrade(game.getFarm().getCurrentMoney());
-                }else {
+                } else {
                     System.out.println("Helicopter Not Found");
                 }
                 return true;
             }
-            if (matcher.group(1).equalsIgnoreCase("wareHouse")){
+            if (matcher.group(1).equalsIgnoreCase("wareHouse")) {
                 game.getFarm().getWarehouse().upgrade(game.getFarm().getCurrentMoney());
-
 
 
                 return true;
             }
             Factory factory = game.getFarm().findFactory(matcher.group(1));
 
-            if (factory!=null){
+            if (factory != null) {
                 factory.upgrade(game.getFarm().getCurrentMoney());
                 return true;
             }
@@ -358,7 +350,73 @@ public class InputProcessor {
     }
 
     private boolean addToVehicle(String input) {
+        Matcher matcher;
+        String regex = "\\s*(\\S+)\\s+add(\\S+)\\s+(\\d+)";
+        if ((matcher = getMatched(regex, input)) != null) {
+            String itemName = matcher.group(2);
+            int count = Integer.parseInt(matcher.group(3));
+            if (matcher.group(1).equalsIgnoreCase("helicopter")) {
+                Item.ItemInfo itemInfo = Helicopter.findItem(itemName);
+                if (itemInfo==null){
+                    System.out.println("Item not buyable");
+                    return true;
+                }else {
+                    for (int i=0;i<count;i++){
+                        game.getFarm().getHelicopter().addItem(Item.getInstance(itemName));
+                    }
+                }
 
+
+            } else if (matcher.group(1).equalsIgnoreCase("truck")) {
+
+                Item item = Item.getInstance(itemName);
+                if (item==null){
+                    System.out.println("Item doesn't exits");
+                    return true;
+                }
+                if (item instanceof NonAnimalItem) {
+                    ArrayList<Item> toBeAddedItems = new ArrayList<>(0);
+                    List<Item> wareHouseItems = game.getFarm().getWarehouse().getItems();
+                    for (Item wareHouseItem : wareHouseItems) {
+                        if (wareHouseItem.getItemInfo().getItemName().equalsIgnoreCase(itemName)) {
+                            toBeAddedItems.add(wareHouseItem);
+                        }
+                    }
+                    if (toBeAddedItems.size() < count) {
+                        System.out.println("Not Enough Number Of " + itemName);
+                    } else if (count * item.getItemInfo().getVolume() > game.getFarm().getWarehouse().getCapacity()) {
+                        System.out.println("Not Enough Space in the wareHouse");
+                    } else {
+                        for (Item toBeAddedItem : toBeAddedItems) {
+                            game.getFarm().getWarehouse().remove(toBeAddedItem);
+                            game.getFarm().getTruck().addItem(toBeAddedItem);
+                        }
+                    }
+
+
+                } else {
+                    Map map = game.getFarm().getMap();
+                    List<Item> toBeAddedItems =map.getItemOfSpecifiedType(itemName);
+                    if (toBeAddedItems.size() < count) {
+                        System.out.println("Not Enough Number Of " + itemName);
+                    } else if (count * item.getItemInfo().getVolume() > game.getFarm().getWarehouse().getCapacity()) {
+                        System.out.println("Not Enough Space in the WareHouse");
+                    } else {
+                        for (Item toBeAddedItem : toBeAddedItems) {
+                            map.getCellByPosition(toBeAddedItem.getPosition()).removeItem(toBeAddedItem);
+                            game.getFarm().getTruck().addItem(toBeAddedItem);
+                        }
+                    }
+
+
+                }
+
+
+            }
+
+            System.out.println("I don't know that vehicle");
+        }
+        return false;
     }
 
 
