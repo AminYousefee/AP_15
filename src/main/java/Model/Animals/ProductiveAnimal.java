@@ -3,21 +3,22 @@ package Model.Animals;
 import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
-import View.AnimalView.ProductiveAnimalViewer;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import controller.InputProcessor;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.HashSet;
-import java.util.Scanner;
 
 public class ProductiveAnimal extends NonWildAnimal {
     public static final String ProductiveAnimalConfigFilePath = "./ProductiveAnimalConfigFile.json";
     public static HashSet<ProductiveAnimalInfo> productiveAnimalInfos = new HashSet<>(0);
 
     static {
+        productiveAnimalInfos.add(new ProductiveAnimalInfo("Turkey", -1, 100, 50, 50, 20, 110, 10, 2, 3, 50));
+        productiveAnimalInfos.add(new ProductiveAnimalInfo("Sheep", -1, 1000, 500, 55, 20, 110, 10, 2, 9, 150));
+        productiveAnimalInfos.add(new ProductiveAnimalInfo("Cow", -1, 10000, 5000, 40, 20, 80, 10, 2, 18, 300));
+
+    }
+
+  /*  static {
         try {
             Gson gson = new Gson();
             FileReader fileReader = new FileReader(ProductiveAnimalConfigFilePath);
@@ -32,10 +33,11 @@ public class ProductiveAnimal extends NonWildAnimal {
         } catch (JsonSyntaxException e) {
             ProductiveAnimalViewer.JsonSyntaxException();
         }
-    }
+    }*/
 
     public ProductiveAnimal(ProductiveAnimalInfo animalInfo, Map map) {
-        super(animalInfo,map);
+        super(animalInfo, map);
+        fullness = ((ProductiveAnimal.ProductiveAnimalInfo) itemInfo).HungryValue;
     }
 
     public static ProductiveAnimal getInstance(String name) {
@@ -51,7 +53,7 @@ public class ProductiveAnimal extends NonWildAnimal {
 
     public boolean produce() {
         ProductiveAnimalInfo productiveAnimalInfo = (ProductiveAnimalInfo) this.itemInfo;
-        int ProductionTime = productiveAnimalInfo.getProductionTime();
+        int ProductionTime = productiveAnimalInfo.getProductionPeriod();
         if (getLifeTime() % ProductionTime == ProductionTime - 1) {
             map.getCellByPosition((MapPosition) this.getPosition()).addItem(Item.getInstance(productiveAnimalInfo.outputItem));
             return true;
@@ -62,20 +64,31 @@ public class ProductiveAnimal extends NonWildAnimal {
 
 
     public static class ProductiveAnimalInfo extends NonWildAnimalInfo {
-        int ProductionTime;
+        int ProductionPeriod;
+        int HungryMovingSpeed;
+        int OneTimeBite;
+        int WaitTime;
+        int HungrySpeed;
+        int HungryValue;
 
         String outputItem;
 
-        public ProductiveAnimalInfo(String name, int Volume, int price) {
-            super(name, Volume, price);
+        public ProductiveAnimalInfo(String itemName, int depotSize, int buyCost, int SaleCost, int speed, int productionPeriod, int hungryMovingSpeed, int oneTimeBite, int waitTime, int hungrySpeed, int hungryValue) {
+            super(itemName, depotSize, buyCost, SaleCost, speed);
+            ProductionPeriod = productionPeriod;
+            HungryMovingSpeed = hungryMovingSpeed;
+            OneTimeBite = oneTimeBite;
+            WaitTime = waitTime;
+            HungrySpeed = hungrySpeed;
+            HungryValue = hungryValue;
         }
 
-        public int getProductionTime() {
-            return ProductionTime;
+        public int getProductionPeriod() {
+            return ProductionPeriod;
         }
 
-        public void setProductionTime(int productionTime) {
-            ProductionTime = productionTime;
+        public void setProductionPeriod(int productionPeriod) {
+            ProductionPeriod = productionPeriod;
         }
     }
 

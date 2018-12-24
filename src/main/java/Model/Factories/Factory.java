@@ -5,17 +5,21 @@ import Model.Positions.MapPosition;
 import Model.Upgradable;
 import Model.Warehouse;
 import View.Factories.FactoryView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
 public class Factory implements Upgradable {
-    public static final String FactoriesConfigFilePath = "./FactoriesConfigFile.json";
+    public static final String FactoriesConfigFilePath = "FactoriesConfigFile.json";
     public static ArrayList<FactoryType> factoryTypeArrayList = new ArrayList<>(0);
 
     static {
@@ -39,6 +43,7 @@ public class Factory implements Upgradable {
     FactoryType factoryType;
     MapPosition outputPosition;
     Process process;
+    int Level;
 
     public static FactoryType findFactoryType(String name) {
         for (FactoryType factoryType : factoryTypeArrayList) {
@@ -48,6 +53,27 @@ public class Factory implements Upgradable {
         }
         return null;
     }
+
+    /*public static void main(String[] args) {
+
+        try {
+            FileReader fileReader = new FileReader(FactoriesConfigFilePath);
+            Scanner scanner = new Scanner(fileReader);
+            String Json = scanner.nextLine();
+            Gson gson = new Gson();
+            Type collectionType = new TypeToken<HashSet<FactoryType>>() {
+            }.getType();
+            HashSet<FactoryType> II = (gson.fromJson(Json, collectionType));
+            System.out.println(II);
+            //fail();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            //assertTrue(true);
+        }
+
+
+    }*/
 
     public FactoryType getFactoryType() {
         return factoryType;
@@ -80,25 +106,25 @@ public class Factory implements Upgradable {
     }
 
     public boolean startProcess(Warehouse warehouse) {
-        List<Item> items  =warehouse.getItems();
-        int min=1000;
-        if (process!=null){
+        List<Item> items = warehouse.getItems();
+        int min = 1000;
+        if (process != null) {
             return false;
         }
 
-        for (FactoryType.Isp isp:this.getFactoryType().InputItems){
+        for (FactoryType.Isp isp : this.getFactoryType().InputItems) {
 
-            int num=0;
-            for (Item item:items){
-                if (item.getItemInfo().equals(isp.itemInfo)){
-                    num+=1;
+            int num = 0;
+            for (Item item : items) {
+                if (item.getItemInfo().equals(isp.itemInfo)) {
+                    num += 1;
                 }
 
             }
 
-            min =Math.min(min,num/isp.weight);
+            min = Math.min(min, num / isp.weight);
         }
-        process = new Process(getNeededTurns(),min);
+        process = new Process(getNeededTurns(), min);
         return true;
 
 
@@ -126,6 +152,7 @@ public class Factory implements Upgradable {
         int remainedTurns;
         int numberOfInputs;
         int numberOfOutputs;
+
 
         public Process(int remainedTurns, int numberOfOutputs) {
             this.remainedTurns = remainedTurns;
@@ -168,9 +195,12 @@ public class Factory implements Upgradable {
         int numberOfInputItems;
         int numberOfOutputItems;
         int ProcessTurns;
-        static class Isp {
-            Integer weight;
-            Item.ItemInfo itemInfo;
+        ArrayList<FactoryType.t> Ts = new ArrayList<>(0);
+
+
+        public FactoryType(String name, ArrayList<t> ts) {
+            this.name = name;
+            Ts = ts;
         }
 
         public String getName() {
@@ -188,7 +218,6 @@ public class Factory implements Upgradable {
         public void setOutputItem(Item.ItemInfo outputItem) {
             OutputItem = outputItem;
         }
-
 
         public int getNumberOfInputItems() {
             return numberOfInputItems;
@@ -214,7 +243,30 @@ public class Factory implements Upgradable {
             ProcessTurns = processTurns;
         }
 
+        public static class t {
+            int Level;
+            int ProductionNum;
+            double MaxProductionTime;
+            int MaxLevelCost;
+            int InGameCost;
+
+            public t(int level, int productionNum, double maxProductionTime, int maxLevelCost, int inGameCost) {
+                Level = level;
+                ProductionNum = productionNum;
+                MaxProductionTime = maxProductionTime;
+                MaxLevelCost = maxLevelCost;
+                InGameCost = inGameCost;
+            }
+        }
+
+        static class Isp {
+            Integer weight;
+            Item.ItemInfo itemInfo;
+        }
+
 
         //todo Item input
     }
+
+
 }

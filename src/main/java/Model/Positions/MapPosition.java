@@ -25,4 +25,23 @@ public class MapPosition extends Position {
     public void setY(int y) {
         this.y = y;
     }
+
+
+
+
+
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof MapPosition)){
+            return false;
+        }
+        if (((MapPosition) obj).getX()==this.getX()&&((MapPosition) obj).getY()==this.getY()){
+            return true;
+        }else {
+            return false;
+        }
+
+    }
 }

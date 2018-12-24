@@ -41,13 +41,34 @@ public class Bucket implements Upgradable {
 
 
     private int getFillingCost() {
-        return 0;
+        switch (Level){
+            case 0:
+                return 19;
+            case 1:
+                return 17;
+            case 2:
+                return 15;
+            case 3:
+                return 7;
+            default:
+                return 0;
+        }
         //todo
     }
 
     public int getMaxCapacity() {
-        return 0;
-        //todo
+        switch (Level){
+            case 0:
+                return 5;
+            case 1:
+                return 7;
+            case 2:
+                return 10;
+            case 3:
+                return 100;
+            default:
+                return 0;
+        }
     }
 
     public void printBucket() {
@@ -78,4 +99,12 @@ public class Bucket implements Upgradable {
     public boolean hasEnoughWater() {
         return CurrentWater>=1;
     }
+
+
+
+
+
+
+
+
 }

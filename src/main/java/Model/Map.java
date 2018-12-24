@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Map {
-    Integer lifeTime ;
+    Integer lifeTime  = 0;
 
 
     public static final int Num_Of_CELLS_IN_ROW = 5;
@@ -90,10 +90,11 @@ public class Map {
 
     public void addAnimal(Animal animal) {
         Random random = new Random();
-        int a = random.nextInt();
-        int b = random.nextInt();
+        int a = Math.abs(random.nextInt());
+        int b = Math.abs(random.nextInt());
         a = a % Map.Num_Of_CELLS_IN_ROW;
         b = b % Num_Of_CELLS_IN_ROW;
+        animal.setPosition(cells[a][b].getMapPosition());
         cells[a][b].addItem(animal);
 
     }
@@ -212,7 +213,11 @@ public class Map {
     }
 
 
-
-
-
+    public Map() {
+        for (int i = 0; i < Num_Of_CELLS_IN_ROW; i++) {
+            for (int j = 0; j < Num_Of_CELLS_IN_COLOUM; j++) {
+                cells[i][j] =new Cell(i,j);
+            }
+        }
+    }
 }

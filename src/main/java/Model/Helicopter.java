@@ -1,7 +1,5 @@
 package Model;
 
-import controller.Print;
-
 import java.util.ArrayList;
 
 public class Helicopter extends Vehicle {
@@ -14,8 +12,8 @@ public class Helicopter extends Vehicle {
     }
 
     public static Item.ItemInfo findItem(String itemName) {
-        for (Item.ItemInfo itemInfo:buyableItems) {
-            if (itemName.equalsIgnoreCase(itemInfo.getItemName())){
+        for (Item.ItemInfo itemInfo : buyableItems) {
+            if (itemName.equalsIgnoreCase(itemInfo.getItemName())) {
                 return itemInfo;
             }
 
@@ -28,7 +26,16 @@ public class Helicopter extends Vehicle {
 
     @Override
     public boolean upgrade(Integer CurrentMoney) {
-        return false;
+        if (CurrentMoney < getUpgradeCost()) {
+            return false;
+        }
+        if (getLevel() == 3) {
+            System.out.println("Unable to do update on helicopter as it's updated to level 3");
+            return false;
+        }
+        CurrentMoney -= getUpgradeCost();
+        Level += 1;
+        return true;
     }
 
     @Override
@@ -41,7 +48,7 @@ public class Helicopter extends Vehicle {
             setRemainingTurns(getRemainingTurns() - 1);
         } else if (getRemainingTurns() == 1) {
             setRemainingTurns(getRemainingTurns() - 1);
-            for (Item item:items){
+            for (Item item : items) {
                 farm.getMap().addItemInRandom(item);
             }
             items.clear();
@@ -69,19 +76,32 @@ public class Helicopter extends Vehicle {
 
     @Override
     protected int getTravelTurns() {
-
-        return 50;
+        return 12 - 3 * getLevel();
     }
 
 
-
-
-    public boolean goTravel(){
+    public boolean goTravel() {
         RemainingTurns = getTravelTurns();
         Price = getPrice();
-        setFarmMoney(getFarmMoney()- Price);
+        setFarmMoney(getFarmMoney() - Price);
 
         return true;
 
+    }
+
+
+    public int getScatteringRadius() {
+        switch (getLevel()) {
+            case 0:
+                return 120;
+            case 1:
+                return 100;
+            case 2:
+                return 60;
+            case 3:
+                return 20;
+            default:
+                return 0;
+        }
     }
 }

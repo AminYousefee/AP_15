@@ -1,12 +1,21 @@
 package Model;
 
-import Model.Animals.*;
+import Model.Animals.ProductiveAnimal;
+import Model.Animals.WildAnimal;
 import Model.Positions.MapPosition;
-import Model.Positions.Position;
 
 import java.util.ArrayList;
 
 public class Cell {
+    Grass grass;
+    MapPosition mapPosition;
+    ArrayList<Model.Item> items = new ArrayList<>(0);
+    public Cell(int x, int y) {
+        grass = new Grass();
+        mapPosition = new MapPosition(x, y);
+        items = new ArrayList<>(0);
+    }
+
     public Grass getGrass() {
         return grass;
     }
@@ -15,49 +24,33 @@ public class Cell {
         this.grass = grass;
     }
 
-    Grass grass;
-    MapPosition mapPosition;
-
-    public Cage getCage() {
-        return cage;
-    }
-
-    public void setCage(Cage cage) {
-        this.cage = cage;
-    }
-
-    Cage cage;
-    ArrayList<Model.Item> items = new ArrayList<>(0);
-
-
-    public boolean cage() {
-
-        return true;
-    }
-
-
     public boolean collect() {
 
         // Priority NonAnimal WildAnimal ProductiveAnimal Dog Cat
-        Item toBeCollectedItem=null;
-        for (Item item:items){
-            if (item instanceof NonAnimalItem){
-                toBeCollectedItem= item;
+        Item toBeCollectedItem = null;
+        for (Item item : items) {
+            if (item instanceof NonAnimalItem) {
+                toBeCollectedItem = item;
             }
         }
-        if (toBeCollectedItem!=null){
+        if (toBeCollectedItem != null) {
+            toBeCollectedItem.getCollected();
+
             return true;
         }
 
-        for (Item item:items){
-            if (item instanceof WildAnimal){
-                toBeCollectedItem= item;
+        for (Item item : items) {
+            if (item instanceof WildAnimal && ((WildAnimal) item).getCage() != null && ((WildAnimal) item).getCage().getCompletnessPercetage() == ((WildAnimal) item).getCage().getProgressMaxValue()) {
+
+                toBeCollectedItem = item;
             }
         }
-        if (toBeCollectedItem!=null){
+        if (toBeCollectedItem != null) {
+            toBeCollectedItem.getCollected();
             return true;
         }
-        for (Item item:items){
+
+        /*for (Item item:items){
             if (item instanceof ProductiveAnimal){
                 toBeCollectedItem= item;
             }
@@ -81,13 +74,12 @@ public class Cell {
         }
         if (toBeCollectedItem!=null){
             return true;
-        }
+        }*/
 
         return false;
 
 
     }
-
 
     public MapPosition getMapPosition() {
         return mapPosition;
@@ -106,10 +98,10 @@ public class Cell {
 
 
     }
-    public void removeItem(Item item){
+
+    public void removeItem(Item item) {
         items.remove(item);
     }
-
 
     public Item getCatCollectableItem() {
         for (Item item : items) {
@@ -121,18 +113,22 @@ public class Cell {
     }
 
     public void PrintCell() {
-        View.Farmys.Cell.PrintCell(items,this.getMapPosition());
+        View.Farmys.Cell.PrintCell(items, this.getMapPosition());
     }
 
     public void turn() {
-        for (Item item : items) {
-            item.turn();
+        for (int i = 0; i <;) {
+            if(items.get(i).turn()){
+
+            }else {
+                i++;
+            }
         }
     }
 
     public boolean containsNonWildAnimalOrItem() {
         for (Item item : items) {
-            if (item instanceof NonAnimalItem||item instanceof ProductiveAnimal){
+            if (item instanceof NonAnimalItem || item instanceof ProductiveAnimal) {
                 return true;
             }
         }
@@ -140,8 +136,8 @@ public class Cell {
     }
 
     public boolean containsWildAniaml() {
-        for (Item item:items){
-            if (item instanceof WildAnimal){
+        for (Item item : items) {
+            if (item instanceof WildAnimal) {
                 return true;
             }
         }

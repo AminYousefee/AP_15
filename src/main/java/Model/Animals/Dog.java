@@ -52,8 +52,8 @@ public class Dog extends NonWildAnimal {
 
 
     @Override
-    public void turn() {
-        this.move();
+    public boolean turn() {
+        return this.move();
 
     }
 
@@ -61,4 +61,18 @@ public class Dog extends NonWildAnimal {
 
 
     }
+
+    public static class DogInfo extends NonWildAnimalInfo{
+        public static final DogInfo ourInstance = new DogInfo();
+
+        public static DogInfo getInstance() {
+            return ourInstance;
+        }
+        public DogInfo() {
+            super("Dog", -1, -1, -1, 65);
+        }
+    }
+
+
+
 }

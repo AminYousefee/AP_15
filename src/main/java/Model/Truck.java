@@ -5,8 +5,7 @@ import View.VehicleView.TruckView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Truck extends Vehicle{
-
+public class Truck extends Vehicle {
 
 
     public Truck(Integer FarmMoney) {
@@ -15,7 +14,7 @@ public class Truck extends Vehicle{
 
     private int getMaxCapacity() {
         //todo
-        return getLevel()*50;
+        return getLevel() * 50;
     }
 
     public void turn() {
@@ -31,38 +30,34 @@ public class Truck extends Vehicle{
     }
 
 
-
-
     public void printTruck() {
         TruckView.PrintTruck(this);
 
 
     }
-    public ArrayList<Item> getItems(){
+
+    public ArrayList<Item> getItems() {
         return (ArrayList<Item>) Collections.unmodifiableList(items);
     }
 
 
-
-
-
-
-
-    public int getTravelTurns(){
+    public int getTravelTurns() {
         //todo
-        return 100-10*getLevel();
+        return 20 - 5 * getLevel();
     }
-
-
 
 
     @Override
     public boolean upgrade(Integer CurrentMoney) {
-        if (CurrentMoney<getUpgradeCost()){
+        if (CurrentMoney < getUpgradeCost()) {
+            return false;
+        }
+        if (getLevel() == 3) {
+            System.out.println("Unable to do update on truck as it's updated to level 3");
             return false;
         }
         CurrentMoney -= getUpgradeCost();
-        Level +=1;
+        Level += 1;
         return true;
 
     }
@@ -74,30 +69,34 @@ public class Truck extends Vehicle{
     }
 
     public void addItem(Item item) {
-        items.add(item);
+        //if ()
+            items.add(item);
     }
-
 
 
     @Override
     public boolean go() {
-        if (this.isInTravel()){
+        if (this.isInTravel()) {
             System.out.println("Truck in Travel");
             return false;
-        }else {
+        } else {
             this.goTravel();
             return true;
         }
     }
 
 
-
-    public boolean goTravel(){
+    public boolean goTravel() {
         RemainingTurns = getTravelTurns();
         Price = getPrice();
 
         return true;
 
     }
+
+    public int getBoxNumbers() {
+        return 2 + getLevel();
+    }
+
 
 }

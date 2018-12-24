@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -64,13 +65,14 @@ public class InputProcessor {
 
     private static boolean runNewGame(String string) {
         Matcher matcher;
-        String regex = "\\s*run\\s+(\\S+)\\s+";
+        String regex = "\\s*run\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, string)) != null) {
-            Farm farm = Farm.findLoadedFarm(matcher.group(1));
-            if (farm == null) {
+            //Farm farm = Farm.findLoadedFarm(matcher.group(1));
+            Game game=Game.findLoadedGame(matcher.group(1));
+            if (game == null) {
                 System.out.println("The Specified Farm Not Found");
             }
-            game.setFarm(farm);
+            InputProcessor.game =game;
             return true;
         }
         return false;
@@ -120,7 +122,7 @@ public class InputProcessor {
                     if (item instanceof NonWildAnimal) {
                         game.getFarm().getMap().addItemInRandom(item);
                     } else if (item instanceof NonAnimalItem) {
-                        Volume += item.getItemInfo().getVolume();
+                        Volume += item.getItemInfo().getDepotSize();
                     }
 
 
@@ -172,8 +174,8 @@ public class InputProcessor {
                             FileReader fileReader = new FileReader(file1.getAbsoluteFile());
                             Gson gson = new Gson();
                             try {
-                                Farm farm = gson.fromJson(fileReader, Farm.class);
-                                Farm.loadedFarms.add(farm);
+                                Game game = gson.fromJson(fileReader, Game.class);
+                                Game.loadedGames.add(game);
                             } catch (JsonParseException e) {
                                 Factory.FactoryType factoryType = gson.fromJson(fileReader, Factory.FactoryType.class);
                                 Factory.factoryTypeArrayList.add(factoryType);
@@ -209,28 +211,6 @@ public class InputProcessor {
         return false;
     }
 
-    private boolean saveGame(String string) {
-        Matcher matcher;
-        Gson gson = new Gson();
-        String regex = "\\s*save\\s+game\\s+(\\S+)\\s*";
-        if ((matcher = getMatched(regex, string)) != null) {
-            String path = matcher.group(1);
-            if (path.endsWith(".json")) {
-
-                try {
-                    FileWriter fileWriter = new FileWriter(path);
-                    gson.toJson(game, fileWriter);
-                } catch (IOException e) {
-                    System.out.println("Unable To Write To  the Specified File");
-                }
-            } else {
-                System.out.println("Path should be in the form *.json");
-            }
-            return true;
-        }
-        return false;
-    }
-
     public static boolean process(String input) {
         if (startFactory(input)) {
             return true;
@@ -258,7 +238,7 @@ public class InputProcessor {
         if (makeWellFull(input)) {
             return true;
         }
-        if (plant(input)){
+        if (plant(input)) {
             return true;
         }
         if (loadGame(input)) {
@@ -273,6 +253,14 @@ public class InputProcessor {
         if (endStatemet(input)) {
             return true;
         }
+        if (print(input)){
+            return true;
+        }if (turn(input)){
+            return true;
+        }if ((getMatched("\\s+",input)!=null)){
+            return true;
+        }
+        System.out.println("Undefined Statement");
         return false;
     }
 
@@ -327,46 +315,6 @@ public class InputProcessor {
             return true;
         }
         return false;
-    }
-
-    private boolean print(String input) {
-        Matcher matcher;
-        String regex = "print\\s+(.+)";
-        if ((matcher = getMatched(regex, input)) != null) {
-            Factory factory;
-            String string = matcher.group(1);
-            if (string.equalsIgnoreCase("info")) {
-                game.printInfo();
-            } else if (string.equalsIgnoreCase("map")) {
-                game.getFarm().getMap().printMap();
-            } else if (string.equalsIgnoreCase("levels")) {
-
-            } else if (string.equalsIgnoreCase("warehouse")) {
-
-            } else if (string.equalsIgnoreCase("well")) {
-                game.getFarm().getBucket().printBucket();
-
-            } else if (string.equalsIgnoreCase("truck")) {
-                game.getFarm().getTruck().printTruck();
-            } else if (string.equalsIgnoreCase("helicopter")) {
-                Helicopter helicopter = game.getFarm().getHelicopter();
-                if (helicopter == null) {
-                    System.out.println("Helicopter Not Found");
-
-                } else {
-                    helicopter.printHelicopter();
-                }
-            } else if (string.equalsIgnoreCase("workshops")) {
-                game.getFarm().printWorkshops();
-
-            } else {
-                //todo Statement Not Legal
-
-            }
-        }
-
-        return false;
-
     }
 
     private static boolean cage(String input) {
@@ -511,7 +459,7 @@ public class InputProcessor {
                     }
                     if (toBeAddedItems.size() < count) {
                         System.out.println("Not Enough Number Of " + itemName);
-                    } else if (count * item.getItemInfo().getVolume() > game.getFarm().getWarehouse().getCapacity()) {
+                    } else if (count * item.getItemInfo().getDepotSize() > game.getFarm().getWarehouse().getCapacity()) {
                         System.out.println("Not Enough Space in the wareHouse");
                     } else {
                         for (Item toBeAddedItem : toBeAddedItems) {
@@ -526,7 +474,7 @@ public class InputProcessor {
                     List<Item> toBeAddedItems = map.getItemOfSpecifiedType(itemName);
                     if (toBeAddedItems.size() < count) {
                         System.out.println("Not Enough Number Of " + itemName);
-                    } else if (count * item.getItemInfo().getVolume() > game.getFarm().getWarehouse().getCapacity()) {
+                    } else if (count * item.getItemInfo().getDepotSize() > game.getFarm().getWarehouse().getCapacity()) {
                         System.out.println("Not Enough Space in the WareHouse");
                     } else {
                         for (Item toBeAddedItem : toBeAddedItems) {
@@ -577,11 +525,81 @@ public class InputProcessor {
         return false;
     }
 
-    public boolean turn(String input) {
+    private boolean saveGame(String string) {
         Matcher matcher;
-        String regex = "\\s*turn\\s+(\\d+)\\*";
+        Gson gson = new Gson();
+        String regex = "\\s*save\\s+game\\s+(\\S+)\\s*";
+        if ((matcher = getMatched(regex, string)) != null) {
+            String path = matcher.group(1);
+            if (path.endsWith(".json")) {
+
+                try {
+                    FileWriter fileWriter = new FileWriter(path);
+                    gson.toJson(game, fileWriter);
+                } catch (IOException e) {
+                    System.out.println("Unable To Write To  the Specified File");
+                }
+            } else {
+                System.out.println("Path should be in the form *.json");
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean print(String input) {
+        Matcher matcher;
+        String regex = "print\\s+(\\S+)";
         if ((matcher = getMatched(regex, input)) != null) {
-            game.turn();
+            Factory factory;
+            String string = matcher.group(1);
+            if (string.equalsIgnoreCase("info")) {
+                game.printInfo();
+            } else if (string.equalsIgnoreCase("map")) {
+                game.getFarm().getMap().printMap();
+            } else if (string.equalsIgnoreCase("levels")) {
+
+
+            } else if (string.equalsIgnoreCase("warehouse")) {
+                game.getFarm().getWarehouse().print();
+
+            } else if (string.equalsIgnoreCase("well")) {
+                game.getFarm().getBucket().printBucket();
+
+            } else if (string.equalsIgnoreCase("truck")) {
+                game.getFarm().getTruck().printTruck();
+            } else if (string.equalsIgnoreCase("helicopter")) {
+                Helicopter helicopter = game.getFarm().getHelicopter();
+                if (helicopter == null) {
+                    System.out.println("Helicopter Not Found");
+
+                } else {
+                    helicopter.printHelicopter();
+                }
+            } else if (string.equalsIgnoreCase("workshops")) {
+                game.getFarm().printWorkshops();
+
+            } else {
+                //todo Statement Not Legal
+                System.out.println("Undefined Statement");
+
+            }
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public static boolean turn(String input) {
+        Matcher matcher;
+        String regex = "\\s*turn\\s+(\\d+)\\s*";
+        if ((matcher = getMatched(regex, input)) != null) {
+            int n = Integer.parseInt(matcher.group(1));
+            for (int i = 0; i < n; i++) {
+                game.turn();
+
+            }
             return true;
         }
 
@@ -598,4 +616,85 @@ public class InputProcessor {
         }
         System.exit(0);
     }
+
+
+    @Test
+    public void JsonFormatTest() throws IOException {
+        HashSet<Item.ItemInfo> itemInfos = new HashSet<>(0);
+        FileReader fileReader = null;
+        try {
+            fileReader = new FileReader("a.txt");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Scanner scanner = new Scanner(fileReader);
+        while (scanner.hasNext()) {
+            String string = scanner.nextLine();
+            Matcher matcher = getMatched("(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)", string);
+            itemInfos.add(new Item.ItemInfo(matcher.group(1), Double.parseDouble(matcher.group(2)), Integer.parseInt(matcher.group(3)), Integer.parseInt(matcher.group(4))));
+
+        }
+        scanner.close();
+        try {
+            fileReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FileWriter fileWriter = new FileWriter("NonAnimalItemsConfigFile.json");
+
+
+        Gson gson = new Gson();
+        gson.toJson(itemInfos, fileWriter);
+        fileWriter.flush();
+        fileWriter.close();
+        assertTrue(true);
+
+    }
+
+
+    @Test
+    public void initTest() throws IOException {
+
+            FileReader fileReader = new FileReader("a.txt");
+            Scanner scanner = new Scanner(fileReader);
+            HashSet<Factory.FactoryType> factoryTypes = new HashSet<>(0);
+            while (scanner.hasNext()) {
+                String string1 = scanner.nextLine();
+                String string2 = scanner.nextLine();
+                String string3 = scanner.nextLine();
+                String string4 = scanner.nextLine();
+                String string5 = scanner.nextLine();
+                ArrayList<Factory.FactoryType.t> Ts = new ArrayList<>(0);
+                Matcher matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string1);
+                Factory.FactoryType.t T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+                Ts.add(T);
+                matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string2);
+                T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+                Ts.add(T);
+                matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string3);
+                T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+                Ts.add(T);
+                matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string4);
+                T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+                Ts.add(T);
+                matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string5);
+                T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+                Ts.add(T);
+                factoryTypes.add(new Factory.FactoryType(matcher.group(1), Ts));
+
+
+            }
+
+
+            Gson gson = new Gson();
+            FileWriter fileWriter = new FileWriter(Factory.FactoriesConfigFilePath);
+            gson.toJson(factoryTypes,fileWriter);
+            fileWriter.flush();
+            fileWriter.close();
+
+
+    }
+
 }

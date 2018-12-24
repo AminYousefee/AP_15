@@ -1,5 +1,7 @@
 package Model.Positions;
 
-public class Position {
+public abstract class Position {
+
+
 
 }

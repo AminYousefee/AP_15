@@ -3,10 +3,7 @@ package Model.Animals;
 import Model.*;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
-import controller.InputProcessor;
-import org.junit.jupiter.api.Test;
 
-import javax.print.attribute.standard.MediaPrintableArea;
 import java.util.Random;
 
 public abstract class Animal extends Item implements Upgradable {
@@ -14,10 +11,10 @@ public abstract class Animal extends Item implements Upgradable {
     MapPosition goalPosition;
 
 
-    public static final int CAT_VOLUME=10;
-    public static final NonWildAnimal.NonWildAnimalInfo Cat_Info = new NonWildAnimal.NonWildAnimalInfo("cat", CAT_VOLUME, 30);
-    public static final int DOG_VOLUME=10;
-    public static final NonWildAnimal.NonWildAnimalInfo Dog_Info = new NonWildAnimal.NonWildAnimalInfo("Dog", DOG_VOLUME, 30);
+    public static final int CAT_VOLUME=0;
+    public static final NonWildAnimal.NonWildAnimalInfo Cat_Info = Cat.CatInfo.getInstance();
+    public static final int DOG_VOLUME=0;
+    public static final NonWildAnimal.NonWildAnimalInfo Dog_Info = Dog.DogInfo.getInstance();
     int fullness;
     int Level;
 
@@ -86,17 +83,21 @@ public abstract class Animal extends Item implements Upgradable {
         }else {
 
             Random random = new Random();
-            int x = random.nextInt();
-            int y = random.nextInt();
+            int x = Math.abs(random.nextInt());
+            int y = Math.abs(random.nextInt());
             x = x % 3 - 1;
             y = y % 3 - 1;
             x += ((MapPosition)getPosition()).getX();
             y += ((MapPosition)getPosition()).getY();
             if (x >= Map.Num_Of_CELLS_IN_ROW) {
                 x = Map.Num_Of_CELLS_IN_ROW - 1;
+            }else if (x<0){
+                x = 0;
             }
             if (y >= Map.Num_Of_CELLS_IN_COLOUM) {
                 y =Map.Num_Of_CELLS_IN_COLOUM;
+            }else if (y< 0){
+                y= 0;
             }
             MapPosition mapPosition = new MapPosition(x,y);
             moveToPosition(mapPosition);
@@ -129,21 +130,28 @@ public abstract class Animal extends Item implements Upgradable {
     protected abstract void addFullness();
 
     public static class AnimalInfo extends ItemInfo {
-        public AnimalInfo(String name, int Volume, int price) {
-            super(name, Volume, price);
+        int Speed;
+
+
+        public AnimalInfo(String itemName, int depotSize, int buyCost, int SaleCost, int speed) {
+            super(itemName, depotSize, buyCost, SaleCost);
+            Speed = speed;
         }
     }
 
     @Override
-    public void turn() {
-        if (eat()){
-
-        }else {
-            move();
-        }
+    public boolean turn() {
         if (this instanceof ProductiveAnimal){
             ((ProductiveAnimal) this).produce();
         }
+
+        if (eat()){
+
+        }else {
+            return move();
+        }
+        return false;
+
     }
 
     public void moveToPosition(MapPosition position) {

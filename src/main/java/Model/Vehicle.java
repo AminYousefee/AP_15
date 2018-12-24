@@ -61,7 +61,11 @@ public abstract class Vehicle implements Upgradable {
     public int getPrice(){
         int price=0;
         for (Item item:items){
-            price+=item.getPrice();
+            if (this instanceof Truck){
+                price+=item.getBuyCost();
+            }else if (this instanceof Helicopter){
+                price+=item.getSaleCost();
+            }
         }
         return price;
 

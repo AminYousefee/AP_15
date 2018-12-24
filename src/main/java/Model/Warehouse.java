@@ -1,7 +1,5 @@
 package Model;
 
-import View.ItemView;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -36,7 +34,12 @@ public class Warehouse implements Upgradable {
         if (CurrentMoney < getUpgradeCost()) {
             return false;
         }
+        if (Level == 3) {
+            System.out.println("Wow you still want a better wareHouse");
+            return false;
+        }
         CurrentMoney -= getUpgradeCost();
+        Level += 1;
         return true;
     }
 
@@ -49,8 +52,18 @@ public class Warehouse implements Upgradable {
 
 
     private int getMaxCapacity() {
-        //todo
-        return 0;
+        switch (Level) {
+            case 0:
+                return 50;
+            case 1:
+                return 150;
+            case 2:
+                return 300;
+            case 3:
+                return 600;
+            default:
+                return 0;
+        }
     }
 
     //finished
@@ -83,5 +96,12 @@ public class Warehouse implements Upgradable {
 
     public void addItem(Item item) {
         items.add(item);
+    }
+
+    public void print() {
+        System.out.println("WareHouse :");
+        for (Item item : items) {
+            item.Print();
+        }
     }
 }

@@ -1,12 +1,11 @@
 package Model;
 
 import Model.Animals.Animal;
-import Model.Animals.Cage;
 import Model.Animals.Cat;
+import Model.Animals.NonWildAnimal;
 import Model.Animals.WildAnimal;
 import Model.Factories.Factory;
 import Model.Positions.MapPosition;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,19 +18,36 @@ public class Farm {
     Integer CurrentMoney;
     Warehouse warehouse;
     Bucket bucket;
+    Integer CagesLevel;
     private Factory[] factories = new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
     private Truck truck;
-    private Helicopter helicopter=null;
+    private Helicopter helicopter = null;
+    public Farm() {
+        CurrentMoney =new Integer(10000);
+        map = new Map();
+        warehouse = new Warehouse();
+        truck = new Truck(CurrentMoney);
+        helicopter = new Helicopter(CurrentMoney);
+        bucket = new Bucket(CurrentMoney);
 
-    public static Farm findLoadedFarm(String farmName) {
-        for (Farm farm:loadedFarms){
-            if (farm.name.equalsIgnoreCase(farmName)){
-                return farm;
-            }
-        }
-        return null;
+
     }
 
+    public Integer getCagesLevel() {
+        return CagesLevel;
+    }
+
+    public void setCagesLevel(Integer cagesLevel) {
+        CagesLevel = cagesLevel;
+    }
+
+    public long getTurnsWent() {
+        return turnsWent;
+    }
+
+    public void setTurnsWent(long turnsWent) {
+        this.turnsWent = turnsWent;
+    }
 
     public Warehouse getWarehouse() {
         return warehouse;
@@ -40,19 +56,6 @@ public class Farm {
     public void setWarehouse(Warehouse warehouse) {
         this.warehouse = warehouse;
     }
-
-    private Farm() {
-        map = new Map();
-        warehouse = new Warehouse();
-        truck  = new Truck(CurrentMoney);
-        helicopter = new Helicopter(CurrentMoney);
-        bucket = new Bucket(CurrentMoney);
-
-
-
-
-    }
-
 
     public Integer getCurrentMoney() {
         return CurrentMoney;
@@ -82,7 +85,6 @@ public class Farm {
 
     }
 
-
     public void pickUp(MapPosition mapPosition) {
         Map map = getMap();
         Cell cell = map.getCellByPosition(mapPosition);
@@ -90,7 +92,6 @@ public class Farm {
 
 
     }
-
 
     public boolean cage(MapPosition mapPosition) {
         Cell cell = getMap().getCellByPosition(mapPosition);
@@ -108,9 +109,9 @@ public class Farm {
 
 
         for (WildAnimal wildAnimal : wildAnimals) {
-            if (wildAnimal.getCage()==null){
+            if (wildAnimal.getCage() == null) {
                 wildAnimal.getCaged();
-            }else {
+            } else {
                 wildAnimal.getCage().addCompletenesPercentage();
             }
 
@@ -119,27 +120,27 @@ public class Farm {
 
     }
 
-
     public Bucket getBucket() {
         return this.bucket;
     }
 
-
     public void turn() {
-        for (Factory factory:factories) {
-            factory.turn();
+        for (Factory factory : factories) {
+            if (factory!=null) {
+                factory.turn();
+            }
         }
         map.turn();
         truck.turn();
         helicopter.turn();
+        turnsWent += 1;
 
 
     }
 
-
     public Factory findFactory(String string) {
-        for (Factory factory:factories){
-            if (factory.getFactoryType().getName().equalsIgnoreCase(string)){
+        for (Factory factory : factories) {
+            if (factory.getFactoryType().getName().equalsIgnoreCase(string)) {
                 return factory;
             }
         }
@@ -147,17 +148,16 @@ public class Farm {
 
     }
 
-
     public Map getMap() {
         return map;
     }
 
     public void buyAnimal(Animal animal) {
-        if (animal.getPrice() > this.CurrentMoney) {
+        if (animal.getBuyCost() > this.CurrentMoney) {
             System.out.println("Not Enough Money");
         } else {
 
-            CurrentMoney -= animal.getPrice();
+            CurrentMoney -= animal.getBuyCost();
             getMap().addAnimal(animal);
 
         }
@@ -177,17 +177,15 @@ public class Farm {
 
     }
 
-
     public void printWorkshops() {
 
     }
 
-
     public void UpgradeCats() {
-        for (Cell[] cells:getMap().cells) {
+        for (Cell[] cells : getMap().cells) {
             for (Cell cell : cells) {
-                for (Item item:cell.getItems()){
-                    if (item instanceof Cat){
+                for (Item item : cell.getItems()) {
+                    if (item instanceof Cat) {
                         ((Cat) item).upgrade(this.getCurrentMoney());
                     }
                 }
@@ -197,15 +195,47 @@ public class Farm {
 
     }
 
+    public int findNumberOfItemX(Item.ItemInfo itemInfo) {
+        int res = 0;
+        if (itemInfo instanceof WildAnimal.WildAnimalInfo) {
+            for (Item item : warehouse.getItems()) {
+                if (item.getItemInfo().equals(itemInfo)) {
+                    res += 1;
+                }
+            }
+            return res;
+        }
 
+        if (itemInfo instanceof NonWildAnimal.NonWildAnimalInfo) {
+            for (Cell[] cells : map.cells) {
+                for (Cell cell : cells) {
+                    for (Item item : cell.getItems()) {
+                        if (item.itemInfo.equals(itemInfo)) {
+                            res += 1;
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+        if (itemInfo instanceof NonAnimalItem.NonAnimalItemInfo) {
+            for (Item item : warehouse.getItems()) {
+                if (item.getItemInfo().equals(itemInfo)) {
+                    res += 1;
+                }
+            }
+            for (Cell[] cells : map.cells) {
+                for (Cell cell : cells) {
+                    for (Item item : cell.getItems()) {
+                        if (item.itemInfo.equals(itemInfo)) {
+                            res += 1;
+                        }
+                    }
+                }
+            }
+            return res;
+        }
+        return 0;
 
-
-
-
-    public  static ArrayList<Farm> loadedFarms = new ArrayList<>(0);
-
-
-
-
-
+    }
 }

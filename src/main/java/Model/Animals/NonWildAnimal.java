@@ -5,6 +5,7 @@ import Model.Map;
 import View.GameMenu.Missions.MissionView;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import controller.InputProcessor;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -18,24 +19,20 @@ public class NonWildAnimal extends Animal{
         super(animalInfo,map);
     }
 
-    public static NonWildAnimal getInstance(String name, Map map) {
+    public static NonWildAnimal getInstance(String name) {
 
         NonWildAnimal res = ProductiveAnimal.getInstance(name);
         if (res != null) {
             return res;
         }
         if (name.equalsIgnoreCase("cat")) {
-            return new Cat(map);
+            return new Cat(InputProcessor.game.getFarm().getMap());
         } else if (name.equalsIgnoreCase("dog")) {
-            return new Dog(map);
+            return new Dog(InputProcessor.game.getFarm().getMap());
         }
         return null;
     }
 
-    @Override
-    public boolean move() {
-        return false;
-    }
 
     @Override
     protected void addFullness() {
@@ -58,10 +55,8 @@ public class NonWildAnimal extends Animal{
     }
 
     public static class NonWildAnimalInfo extends AnimalInfo {
-
-        public NonWildAnimalInfo(String name, int Volume, int price) {
-            super(name, Volume, price);
-
+        public NonWildAnimalInfo(String itemName, int depotSize, int buyCost, int SaleCost, int speed) {
+            super(itemName, depotSize, buyCost, SaleCost, speed);
         }
     }
 

@@ -6,6 +6,7 @@ import Model.NonAnimalItem;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
+import controller.Print;
 
 public class Cat extends NonWildAnimal {
 
@@ -26,6 +27,22 @@ public class Cat extends NonWildAnimal {
         if (goalItem != null) {
 
         } else if (goalItem == null) {
+            if (this.Level == 1) {
+                goalItem = map.getCatCollectableItem();
+
+            } else {
+                goalItem = map.getNearestCatCollectableItem(this.map.getCellByPosition((MapPosition) this.getPosition()));
+            }
+        }
+
+        if (goalItem.getPosition() instanceof NonMapPosition){
+            if (this.Level == 1) {
+                goalItem = map.getCatCollectableItem();
+
+            } else {
+                goalItem = map.getNearestCatCollectableItem(this.map.getCellByPosition((MapPosition) this.getPosition()));
+            }
+        }else if (! map.getCellByPosition((MapPosition) goalItem.getPosition()).getItems().contains(goalItem)){
             if (this.Level == 1) {
                 goalItem = map.getCatCollectableItem();
 
@@ -76,4 +93,19 @@ public class Cat extends NonWildAnimal {
 
         return true;
     }
+
+
+    public static class CatInfo extends NonWildAnimalInfo{
+        private static CatInfo ourInstance = new CatInfo();
+        int sleepTime =10;
+        int MaxLevelUpgradeCost=  500;
+
+        public static CatInfo getInstance() {
+            return ourInstance;
+        }
+        public CatInfo() {
+            super("Cat", -1, 2500, -1, 38);
+        }
+    }
+
 }
