@@ -3,11 +3,11 @@ package Model;
 import Model.Positions.Position;
 
 public abstract class Item {
-    Position position;
-    int Volume;
-    int ID;
-    int lifeTime;
-    double price;
+    private Position position;
+    private int Volume;
+    private int ID;
+    private int lifeTime;
+    private double price;
 
     public Position getPosition() {
         return position;
@@ -49,8 +49,9 @@ public abstract class Item {
         this.price = price;
     }
 
+    public Item() {
 
-
+    }
 
     public void anihilate(){
 
