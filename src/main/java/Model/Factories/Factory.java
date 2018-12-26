@@ -5,16 +5,12 @@ import Model.Positions.MapPosition;
 import Model.Upgradable;
 import Model.Warehouse;
 import View.Factories.FactoryView;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
@@ -38,6 +34,13 @@ public class Factory implements Upgradable {
         }
 
 
+    }
+
+    public Factory(FactoryType factoryType, MapPosition outputPosition, Process process, int level) {
+        this.factoryType = factoryType;
+        this.outputPosition = outputPosition;
+        this.process = process;
+        Level = level;
     }
 
     FactoryType factoryType;
@@ -148,7 +151,7 @@ public class Factory implements Upgradable {
         return 0;
     }
 
-    private static class Process {
+    public static class Process {
         int remainedTurns;
         int numberOfInputs;
         int numberOfOutputs;

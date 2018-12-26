@@ -11,8 +11,12 @@ public class Cage implements Upgradable {
     int turnsCompleted;
 
     public Cage(int remainingTimeTo, int numOfWildAnimalsInTheCell) {
-        CompletnessPercetage += 20;
+        CompletnessPercetage = 0;
 
+    }
+
+    public Cage(WildAnimal wildAnimal) {
+        this.wildAnimal =wildAnimal;
     }
 
     public int getCompletnessPercetage() {
@@ -31,7 +35,14 @@ public class Cage implements Upgradable {
     public void addCompletenesPercentage() {
         CompletnessPercetage += 20;
         if (CompletnessPercetage >= getProgressMaxValue()) {
+            if (CompletnessPercetage ==getProgressMaxValue()+20){
+                System.out.println("It's already completed:the cage");
+            }else {
+                turnsCompleted =0;
+            }
             CompletnessPercetage = getProgressMaxValue();
+
+
 
 
         }
@@ -39,7 +50,9 @@ public class Cage implements Upgradable {
     }
 
     public void turn() {
-        turnsCompleted++;
+        if (this.CompletnessPercetage ==getProgressMaxValue()){
+            turnsCompleted++;
+        }
         if (turnsCompleted == getEscapeTurn() && wildAnimal.getPosition() instanceof MapPosition) {
             wildAnimal.escape();
         }
@@ -47,8 +60,8 @@ public class Cage implements Upgradable {
 
             setCompletnessPercetage(getCompletnessPercetage() - 5);
         }
-        if (getCompletnessPercetage() == 0) {
-            wildAnimal.setCage(null);
+        if (getCompletnessPercetage() <= 0) {
+            setCompletnessPercetage(0);
         }
 
     }

@@ -14,23 +14,35 @@ public class Farm {
     public static final int POSSIBLE_NUMBER_OF_FACTORIES = 6;
     long turnsWent;
     Map map;
-    String name;
     Integer CurrentMoney;
     Warehouse warehouse;
     Bucket bucket;
-    Integer CagesLevel;
+    Integer CagesLevel = 0;
     private Factory[] factories = new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
     private Truck truck;
     private Helicopter helicopter = null;
+
     public Farm() {
-        CurrentMoney =new Integer(10000);
+        CurrentMoney =10000;
         map = new Map();
         warehouse = new Warehouse();
-        truck = new Truck(CurrentMoney);
+        truck = new Truck(0,);
         helicopter = new Helicopter(CurrentMoney);
         bucket = new Bucket(CurrentMoney);
 
 
+    }
+
+    public Farm(long turnsWent, Map map, Integer currentMoney, Warehouse warehouse, Bucket bucket, Integer cagesLevel, Factory[] factories, Truck truck, Helicopter helicopter) {
+        this.turnsWent = turnsWent;
+        this.map = map;
+        CurrentMoney = currentMoney;
+        this.warehouse = warehouse;
+        this.bucket = bucket;
+        CagesLevel = cagesLevel;
+        this.factories = factories;
+        this.truck = truck;
+        this.helicopter = helicopter;
     }
 
     public Integer getCagesLevel() {
@@ -126,7 +138,7 @@ public class Farm {
 
     public void turn() {
         for (Factory factory : factories) {
-            if (factory!=null) {
+            if (factory != null) {
                 factory.turn();
             }
         }
@@ -153,6 +165,7 @@ public class Farm {
     }
 
     public void buyAnimal(Animal animal) {
+
         if (animal.getBuyCost() > this.CurrentMoney) {
             System.out.println("Not Enough Money");
         } else {
@@ -167,8 +180,12 @@ public class Farm {
     public void plant(MapPosition mapPosition) {
         Cell cell = getMap().getCellByPosition(mapPosition);
         if (bucket.hasEnoughWater()) {
-            cell.getGrass().setNum(100);
-            bucket.consume();
+            if (cell.getGrass().getNum() < 100) {
+                cell.getGrass().setNum(100);
+                bucket.consume();
+            } else {
+                System.out.println("The cell is already full of grass");
+            }
 
         } else {
             System.out.println("Bucket Doesn't Have Enough Water");

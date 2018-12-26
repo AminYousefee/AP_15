@@ -8,6 +8,8 @@ import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
 import controller.Print;
 
+import java.util.Random;
+
 public class Cat extends NonWildAnimal {
 
 
@@ -16,7 +18,7 @@ public class Cat extends NonWildAnimal {
 
     public Cat(Map map) {
         super(Animal.Cat_Info, InputProcessor.game.getFarm().getMap());
-        this.map = map;
+        //this.map = map;
     }
 
     @Override
@@ -52,7 +54,25 @@ public class Cat extends NonWildAnimal {
         }
 
         if (goalItem == null) {
-            return super.move();
+            Random random = new Random();
+            int x = Math.abs(random.nextInt());
+            int y = Math.abs(random.nextInt());
+            x = x % 3 - 1;
+            y = y % 3 - 1;
+            x += ((MapPosition)getPosition()).getX();
+            y += ((MapPosition)getPosition()).getY();
+            if (x >= Map.Num_Of_CELLS_IN_ROW) {
+                x = Map.Num_Of_CELLS_IN_ROW - 1;
+            }else if (x<0){
+                x = 0;
+            }
+            if (y >= Map.Num_Of_CELLS_IN_COLOUM) {
+                y =Map.Num_Of_CELLS_IN_COLOUM-1;
+            }else if (y< 0){
+                y= 0;
+            }
+            MapPosition mapPosition = new MapPosition(x,y);
+            return moveToPosition(mapPosition);
         } else {
 
             MapPosition goalItemPosition = (MapPosition) goalItem.getPosition();

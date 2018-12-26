@@ -16,6 +16,12 @@ public class Cell {
         items = new ArrayList<>(0);
     }
 
+    public Cell(Grass grass, MapPosition mapPosition, ArrayList<Item> items) {
+        this.grass = grass;
+        this.mapPosition = mapPosition;
+        this.items = items;
+    }
+
     public Grass getGrass() {
         return grass;
     }
@@ -113,12 +119,14 @@ public class Cell {
     }
 
     public void PrintCell() {
-        View.Farmys.Cell.PrintCell(items, this.getMapPosition());
+        View.Farmys.Cell.PrintCell(items, this.getMapPosition(),this.grass);
     }
 
     public void turn() {
-        for (int i = 0; i <;) {
-            if(items.get(i).turn()){
+        for (int i = 0; i <items.size();) {
+            Item item =items.get(i);
+            System.out.println("ewe");
+            if(item.turn()||item.isRemove){
 
             }else {
                 i++;

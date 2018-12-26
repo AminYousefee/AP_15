@@ -6,15 +6,13 @@ import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import controller.InputProcessor;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 public abstract class Item {
     protected transient Map map;
     protected ItemInfo itemInfo;
     protected Position Position;
     int ID;
     int lifeTime;
+    boolean isRemove = false;
 
     public static Item getInstance(String name) {
         Item result = NonAnimalItem.getInstance(name);
@@ -70,8 +68,9 @@ public abstract class Item {
     }
 
     public void anihilate() {
-
-
+        map.getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
+        isRemove = true;
+        System.out.println("Turkey in cell " + ((MapPosition) this.getPosition()).getX() + " " + ((MapPosition) this.getPosition()).getY() + " died.");
     }
 
     private void create() {
@@ -85,12 +84,8 @@ public abstract class Item {
 
 
     public void Print() {
-        System.out.println(itemInfo.getItemName() + ":");
-        System.out.println("BuyCost = " + itemInfo.getBuyCost());
-        System.out.println("SaleCost = " + itemInfo.getSaleCost());
-        System.out.println("DepotSize = " + itemInfo.getDepotSize());
+        System.out.println(itemInfo.getItemName());
     }
-
 
 
     public int getSaleCost() {
@@ -101,19 +96,19 @@ public abstract class Item {
         return itemInfo.BuyCost;
     }
 
-    public void getCollected(){
+    public void getCollected() {
 
-        if (this instanceof NonAnimalItem){
-            if (InputProcessor.game.getFarm().getWarehouse().getCapacity()>this.getItemInfo().getDepotSize()){
+        if (this instanceof NonAnimalItem) {
+            if (InputProcessor.game.getFarm().getWarehouse().getCapacity() > this.getItemInfo().getDepotSize()) {
 
                 map.getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
                 InputProcessor.game.getFarm().getWarehouse().addItem(this);
-            }else {
+            } else {
                 System.out.println("Not Enough Space in WareHouse");
             }
-        }else if (this instanceof WildAnimal){
-            Item item =Item.getInstance("caged"+this.itemInfo.getItemName());
-            if (InputProcessor.game.getFarm().getWarehouse().getCapacity()>item.getItemInfo().getDepotSize()){
+        } else if (this instanceof WildAnimal) {
+            Item item = Item.getInstance("caged" + this.itemInfo.getItemName());
+            if (InputProcessor.game.getFarm().getWarehouse().getCapacity() > item.getItemInfo().getDepotSize()) {
                 map.getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
                 InputProcessor.game.getFarm().getWarehouse().addItem(item);
 
@@ -182,4 +177,6 @@ public abstract class Item {
             return getItemName().hashCode();
         }
     }
+
+
 }

@@ -21,7 +21,7 @@ public class WildAnimal extends Animal {
 
     }
 
-    private Cage cage;
+    private Cage cage = new Cage(this);
 
     //Finished
     public WildAnimal(WildAnimalInfo wildAnimalInfo, Map map) {
@@ -94,7 +94,8 @@ public class WildAnimal extends Animal {
     }
 
     public void getCaged() {
-        setCage(new Cage(((MapPosition) getPosition()).getX(), ((MapPosition) getPosition()).getY()));
+        setCage(new Cage(this));
+        // setCage(new Cage(((MapPosition) getPosition()).getX(), ((MapPosition) getPosition()).getY()));
     }
 
     public void escape() {
@@ -109,7 +110,7 @@ public class WildAnimal extends Animal {
             return false;
         }
         Cell cell;
-        if (fullness < 30 && (cell = map.findNearestCellWithFoodForWildAnimal(map.getCellByPosition((MapPosition) this.getPosition()))) != null) {
+        /*if (fullness < 3.0 / 10 * ((ProductiveAnimal.ProductiveAnimalInfo) this.itemInfo).HungryValue && (cell = map.findNearestCellWithFoodForWildAnimal(map.getCellByPosition((MapPosition) this.getPosition()))) != null) {
             if (cell != null) {
                 MapPosition goalItemPosition = cell.getMapPosition();
                 MapPosition CurrentPosition = (MapPosition) this.getPosition();
@@ -137,35 +138,37 @@ public class WildAnimal extends Animal {
             return true;
 
         } else {
+*/
 
-            Random random = new Random();
-            int x = random.nextInt();
-            int y = random.nextInt();
-            x = x % 3 - 1;
-            y = y % 3 - 1;
-            x += ((MapPosition) this.getPosition()).getX();
-            y += ((MapPosition) this.getPosition()).getX();
-            if (x >= Map.Num_Of_CELLS_IN_ROW) {
-                x = Map.Num_Of_CELLS_IN_ROW - 1;
-            } else if (x < 0) {
-                x = 0;
-            }
-            if (y >= Map.Num_Of_CELLS_IN_COLOUM) {
-                y = Map.Num_Of_CELLS_IN_COLOUM;
-            } else if (y < 0) {
-                y = 0;
-            }
-            MapPosition mapPosition = new MapPosition(x, y);
-            moveToPosition(mapPosition);
-            return true;
 
+        Random random = new Random();
+        int x = Math.abs(random.nextInt());
+        int y = Math.abs(random.nextInt());
+        x = x % 3 - 1;
+        y = y % 3 - 1;
+        x += ((MapPosition) getPosition()).getX();
+        y += ((MapPosition) getPosition()).getY();
+        if (x >= Map.Num_Of_CELLS_IN_ROW) {
+            x = Map.Num_Of_CELLS_IN_ROW - 1;
+        } else if (x < 0) {
+            x = 0;
         }
+        if (y >= Map.Num_Of_CELLS_IN_COLOUM) {
+            y = Map.Num_Of_CELLS_IN_COLOUM - 1;
+        } else if (y < 0) {
+            y = 0;
+        }
+        MapPosition mapPosition = new MapPosition(x, y);
+        return moveToPosition(mapPosition);
+
+        //}
     }
 
     @Override
     public boolean turn() {
-
+        System.out.println("why");
         cage.turn();
+
         if (this.getCage().getCompletnessPercetage() == this.getCage().getProgressMaxValue()) {
 
         } else {

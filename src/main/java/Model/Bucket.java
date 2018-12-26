@@ -8,7 +8,8 @@ public class Bucket implements Upgradable {
     private int CurrentWater;
 
     public Bucket(Integer currentMoney) {
-        farmMoney =currentMoney;
+        farmMoney = currentMoney;
+        CurrentWater = getMaxCapacity();
     }
 
 
@@ -41,7 +42,7 @@ public class Bucket implements Upgradable {
 
 
     private int getFillingCost() {
-        switch (Level){
+        switch (Level) {
             case 0:
                 return 19;
             case 1:
@@ -57,7 +58,7 @@ public class Bucket implements Upgradable {
     }
 
     public int getMaxCapacity() {
-        switch (Level){
+        switch (Level) {
             case 0:
                 return 5;
             case 1:
@@ -88,8 +89,6 @@ public class Bucket implements Upgradable {
     }
 
 
-
-
     @Override
     public int getUpgradeCost() {
         return 0;
@@ -97,14 +96,8 @@ public class Bucket implements Upgradable {
     }
 
     public boolean hasEnoughWater() {
-        return CurrentWater>=1;
+        return CurrentWater >= 1;
     }
-
-
-
-
-
-
 
 
 }

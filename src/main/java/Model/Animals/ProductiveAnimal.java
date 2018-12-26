@@ -1,11 +1,14 @@
 package Model.Animals;
 
+import Model.Cell;
 import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
+import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
 
 import java.util.HashSet;
+import java.util.Random;
 
 public class ProductiveAnimal extends NonWildAnimal {
     public static final String ProductiveAnimalConfigFilePath = "./ProductiveAnimalConfigFile.json";
@@ -93,4 +96,70 @@ public class ProductiveAnimal extends NonWildAnimal {
     }
 
 
+
+    public void Print() {
+        System.out.println(itemInfo.getItemName() +":");
+        System.out.println("Fullness  = "+fullness);
+    }
+
+    @Override
+    public boolean move() {
+        if (getPosition() instanceof NonMapPosition){
+            return false;
+            //it doesn't move in this way
+        }
+        Cell cell;
+        if (fullness<3.0/10*((ProductiveAnimal.ProductiveAnimalInfo)this.itemInfo).HungryValue&&((cell = map.findNearestCellWithGrass(map.getCellByPosition((MapPosition) this.getPosition())))!=null)){
+
+
+
+            if (cell!=null) {
+                MapPosition goalItemPosition = cell.getMapPosition();
+                MapPosition CurrentPosition = (MapPosition) this.getPosition();
+                if (goalItemPosition.equals(CurrentPosition)) {
+                    //nothing here
+                    return false;
+                } else {
+                    double deltaX = goalItemPosition.getX() - ((MapPosition)this.getPosition()).getX();
+                    double deltaY = goalItemPosition.getY() - ((MapPosition)this.getPosition()).getY();
+                    if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
+                        return moveToPosition(goalItemPosition);
+
+                    } else {
+                        double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
+                        int x = (int) (amplifier * deltaX + ((MapPosition)getPosition()).getX());
+                        int y = (int) (amplifier * deltaY + ((MapPosition)getPosition()).getY());
+                        MapPosition position = new MapPosition(x, y);
+                        return moveToPosition(position);
+                    }
+                }
+
+            }
+        }else {
+
+            Random random = new Random();
+            int x = Math.abs(random.nextInt());
+            int y = Math.abs(random.nextInt());
+            x = x % 3 - 1;
+            y = y % 3 - 1;
+            x += ((MapPosition)getPosition()).getX();
+            y += ((MapPosition)getPosition()).getY();
+            if (x >= Map.Num_Of_CELLS_IN_ROW) {
+                x = Map.Num_Of_CELLS_IN_ROW - 1;
+            }else if (x<0){
+                x = 0;
+            }
+            if (y >= Map.Num_Of_CELLS_IN_COLOUM) {
+                y =Map.Num_Of_CELLS_IN_COLOUM-1;
+            }else if (y< 0){
+                y= 0;
+            }
+            MapPosition mapPosition = new MapPosition(x,y);
+            return moveToPosition(mapPosition);
+
+        }
+        return false;
+        //maybe there is some bug behind I thought it should have worked well
+
+    }
 }

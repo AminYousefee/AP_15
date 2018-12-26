@@ -24,6 +24,12 @@ public class Warehouse implements Upgradable {
         return Collections.unmodifiableList(items);
     }
 
+    public Warehouse(int level, int capacity, ArrayList<Item> items) {
+        Level = level;
+        this.capacity = capacity;
+        this.items = items;
+    }
+
     public void setItems(ArrayList<Item> items) {
         this.items = items;
     }

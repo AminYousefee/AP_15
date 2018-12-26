@@ -1,20 +1,14 @@
 package Model.GameMenu.Missions;
 
 import Model.Item;
-import View.GameMenu.Missions.MissionView;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import controller.InputProcessor;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Scanner;
 
 public class Mission {
     public static final String MissionsConfigFilePath = "./MissionsConfigFile.json";
-    private static HashSet<Mission> missions = new HashSet<>(0);
+    //private static HashSet<Mission> missions = new HashSet<>(0);
     public Goal goal;
 
    /* static {
@@ -38,33 +32,24 @@ public class Mission {
  */
 
 
-    int level; //for customs -1
-    int ID;
+    public Mission(Goal goal) {
+        this.goal = goal;
+    }
 
-    public static Mission findMission(int ID) {
+    /*public static Mission findMission(int ID) {
         for (Mission mission : missions) {
             if (mission.getID() == ID) {
                 return mission;
             }
         }
         return null;
-    }
+    }*/
 
-    public Mission(Goal goal) {
-        this.goal = goal;
-    }
 
-    public int getID() {
-        return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
-    }
 
     public boolean isSatisfied() {
-        for (Goal.EE ee :goal.ees){
-            if (!ee.isSatisfied()){
+        for (Goal.EE ee : goal.ees) {
+            if (!ee.isSatisfied()) {
                 return false;
             }
         }
@@ -73,19 +58,19 @@ public class Mission {
 
 
     public static class Goal {
+        ArrayList<EE> ees;
+
         public Goal(ArrayList<EE> ees) {
             this.ees = ees;
         }
-
-        ArrayList<EE> ees;
 
         @Override
         public String toString() {
             StringBuilder stringBuilder = new StringBuilder(0);
             for (EE ee : ees) {
-                stringBuilder.append(ee.toString()+"\n");
+                stringBuilder.append(ee.toString() + "\n");
             }
-            return stringBuilder.deleteCharAt(stringBuilder.length()-1).toString();
+            return stringBuilder.deleteCharAt(stringBuilder.length() - 1).toString();
         }
 
         public static class EE {
@@ -99,13 +84,13 @@ public class Mission {
 
             @Override
             public String toString() {
-                return itemInfo.getItemName() + ", needed number = " + neededNumber + ", current number = "+InputProcessor.game.getFarm().findNumberOfItemX(itemInfo);
+                return itemInfo.getItemName() + ", needed number = " + neededNumber + ", current number = " + InputProcessor.game.getFarm().findNumberOfItemX(itemInfo);
             }
 
             public boolean isSatisfied() {
-                if (InputProcessor.game.getFarm().findNumberOfItemX(itemInfo)<neededNumber){
+                if (InputProcessor.game.getFarm().findNumberOfItemX(itemInfo) < neededNumber) {
                     return false;
-                }else {
+                } else {
                     return true;
                 }
             }

@@ -8,8 +8,8 @@ import java.util.Collections;
 public class Truck extends Vehicle {
 
 
-    public Truck(Integer FarmMoney) {
-        this.FarmMoney = FarmMoney;
+    public Truck(int level, int capacity, int remainingTurns, Farm farm, int price, ArrayList<Item> items, Integer farmMoney) {
+        super(level, capacity, remainingTurns, farm, price, items, farmMoney);
     }
 
     private int getMaxCapacity() {
@@ -70,7 +70,7 @@ public class Truck extends Vehicle {
 
     public void addItem(Item item) {
         //if ()
-            items.add(item);
+        items.add(item);
     }
 
 

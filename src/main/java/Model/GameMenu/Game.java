@@ -2,9 +2,7 @@ package Model.GameMenu;
 
 import Model.Farm;
 import Model.GameMenu.Missions.Mission;
-import Model.Item;
 import controller.InputProcessor;
-import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -15,6 +13,7 @@ public class Game {
     String name;
     private Mission mission;
     private Farm farm;
+
 
     public Game(String name, Mission mission, Farm farm) {
         this.name = name;
@@ -40,6 +39,7 @@ public class Game {
     }
 
     public void printInfo() {
+        System.out.println("Game = "+name );
         System.out.println("Money = " + this.getFarm().getCurrentMoney());
         System.out.println("Time Gone = " + this.getFarm().getTurnsWent());
         System.out.println(mission.goal);
@@ -64,7 +64,6 @@ public class Game {
             farm.turn();
         }
     }
-
 
 
 }

@@ -1,18 +1,21 @@
 package controller;
 
 
-import Model.Animals.Animal;
-import Model.Animals.NonWildAnimal;
-import Model.Factories.Factory;
+import Model.Animals.*;
 import Model.*;
+import Model.Factories.Factory;
 import Model.GameMenu.Game;
+import Model.GameMenu.Missions.Mission;
 import Model.Positions.MapPosition;
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
+import Model.Positions.NonMapPosition;
+import Model.Positions.Position;
+import Model.Warehouse;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +27,43 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InputProcessor {
     public static Game game;
+    public static Gson gson;
+
+    static {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+
+        RuntimeTypeAdapterFactory<Item> typeAdapterFactory = RuntimeTypeAdapterFactory.of(Item.class, "type")
+                .registerSubtype(ProductiveAnimal.class, "pro")
+                .registerSubtype(Cat.class, "cat")
+                .registerSubtype(Dog.class, "dog")
+                .registerSubtype(WildAnimal.class, "wild");
+        RuntimeTypeAdapterFactory<Position> typeAdapterFactory1 = RuntimeTypeAdapterFactory.of(Position.class, "tye")
+                .registerSubtype(MapPosition.class, "map")
+                .registerSubtype(NonMapPosition.class, "nMap");
+        gsonBuilder.registerTypeAdapterFactory(typeAdapterFactory);
+        gsonBuilder.registerTypeAdapterFactory(typeAdapterFactory1);
+        RuntimeTypeAdapterFactory<Item.ItemInfo> typeAdapterFactory2 = RuntimeTypeAdapterFactory.of(Item.ItemInfo.class, "tt")
+                .registerSubtype(NonAnimalItem.NonAnimalItemInfo.class, "naie")
+                .registerSubtype(ProductiveAnimal.ProductiveAnimalInfo.class, "paie")
+                .registerSubtype(WildAnimal.WildAnimalInfo.class, "wai")
+                .registerSubtype(Cat.CatInfo.class, "catInfo")
+                .registerSubtype(Dog.DogInfo.class, "dogInfo");
+        gsonBuilder.registerTypeAdapterFactory(typeAdapterFactory2);
+        gsonBuilder.registerTypeAdapter( Mission.Goal.class,new GoalDeserializer());
+        gsonBuilder.registerTypeAdapter(Farm.class, new FarmDeserializer());
+        gsonBuilder.registerTypeAdapter(Cell.class,new CellDeserializer());
+        gsonBuilder.registerTypeAdapter(Map.class,new MapDeserializer());
+        gsonBuilder.registerTypeAdapter(Warehouse.class,new WareHouseDeserializer());
+        gsonBuilder.registerTypeAdapter(Mission.class,new MissionDeserializer());
+        gsonBuilder.registerTypeAdapter(Game.class,new GameDeserializer());
+        gsonBuilder.registerTypeAdapter(Factory.class,new FactoryDeserializer());
+        gsonBuilder.registerTypeAdapter(Truck.class,new TruckDeserializer());
+        gsonBuilder.registerTypeAdapter(Helicopter.class,new HelicopterDeserializer());
+        gson =gsonBuilder.create();
+
+
+
+    }
 
     public static Matcher getMatched(String regex, String string) {
         Pattern pattern = Pattern.compile(regex);
@@ -68,11 +108,11 @@ public class InputProcessor {
         String regex = "\\s*run\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, string)) != null) {
             //Farm farm = Farm.findLoadedFarm(matcher.group(1));
-            Game game=Game.findLoadedGame(matcher.group(1));
+            Game game = Game.findLoadedGame(matcher.group(1));
             if (game == null) {
                 System.out.println("The Specified Farm Not Found");
             }
-            InputProcessor.game =game;
+            InputProcessor.game = game;
             return true;
         }
         return false;
@@ -84,15 +124,17 @@ public class InputProcessor {
         if ((matcher = getMatched(regex, string)) != null) {
             String path = matcher.group(1);
             if (path.endsWith(".json")) {
-                Gson gson = new Gson();
+                //Gson gson = new Gson();
                 try {
                     FileReader fileReader = new FileReader(path);
                     game = gson.fromJson(fileReader, Game.class);
+                    //ObjectMapper objectMapper =new ObjectMapper();
+                    //objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+                    //@SuppressWarnings("unchecked")
+                    //Game game = objectMapper.readValue(fileReader, Game.class);
 
-                } catch (FileNotFoundException e) {
-                    System.out.println("File Not Found");
-                } catch (JsonSyntaxException e) {
-                    System.out.println("Syntax Error In Json File");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
 
             } else {
@@ -172,7 +214,7 @@ public class InputProcessor {
                     if (file1.getAbsolutePath().endsWith(".json")) {
                         try {
                             FileReader fileReader = new FileReader(file1.getAbsoluteFile());
-                            Gson gson = new Gson();
+                            //Gson gson = new Gson();
                             try {
                                 Game game = gson.fromJson(fileReader, Game.class);
                                 Game.loadedGames.add(game);
@@ -253,11 +295,16 @@ public class InputProcessor {
         if (endStatemet(input)) {
             return true;
         }
-        if (print(input)){
+        if (print(input)) {
             return true;
-        }if (turn(input)){
+        }
+        if (turn(input)) {
             return true;
-        }if ((getMatched("\\s+",input)!=null)){
+        }
+        if (saveGame(input)) {
+            return true;
+        }
+        if ((getMatched("^\\s*$", input) != null)) {
             return true;
         }
         System.out.println("Undefined Statement");
@@ -271,8 +318,10 @@ public class InputProcessor {
             Animal animal = Animal.getInstance(matcher.group(1));
             if (animal == null) {
                 System.out.println("Animal Type Not Found");
+            } else {
+                game.getFarm().buyAnimal(animal);
             }
-            game.getFarm().buyAnimal(animal);
+            return true;
         }
         return false;
 
@@ -339,7 +388,7 @@ public class InputProcessor {
 
     private static boolean makeWellFull(String input) {
         Matcher matcher;
-        String regex = "\\s+well\\s*";
+        String regex = "^well\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
             game.getFarm().getBucket().fill(game.getFarm().getCurrentMoney());
             return true;
@@ -513,43 +562,22 @@ public class InputProcessor {
  */
     private static boolean plant(String input) {
         Matcher matcher;
-        String regex = "plant\\s+(\\d+)\\s+(\\d+)\\s+";
+        String regex = "plant\\s+(\\d+)\\s+(\\d+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
             int x = Integer.parseInt(matcher.group(1));
             int y = Integer.parseInt(matcher.group(2));
             MapPosition mapPosition = new MapPosition(x, y);
             game.getFarm().plant(mapPosition);
-        }
-
-
-        return false;
-    }
-
-    private boolean saveGame(String string) {
-        Matcher matcher;
-        Gson gson = new Gson();
-        String regex = "\\s*save\\s+game\\s+(\\S+)\\s*";
-        if ((matcher = getMatched(regex, string)) != null) {
-            String path = matcher.group(1);
-            if (path.endsWith(".json")) {
-
-                try {
-                    FileWriter fileWriter = new FileWriter(path);
-                    gson.toJson(game, fileWriter);
-                } catch (IOException e) {
-                    System.out.println("Unable To Write To  the Specified File");
-                }
-            } else {
-                System.out.println("Path should be in the form *.json");
-            }
             return true;
         }
+
+
         return false;
     }
 
     private static boolean print(String input) {
         Matcher matcher;
-        String regex = "print\\s+(\\S+)";
+        String regex = "print\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
             Factory factory;
             String string = matcher.group(1);
@@ -606,6 +634,29 @@ public class InputProcessor {
         return false;
     }
 
+    private static boolean saveGame(String string) {
+        Matcher matcher;
+        //Gson gson = new Gson();
+        String regex = "\\s*save\\s+game\\s+(\\S+)\\s*";
+        if ((matcher = getMatched(regex, string)) != null) {
+            String path = matcher.group(1);
+            if (path.endsWith(".json")) {
+
+                try {
+                    FileWriter fileWriter = new FileWriter(path);
+                    gson.toJson(game, fileWriter);
+                    fileWriter.flush();
+                } catch (IOException e) {
+                    System.out.println("Unable To Write To  the Specified File");
+                }
+            } else {
+                System.out.println("Path should be in the form *.json");
+            }
+            return true;
+        }
+        return false;
+    }
+
     @Test
     public void processTest() {
         InputProcessor inputProcessor = new InputProcessor();
@@ -617,7 +668,7 @@ public class InputProcessor {
         System.exit(0);
     }
 
-
+/*
     @Test
     public void JsonFormatTest() throws IOException {
         HashSet<Item.ItemInfo> itemInfos = new HashSet<>(0);
@@ -651,50 +702,213 @@ public class InputProcessor {
         fileWriter.close();
         assertTrue(true);
 
-    }
+    }*/
 
+/*
 
     @Test
     public void initTest() throws IOException {
 
-            FileReader fileReader = new FileReader("a.txt");
-            Scanner scanner = new Scanner(fileReader);
-            HashSet<Factory.FactoryType> factoryTypes = new HashSet<>(0);
-            while (scanner.hasNext()) {
-                String string1 = scanner.nextLine();
-                String string2 = scanner.nextLine();
-                String string3 = scanner.nextLine();
-                String string4 = scanner.nextLine();
-                String string5 = scanner.nextLine();
-                ArrayList<Factory.FactoryType.t> Ts = new ArrayList<>(0);
-                Matcher matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string1);
-                Factory.FactoryType.t T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
-                Ts.add(T);
-                matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string2);
-                T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
-                Ts.add(T);
-                matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string3);
-                T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
-                Ts.add(T);
-                matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string4);
-                T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
-                Ts.add(T);
-                matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string5);
-                T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
-                Ts.add(T);
-                factoryTypes.add(new Factory.FactoryType(matcher.group(1), Ts));
+        FileReader fileReader = new FileReader("a.txt");
+        Scanner scanner = new Scanner(fileReader);
+        HashSet<Factory.FactoryType> factoryTypes = new HashSet<>(0);
+        while (scanner.hasNext()) {
+            String string1 = scanner.nextLine();
+            String string2 = scanner.nextLine();
+            String string3 = scanner.nextLine();
+            String string4 = scanner.nextLine();
+            String string5 = scanner.nextLine();
+            ArrayList<Factory.FactoryType.t> Ts = new ArrayList<>(0);
+            Matcher matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string1);
+            Factory.FactoryType.t T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+            Ts.add(T);
+            matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string2);
+            T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+            Ts.add(T);
+            matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string3);
+            T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+            Ts.add(T);
+            matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string4);
+            T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+            Ts.add(T);
+            matcher = getMatched("(.+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)\t(\\S+)", string5);
+            T = new Factory.FactoryType.t(Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), Double.parseDouble(matcher.group(4)), Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)));
+            Ts.add(T);
+            factoryTypes.add(new Factory.FactoryType(matcher.group(1), Ts));
 
 
-            }
+        }
 
 
-            Gson gson = new Gson();
-            FileWriter fileWriter = new FileWriter(Factory.FactoriesConfigFilePath);
-            gson.toJson(factoryTypes,fileWriter);
-            fileWriter.flush();
-            fileWriter.close();
+        Gson gson = new Gson();
+        FileWriter fileWriter = new FileWriter(Factory.FactoriesConfigFilePath);
+        gson.toJson(factoryTypes, fileWriter);
+        fileWriter.flush();
+        fileWriter.close();
 
 
     }
+*/
+
+
+    public static class GameDeserializer implements JsonDeserializer<Game> {
+
+        @Override
+        public Game deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            final String name = jsonObject.get("name").getAsString();
+            final Mission mission = jsonDeserializationContext.deserialize(jsonObject.get("mission"), Mission.class);
+            final Farm farm = jsonDeserializationContext.deserialize(jsonObject.get("farm"), Farm.class);
+            return new Game(name, mission, farm);
+        }
+    }
+
+    public static class FarmDeserializer implements JsonDeserializer<Farm> {
+
+        @Override
+        public Farm deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            Map map = jsonDeserializationContext.deserialize(jsonObject.get("map"), Map.class);
+            Truck truck = jsonDeserializationContext.deserialize(jsonObject.get("truck"), Truck.class);
+            Model.Warehouse warehouse = jsonDeserializationContext.deserialize(jsonObject.get("warehouse"), Warehouse.class);
+            Helicopter helicopter = jsonDeserializationContext.deserialize(jsonObject.get("helicopter"), Helicopter.class);
+            Integer CurrentMoney = jsonDeserializationContext.deserialize(jsonObject.get("CurrentMoney"), long.class);
+            long turnsWent = jsonDeserializationContext.deserialize(jsonObject.get("turnsWent"), Long.class);
+            Bucket bucket = jsonDeserializationContext.deserialize(jsonObject.get("bucket"), Bucket.class);
+            Integer CagesLevel = jsonDeserializationContext.deserialize(jsonObject.get("CagesLevel"), Integer.class);
+            final Factory[] factories = new Factory[6];
+            JsonArray jsonArray = jsonObject.get("factories").getAsJsonArray();
+            for (int i = 0; i < 6; i++) {
+                factories[i] = jsonDeserializationContext.deserialize(jsonArray.get(i), Factory.class);
+            }
+            return new Farm(turnsWent, map, CurrentMoney, warehouse, bucket, CagesLevel, factories, truck, helicopter);
+
+        }
+    }
+
+    public static class FactoryDeserializer implements JsonDeserializer<Factory> {
+
+        @Override
+        public Factory deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            int Level = jsonDeserializationContext.deserialize(jsonObject.get("Level"), int.class);
+            Factory.Process process = jsonDeserializationContext.deserialize(jsonObject.get("process"), Process.class);
+            Factory.FactoryType factoryType = jsonDeserializationContext.deserialize(jsonObject.get("factoryType"), Factory.FactoryType.class);
+            MapPosition outputPosition = jsonDeserializationContext.deserialize(jsonObject.get("outputPosition"), MapPosition.class);
+            return new Factory(factoryType, outputPosition, process, Level);
+        }
+    }
+
+    public static class GoalDeserializer implements JsonDeserializer<Mission.Goal> {
+
+        @Override
+        public Mission.Goal deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            final ArrayList<Mission.Goal.EE> ees = new ArrayList<Mission.Goal.EE>(0);
+            JsonArray jsonArray = jsonObject.get("ees").getAsJsonArray();
+            for (JsonElement jsonElement1 : jsonArray) {
+                ees.add(jsonDeserializationContext.deserialize(jsonElement1, Mission.Goal.EE.class));
+            }
+            return new Mission.Goal(ees);
+
+        }
+    }/*
+    public class ItemDeserializer implements JsonDeserializer<Item>{
+
+        @Override
+        public Item deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject =jsonElement.getAsJsonObject();
+            if (jsonObject.get("type").getAsString().equals(null));
+            return new Cat()
+        }
+    }*/
+
+    public static class TruckDeserializer implements JsonDeserializer<Truck> {
+
+        @Override
+        public Truck deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            ArrayList<Item> items = jsonDeserializationContext.deserialize(jsonObject.get("items"), new TypeToken<ArrayList<Item>>() {
+            }.getType());
+            int level = jsonDeserializationContext.deserialize(jsonObject.get("Level"), int.class);
+            int Capacity = jsonDeserializationContext.deserialize(jsonObject.get("Capacity"), int.class);
+            int remainingTurns = jsonDeserializationContext.deserialize(jsonObject.get("RemainingTurns"), int.class);
+            int price = jsonDeserializationContext.deserialize(jsonObject.get("Price"), int.class);
+            Integer FarmMoney = jsonDeserializationContext.deserialize(jsonObject.get("FarmMoney"), Integer.class);
+            return new Truck(level, Capacity, remainingTurns, null, price, items, null);
+            //todo remember to initialize farm and farmMoney
+        }
+    }
+
+    public static class HelicopterDeserializer implements JsonDeserializer<Helicopter> {
+
+        @Override
+        public Helicopter deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            ArrayList<Item> items = jsonDeserializationContext.deserialize(jsonObject.get("items"), new TypeToken<ArrayList<Item>>() {
+            }.getType());
+            int level = jsonDeserializationContext.deserialize(jsonObject.get("Level"), int.class);
+            int Capacity = jsonDeserializationContext.deserialize(jsonObject.get("Capacity"), int.class);
+            int remainingTurns = jsonDeserializationContext.deserialize(jsonObject.get("RemainingTurns"), int.class);
+            int price = jsonDeserializationContext.deserialize(jsonObject.get("Price"), int.class);
+            Integer FarmMoney = jsonDeserializationContext.deserialize(jsonObject.get("FarmMoney"), Integer.class);
+            return new Helicopter(level, Capacity, remainingTurns, null, price, items, null);
+            //todo remember to initialize farm and farmMoney
+        }
+    }
+
+    public static class WareHouseDeserializer implements JsonDeserializer<Warehouse> {
+
+        @Override
+        public Warehouse deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            int capacity = jsonDeserializationContext.deserialize(jsonObject.get("capacity"), int.class);
+            int Level = jsonDeserializationContext.deserialize(jsonObject.get("Level"), int.class);
+            ArrayList<Item> items = jsonDeserializationContext.deserialize(jsonObject.get("items"), new TypeToken<ArrayList<Item>>() {}.getType());
+            return new Warehouse(Level, capacity, items);
+        }
+    }
+
+    public static class MissionDeserializer implements JsonDeserializer<Mission> {
+
+        @Override
+        public Mission deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            final Mission.Goal goal = jsonDeserializationContext.deserialize(jsonObject.get("goal"), Mission.Goal.class);
+            return new Mission(goal);
+        }
+    }
+
+    public static class MapDeserializer implements JsonDeserializer<Map> {
+
+        @Override
+        public Map deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            Integer lifeTime = jsonDeserializationContext.deserialize(jsonObject.get("lifeTime"), Integer.class);
+            Cell[][] cells = jsonDeserializationContext.deserialize(jsonObject.get("cells"), Cell[][].class);
+            return new Map(lifeTime, cells);
+
+
+        }
+    }
+    public static class CellDeserializer implements JsonDeserializer<Cell>{
+
+        @Override
+        public Cell deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject =jsonElement.getAsJsonObject();
+            Grass grass = jsonDeserializationContext.deserialize(jsonObject.get("grass"),Grass.class);
+            MapPosition mapPosition = jsonDeserializationContext.deserialize(jsonObject.get("mapPosition"),MapPosition.class);
+            ArrayList<Item> items = jsonDeserializationContext.deserialize(jsonObject.get("items"), new TypeToken<ArrayList<Item>>() {}.getType());
+            return new Cell(grass,mapPosition,items);
+        }
+    }
+  /*  public static class FactoryTypeDeserializer implements JsonDeserializer<Factory.FactoryType>{
+
+        @Override
+        public Factory.FactoryType deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+
+        }
+    }
+*/
 
 }

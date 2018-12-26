@@ -7,8 +7,8 @@ public class Helicopter extends Vehicle {
 
     public static ArrayList<Item.ItemInfo> buyableItems = new ArrayList<>(0);
 
-    public Helicopter(Integer currentMoney) {
-
+    public Helicopter(int level, int capacity, int remainingTurns, Farm farm, int price, ArrayList<Item> items, Integer farmMoney) {
+        super(level, capacity, remainingTurns, farm, price, items, farmMoney);
     }
 
     public static Item.ItemInfo findItem(String itemName) {

@@ -12,7 +12,7 @@ import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Scanner;
 
-public class NonWildAnimal extends Animal{
+public abstract class NonWildAnimal extends Model.Animals.Animal {
 
 
     public NonWildAnimal(NonWildAnimalInfo animalInfo,Map map) {
@@ -21,7 +21,7 @@ public class NonWildAnimal extends Animal{
 
     public static NonWildAnimal getInstance(String name) {
 
-        NonWildAnimal res = ProductiveAnimal.getInstance(name);
+        NonWildAnimal res = Model.Animals.ProductiveAnimal.getInstance(name);
         if (res != null) {
             return res;
         }
