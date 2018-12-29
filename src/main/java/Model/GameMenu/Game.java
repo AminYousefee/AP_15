@@ -48,6 +48,7 @@ public class Game {
     }
 
     public void turn() {
+        System.out.println("Turn = " +this.getFarm().getTurnsWent());
         if (mission.isSatisfied()) {
             System.out.println("Mission Satisfied");
             System.out.println("Do you Want To Continue?");

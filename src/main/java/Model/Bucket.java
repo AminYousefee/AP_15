@@ -30,12 +30,12 @@ public class Bucket implements Upgradable {
 
 
     // Finished
-    public boolean fill(Integer CurrentMoney) {
-        if (CurrentMoney < getFillingCost()) {
+    public boolean fill(Farm farm) {
+        if (farm.getCurrentMoney() < getFillingCost()) {
             return false;
         }
         CurrentWater = getMaxCapacity();
-        CurrentMoney = CurrentMoney - getFillingCost();
+        farm.pay(getFillingCost());
         return true;
 
     }

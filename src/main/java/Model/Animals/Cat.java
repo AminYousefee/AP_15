@@ -8,6 +8,8 @@ import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
 import controller.Print;
 
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Random;
 
 public class Cat extends NonWildAnimal {
@@ -22,7 +24,7 @@ public class Cat extends NonWildAnimal {
     }
 
     @Override
-    public boolean move() {
+    public boolean move(ListIterator<Item> itemIterator) {
         if (getPosition() instanceof NonMapPosition) {
             return false;
         }
@@ -72,7 +74,7 @@ public class Cat extends NonWildAnimal {
                 y= 0;
             }
             MapPosition mapPosition = new MapPosition(x,y);
-            return moveToPosition(mapPosition);
+            return moveToPosition(mapPosition,itemIterator);
         } else {
 
             MapPosition goalItemPosition = (MapPosition) goalItem.getPosition();
@@ -83,14 +85,13 @@ public class Cat extends NonWildAnimal {
                 double deltaX = goalItemPosition.getX() - ((MapPosition) this.getPosition()).getX();
                 double deltaY = goalItemPosition.getY() - ((MapPosition) this.getPosition()).getY();
                 if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
-                    moveToPosition(goalItemPosition);
-
+                    moveToPosition(goalItemPosition,itemIterator);
                 } else {
                     double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
                     int x = (int) (amplifier * deltaX + ((MapPosition) this.getPosition()).getX());
                     int y = (int) (amplifier * deltaY + ((MapPosition) this.getPosition()).getY());
                     MapPosition position = new MapPosition(x, y);
-                    moveToPosition(position);
+                    moveToPosition(position,itemIterator);
                 }
             }
             return true;
@@ -128,4 +129,8 @@ public class Cat extends NonWildAnimal {
         }
     }
 
+    @Override
+    public boolean turn(ListIterator<Item> itemIterator) {
+        return this.move(itemIterator);
+    }
 }

@@ -35,11 +35,6 @@ public abstract class NonWildAnimal extends Model.Animals.Animal {
 
 
     @Override
-    protected void addFullness() {
-
-    }
-
-    @Override
     public boolean upgrade(Integer CurrentMoney) {
         if (CurrentMoney < getUpgradeCost()) {
             return false;

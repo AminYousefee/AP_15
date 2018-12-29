@@ -1,10 +1,14 @@
 package Model.Animals;
 
 import Model.Cell;
+import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
+
+import java.util.Iterator;
+import java.util.ListIterator;
 
 public class Dog extends NonWildAnimal {
 
@@ -15,7 +19,7 @@ public class Dog extends NonWildAnimal {
     }
 
     @Override
-    public boolean move() {
+    public boolean move(ListIterator<Item> itemIterator) {
         if (getPosition() instanceof NonMapPosition){
             return false;
         }
@@ -24,36 +28,36 @@ public class Dog extends NonWildAnimal {
             MapPosition goalItemPosition = cell.getMapPosition();
             MapPosition CurrentPosition = (MapPosition) this.getPosition();
             if (goalItemPosition.equals(CurrentPosition)){
+                return false;
                 //nothing here
             }else {
                 double deltaX = goalItemPosition.getX()-((MapPosition)this.getPosition()).getX();
                 double deltaY = goalItemPosition.getY()-((MapPosition)this.getPosition()).getY();
                 if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())){
-                    moveToPosition(goalItemPosition);
+                    moveToPosition(goalItemPosition,itemIterator);
 
                 }else {
                     double amplifier= Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
                     int x = (int) (amplifier*deltaX + ((MapPosition)this.getPosition()).getX());
                     int y = (int) (amplifier*deltaY + ((MapPosition)this.getPosition()).getX());
                     MapPosition position=new MapPosition(x,y);
-                    moveToPosition(position);
+                    moveToPosition(position,itemIterator);
                 }
+                return true;
             }
+        }else {
+            return super.move(itemIterator);
         }
-        return true;
+
 
 
     }
 
-    @Override
-    public boolean eat() {
-        return false;
-    }
 
 
     @Override
-    public boolean turn() {
-        return this.move();
+    public boolean turn(ListIterator<Item> itemIterator) {
+        return this.move(itemIterator);
 
     }
 

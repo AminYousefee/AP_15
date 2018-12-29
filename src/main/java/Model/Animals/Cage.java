@@ -1,10 +1,21 @@
 package Model.Animals;
 
+import Model.Item;
 import Model.Positions.MapPosition;
 import Model.Upgradable;
 import controller.InputProcessor;
 
+import java.util.ListIterator;
+
 public class Cage implements Upgradable {
+    public WildAnimal getWildAnimal() {
+        return wildAnimal;
+    }
+
+    public void setWildAnimal(WildAnimal wildAnimal) {
+        this.wildAnimal = wildAnimal;
+    }
+
     transient WildAnimal wildAnimal;
     int CompletnessPercetage;
     int remainingTimeTo;
@@ -49,12 +60,12 @@ public class Cage implements Upgradable {
 
     }
 
-    public void turn() {
-        if (this.CompletnessPercetage ==getProgressMaxValue()){
+    public void turn(ListIterator<Item> itemListIterator) {
+        if (wildAnimal.isCaged()){
             turnsCompleted++;
         }
         if (turnsCompleted == getEscapeTurn() && wildAnimal.getPosition() instanceof MapPosition) {
-            wildAnimal.escape();
+            wildAnimal.escape(itemListIterator);
         }
         if (getCompletnessPercetage() != getProgressMaxValue()) {
 

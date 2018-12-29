@@ -11,6 +11,10 @@ public class Helicopter extends Vehicle {
         super(level, capacity, remainingTurns, farm, price, items, farmMoney);
     }
 
+    public Helicopter(int level, int remainingTurns, Farm farm, int price, ArrayList<Item> items, Integer farmMoney) {
+        super(level, remainingTurns, farm, price, items, farmMoney);
+    }
+
     public static Item.ItemInfo findItem(String itemName) {
         for (Item.ItemInfo itemInfo : buyableItems) {
             if (itemName.equalsIgnoreCase(itemInfo.getItemName())) {

@@ -37,7 +37,7 @@ public class Cell {
 
     public static void PrintCell(ArrayList<Item> items, MapPosition mapPosition, Grass grass) {
         System.out.println("Cell " + mapPosition.getX() + "," + mapPosition.getY());
-        System.out.println("Grass"+ grass.getNum());
+        System.out.println("Grass = "+ grass.getNum());
         for (Item item : items) {
             System.out.print("\t");
             item.Print();

@@ -7,10 +7,9 @@ import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.ListIterator;
 
 public class WildAnimal extends Animal {
     public static HashSet<WildAnimalInfo> wildAnimalInfos = new HashSet<>(0);
@@ -24,8 +23,12 @@ public class WildAnimal extends Animal {
     private Cage cage = new Cage(this);
 
     //Finished
+
     public WildAnimal(WildAnimalInfo wildAnimalInfo, Map map) {
+
         super(wildAnimalInfo, map);
+        cage.wildAnimal= this;
+
     }
 
     //Finished
@@ -48,36 +51,42 @@ public class WildAnimal extends Animal {
         this.cage = cage;
     }
 
-    public boolean kill() {
+    public boolean kill(ListIterator<Item> itemIterator) {
         Cell cell = map.getCellByPosition((MapPosition) this.getPosition());
         List<Item> items = cell.getItems();
-        ArrayList<Item> toBeKilledItems = new ArrayList<>(0);
-        Dog dog = null;
+        boolean isThereADog = false;
         for (Item item : items) {
             if (item instanceof Dog) {
-                dog = (Dog) item;
+                isThereADog = true;
+            }
 
-            } else {
-                toBeKilledItems.add(item);
+        }
+        Item item;
+        while (itemIterator.hasNext()) {
+            item = itemIterator.next();
+            if (!(item instanceof WildAnimal)) {
+                itemIterator.remove();
             }
         }
-        if (dog != null) {
-            cell.removeItem(dog);
-            cell.removeItem(this);
-            return true;
+        while (itemIterator.hasPrevious()) {
+            item = itemIterator.previous();
+            if (!(item instanceof WildAnimal)) {
+                itemIterator.remove();
+            }
+        }
 
-
-        } else {
-            if (toBeKilledItems.size() > 0) {
-                for (Item item : toBeKilledItems) {
-                    cell.removeItem(item);
-                    this.addFullness();
+        while (itemIterator.hasNext()) {
+            item = itemIterator.next();
+            if (item == this) {
+                if (isThereADog) {
+                    itemIterator.remove();
+                    return true;
                 }
-                return true;
-            } else {
-                return false;
+                break;
+
             }
         }
+        return false;
 
 
     }
@@ -98,102 +107,37 @@ public class WildAnimal extends Animal {
         // setCage(new Cage(((MapPosition) getPosition()).getX(), ((MapPosition) getPosition()).getY()));
     }
 
-    public void escape() {
+    public void escape(ListIterator<Item> itemListIterator) {
         setCage(null);
-        map.getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
+        itemListIterator.remove();
 
     }
 
     @Override
-    public boolean move() {
+    public boolean move(ListIterator<Item> itemIterator) {
         if (getPosition() instanceof NonMapPosition) {
             return false;
         }
-        Cell cell;
-        /*if (fullness < 3.0 / 10 * ((ProductiveAnimal.ProductiveAnimalInfo) this.itemInfo).HungryValue && (cell = map.findNearestCellWithFoodForWildAnimal(map.getCellByPosition((MapPosition) this.getPosition()))) != null) {
-            if (cell != null) {
-                MapPosition goalItemPosition = cell.getMapPosition();
-                MapPosition CurrentPosition = (MapPosition) this.getPosition();
-                if (goalItemPosition.equals(CurrentPosition)) {
-                    //nothing here
-                } else {
-                    double deltaX = goalItemPosition.getX() - ((MapPosition) this.getPosition()).getX();
-                    double deltaY = goalItemPosition.getY() - ((MapPosition) this.getPosition()).getY();
-                    if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
-                        moveToPosition(goalItemPosition);
-
-                    } else {
-                        double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
-                        int x = (int) (amplifier * deltaX + ((MapPosition) this.getPosition()).getX());
-                        int y = (int) (amplifier * deltaY + ((MapPosition) this.getPosition()).getY());
-                        MapPosition position = new MapPosition(x, y);
-                        moveToPosition(position);
-                    }
-                }
-
-
-            }
-
-
-            return true;
-
-        } else {
-*/
-
-
-        Random random = new Random();
-        int x = Math.abs(random.nextInt());
-        int y = Math.abs(random.nextInt());
-        x = x % 3 - 1;
-        y = y % 3 - 1;
-        x += ((MapPosition) getPosition()).getX();
-        y += ((MapPosition) getPosition()).getY();
-        if (x >= Map.Num_Of_CELLS_IN_ROW) {
-            x = Map.Num_Of_CELLS_IN_ROW - 1;
-        } else if (x < 0) {
-            x = 0;
-        }
-        if (y >= Map.Num_Of_CELLS_IN_COLOUM) {
-            y = Map.Num_Of_CELLS_IN_COLOUM - 1;
-        } else if (y < 0) {
-            y = 0;
-        }
-        MapPosition mapPosition = new MapPosition(x, y);
-        return moveToPosition(mapPosition);
-
-        //}
+        return super.move(itemIterator);
     }
 
     @Override
-    public boolean turn() {
-        System.out.println("why");
-        cage.turn();
+    public boolean turn(ListIterator<Item> itemIterator) {
 
-        if (this.getCage().getCompletnessPercetage() == this.getCage().getProgressMaxValue()) {
+        cage.turn(itemIterator);
 
-        } else {
-            if (this.eat()) {
-
-            } else {
-                this.move();
+        if (!this.isCaged()) {
+            if (!this.kill(itemIterator)) {
+                this.move(itemIterator);
             }
         }
-
-
         return false;
     }
 
-    @Override
-    public boolean eat() {
-        //this shouldn't do anything
-        return this.kill();
-
+    public boolean isCaged() {
+        return this.getCage().getCompletnessPercetage() == this.getCage().getProgressMaxValue();
     }
 
-    @Override
-    protected void addFullness() {
-        fullness += 20;
-    }
 
     public static class WildAnimalInfo extends AnimalInfo {
 

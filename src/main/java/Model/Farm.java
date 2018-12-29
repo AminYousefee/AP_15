@@ -25,9 +25,9 @@ public class Farm {
     public Farm() {
         CurrentMoney =10000;
         map = new Map();
-        warehouse = new Warehouse();
-        truck = new Truck(0,);
-        helicopter = new Helicopter(CurrentMoney);
+        warehouse = new Warehouse(0,new ArrayList<>(0));
+        truck = new Truck(0,0,this,0,new ArrayList<>(0),this.CurrentMoney);
+        helicopter = new Helicopter(0,0,this,0,new ArrayList<>(0),this.CurrentMoney);
         bucket = new Bucket(CurrentMoney);
 
 
@@ -38,11 +38,17 @@ public class Farm {
         this.map = map;
         CurrentMoney = currentMoney;
         this.warehouse = warehouse;
+
         this.bucket = bucket;
+        bucket.farmMoney = CurrentMoney;
         CagesLevel = cagesLevel;
         this.factories = factories;
         this.truck = truck;
+        truck.farm = this;
+        truck.FarmMoney  =this.CurrentMoney;
         this.helicopter = helicopter;
+        helicopter.farm = this;
+        helicopter.FarmMoney = this.getCurrentMoney();
     }
 
     public Integer getCagesLevel() {
@@ -254,5 +260,8 @@ public class Farm {
         }
         return 0;
 
+    }
+    public void pay(int pay){
+        CurrentMoney =CurrentMoney -pay;
     }
 }

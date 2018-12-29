@@ -6,12 +6,20 @@ public abstract class Vehicle implements Upgradable {
     int Level;
     int Capacity;
     int RemainingTurns;
-    Farm farm;
+    transient Farm farm;
     int Price;
     ArrayList<Item> items = new ArrayList<>(0);
     transient Integer FarmMoney;
     String name;
 
+    public Vehicle(int level, int remainingTurns, Farm farm, int price, ArrayList<Item> items, Integer farmMoney) {
+        Level = level;
+        RemainingTurns = remainingTurns;
+        this.farm = farm;
+        Price = price;
+        this.items = items;
+        FarmMoney = farmMoney;
+    }
 
     public Vehicle(int level, int capacity, int remainingTurns, Farm farm, int price, ArrayList<Item> items, Integer farmMoney) {
         Level = level;

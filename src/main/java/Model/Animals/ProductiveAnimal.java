@@ -8,6 +8,8 @@ import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Random;
 
 public class ProductiveAnimal extends NonWildAnimal {
@@ -65,6 +67,98 @@ public class ProductiveAnimal extends NonWildAnimal {
         return false;
     }
 
+    public void Print() {
+        System.out.println(itemInfo.getItemName() + ":");
+        System.out.println("Fullness  = " + fullness);
+    }
+
+    @Override
+    public boolean move(ListIterator<Item> itemIterator) {
+        if (getPosition() instanceof NonMapPosition) {
+            return false;
+            //it doesn't move in this way
+        }
+        Cell cell;
+        if (fullness < 3.0 / 10 * ((ProductiveAnimal.ProductiveAnimalInfo) this.itemInfo).HungryValue && ((cell = map.findNearestCellWithGrass(map.getCellByPosition((MapPosition) this.getPosition()))) != null)) {
+
+
+            if (cell != null) {
+                MapPosition goalItemPosition = cell.getMapPosition();
+                MapPosition CurrentPosition = (MapPosition) this.getPosition();
+                if (goalItemPosition.equals(CurrentPosition)) {
+                    //nothing here
+                    return false;
+                } else {
+                    double deltaX = goalItemPosition.getX() - ((MapPosition) this.getPosition()).getX();
+                    double deltaY = goalItemPosition.getY() - ((MapPosition) this.getPosition()).getY();
+                    if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
+                        return moveToPosition(goalItemPosition,itemIterator);
+
+                    } else {
+                        double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
+                        int x = (int) (amplifier * deltaX + ((MapPosition) getPosition()).getX());
+                        int y = (int) (amplifier * deltaY + ((MapPosition) getPosition()).getY());
+                        MapPosition position = new MapPosition(x, y);
+                        return moveToPosition(position,itemIterator);
+                    }
+                }
+
+            }
+        } else {
+
+            return super.move(itemIterator);
+
+        }
+        return false;
+        //maybe there is some bug behind I thought it should have worked well
+
+    }
+
+    protected void addFullness() {
+        fullness += ((ProductiveAnimalInfo) this.itemInfo).OneTimeBite;
+    }
+
+
+    public boolean eat(Iterator<Item> itemIterator) {
+        if (fullness <= 0) {
+            itemIterator.remove();
+            System.out.println(itemInfo.getItemName()+" in cell " + ((MapPosition) this.getPosition()).getX() + " " + ((MapPosition) this.getPosition()).getY() + " died.");
+
+            return true;//well this bad smell I should do it
+        }
+        if (getPosition() instanceof NonMapPosition) {
+            return false;
+            //do nothing in this case
+        }
+
+        Cell cell = map.getCellByPosition((MapPosition) getPosition());
+        if (cell.getGrass().getNum() > 0 && fullness < 7.0 / 10 * ((ProductiveAnimal.ProductiveAnimalInfo) this.itemInfo).HungryValue) {
+            cell.getGrass().getEaten();
+            this.addFullness();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean turn(ListIterator<Item> itemIterator) {
+        if (map.getCellByPosition((MapPosition) this.Position).getItems().contains(this)) {
+
+
+            this.produce();
+            this.fullness -= ((ProductiveAnimalInfo) this.itemInfo).HungrySpeed;
+
+            if (!eat(itemIterator)) {
+                move(itemIterator);
+            }
+            return false;
+        }else {
+            //it is dead so shouldn't do anything
+            return false;
+        }
+
+    }
 
     public static class ProductiveAnimalInfo extends NonWildAnimalInfo {
         int ProductionPeriod;
@@ -93,73 +187,5 @@ public class ProductiveAnimal extends NonWildAnimal {
         public void setProductionPeriod(int productionPeriod) {
             ProductionPeriod = productionPeriod;
         }
-    }
-
-
-
-    public void Print() {
-        System.out.println(itemInfo.getItemName() +":");
-        System.out.println("Fullness  = "+fullness);
-    }
-
-    @Override
-    public boolean move() {
-        if (getPosition() instanceof NonMapPosition){
-            return false;
-            //it doesn't move in this way
-        }
-        Cell cell;
-        if (fullness<3.0/10*((ProductiveAnimal.ProductiveAnimalInfo)this.itemInfo).HungryValue&&((cell = map.findNearestCellWithGrass(map.getCellByPosition((MapPosition) this.getPosition())))!=null)){
-
-
-
-            if (cell!=null) {
-                MapPosition goalItemPosition = cell.getMapPosition();
-                MapPosition CurrentPosition = (MapPosition) this.getPosition();
-                if (goalItemPosition.equals(CurrentPosition)) {
-                    //nothing here
-                    return false;
-                } else {
-                    double deltaX = goalItemPosition.getX() - ((MapPosition)this.getPosition()).getX();
-                    double deltaY = goalItemPosition.getY() - ((MapPosition)this.getPosition()).getY();
-                    if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
-                        return moveToPosition(goalItemPosition);
-
-                    } else {
-                        double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
-                        int x = (int) (amplifier * deltaX + ((MapPosition)getPosition()).getX());
-                        int y = (int) (amplifier * deltaY + ((MapPosition)getPosition()).getY());
-                        MapPosition position = new MapPosition(x, y);
-                        return moveToPosition(position);
-                    }
-                }
-
-            }
-        }else {
-
-            Random random = new Random();
-            int x = Math.abs(random.nextInt());
-            int y = Math.abs(random.nextInt());
-            x = x % 3 - 1;
-            y = y % 3 - 1;
-            x += ((MapPosition)getPosition()).getX();
-            y += ((MapPosition)getPosition()).getY();
-            if (x >= Map.Num_Of_CELLS_IN_ROW) {
-                x = Map.Num_Of_CELLS_IN_ROW - 1;
-            }else if (x<0){
-                x = 0;
-            }
-            if (y >= Map.Num_Of_CELLS_IN_COLOUM) {
-                y =Map.Num_Of_CELLS_IN_COLOUM-1;
-            }else if (y< 0){
-                y= 0;
-            }
-            MapPosition mapPosition = new MapPosition(x,y);
-            return moveToPosition(mapPosition);
-
-        }
-        return false;
-        //maybe there is some bug behind I thought it should have worked well
-
     }
 }

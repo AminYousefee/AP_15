@@ -6,6 +6,8 @@ import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import controller.InputProcessor;
 
+import java.util.ListIterator;
+
 public abstract class Item {
     protected transient Map map;
     protected ItemInfo itemInfo;
@@ -67,17 +69,12 @@ public abstract class Item {
         this.lifeTime = lifeTime;
     }
 
-    public void anihilate() {
-        map.getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
-        isRemove = true;
-        System.out.println("Turkey in cell " + ((MapPosition) this.getPosition()).getX() + " " + ((MapPosition) this.getPosition()).getY() + " died.");
-    }
 
     private void create() {
 
     }
 
-    public boolean turn() {
+    public boolean turn(ListIterator<Item> itemIterator) {
         lifeTime++;
         return false;
     }

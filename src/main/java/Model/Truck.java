@@ -12,6 +12,10 @@ public class Truck extends Vehicle {
         super(level, capacity, remainingTurns, farm, price, items, farmMoney);
     }
 
+    public Truck(int level, int remainingTurns, Farm farm, int price, ArrayList<Item> items, Integer farmMoney) {
+        super(level, remainingTurns, farm, price, items, farmMoney);
+    }
+
     private int getMaxCapacity() {
         //todo
         return getLevel() * 50;

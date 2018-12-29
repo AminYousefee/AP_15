@@ -1,15 +1,19 @@
 package Model.Factories;
 
+import Model.Farm;
 import Model.Item;
 import Model.Positions.MapPosition;
 import Model.Upgradable;
 import Model.Warehouse;
 import View.Factories.FactoryView;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -36,17 +40,17 @@ public class Factory implements Upgradable {
 
     }
 
+    FactoryType factoryType;
+    MapPosition outputPosition;
+    Process process;
+    int Level;
+
     public Factory(FactoryType factoryType, MapPosition outputPosition, Process process, int level) {
         this.factoryType = factoryType;
         this.outputPosition = outputPosition;
         this.process = process;
         Level = level;
     }
-
-    FactoryType factoryType;
-    MapPosition outputPosition;
-    Process process;
-    int Level;
 
     public static FactoryType findFactoryType(String name) {
         for (FactoryType factoryType : factoryTypeArrayList) {
@@ -112,6 +116,7 @@ public class Factory implements Upgradable {
         List<Item> items = warehouse.getItems();
         int min = 1000;
         if (process != null) {
+            System.out.println("Factory Already doing some process");
             return false;
         }
 
@@ -125,7 +130,10 @@ public class Factory implements Upgradable {
 
             }
 
-            min = Math.min(min, num / isp.weight);
+            min = Math.min( min, num / isp.weight);
+        }
+        if (min >this.factoryType.Ts.get(Level).ProductionNum){
+            min = this.factoryType.Ts.get(Level).ProductionNum;
         }
         process = new Process(getNeededTurns(), min);
         return true;
@@ -133,8 +141,8 @@ public class Factory implements Upgradable {
 
     }
 
-    private int getNeededTurns() {
-        return 0;
+    private double getNeededTurns() {
+        return this.factoryType.Ts.get(Level).MaxProductionTime;
     }
 
     private boolean isFinished() {
@@ -142,8 +150,20 @@ public class Factory implements Upgradable {
     }
 
     @Override
-    public boolean upgrade(Integer CurrentMoney) {
-        return false;
+    public boolean upgrade(Farm farm) {
+        if (Level==this.factoryType.Ts.size()-1){
+            System.out.println("Fully Upgraded");
+            return false;
+        }else {
+            if (farm.getCurrentMoney()<this.factoryType.Ts.get(Level).InGameCost){
+                System.out.println("You don't have enough money");
+            }else {
+                Level+=1;
+                farm.setCurrentMoney(farm.getCurrentMoney()-this.factoryType.Ts.get(Level).InGameCost);
+
+            }
+        }
+
     }
 
     @Override
@@ -152,13 +172,14 @@ public class Factory implements Upgradable {
     }
 
     public static class Process {
-        int remainedTurns;
+        double remainedTurns;
         int numberOfInputs;
         int numberOfOutputs;
 
 
-        public Process(int remainedTurns, int numberOfOutputs) {
+        public Process(double remainedTurns, int numberOfOutputs) {
             this.remainedTurns = remainedTurns;
+            if (numberOfOutputs<)
             this.numberOfOutputs = numberOfOutputs;
         }
 
@@ -188,6 +209,23 @@ public class Factory implements Upgradable {
 
         public void setNumberOfOutputs(int numberOfOutputs) {
             this.numberOfOutputs = numberOfOutputs;
+        }
+    }
+
+
+    public static class FactoryTypeDeserializer implements JsonDeserializer<FactoryType> {
+
+
+        @Override
+        public FactoryType deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            String name = jsonDeserializationContext.deserialize(jsonObject.get("name"), String.class);
+            int numberOfInputItems = jsonDeserializationContext.deserialize(jsonObject.get("numberOfInputItems"), int.class);
+            int numberOfOutputItems = jsonDeserializationContext.deserialize(jsonObject.get("numberOfOutputItems"), int.class);
+            int ProcessTurns = jsonDeserializationContext.deserialize(jsonObject.get("ProcessTurns"), int.class);
+            ArrayList<FactoryType.t> InputItems = jsonDeserializationContext.deserialize(jsonObject.get("InputItems"), new TypeToken<ArrayList<FactoryType.t>>() {
+            }.getType());
+            return new FactoryType(name, InputItems);
         }
     }
 

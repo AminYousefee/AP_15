@@ -30,6 +30,11 @@ public class Warehouse implements Upgradable {
         this.items = items;
     }
 
+    public Warehouse(int level, ArrayList<Item> items) {
+        Level = level;
+        this.items = items;
+    }
+
     public void setItems(ArrayList<Item> items) {
         this.items = items;
     }
@@ -76,20 +81,14 @@ public class Warehouse implements Upgradable {
     public List<Item> findSpecificItem(Item.ItemInfo itemType, int MaxNumberToFind) {
         ArrayList<Item> methodOutput = new ArrayList<>(0);
         int numberFound = 0;
-        Iterator iterator = items.iterator();
-        while (iterator.hasNext()) {
-            Item item = (Item) iterator;
-            if (itemType.equals(itemType)) {
-                methodOutput.add((Item) iterator);
-                iterator.remove();
+        for (Item item:items) {
+            if (item.getItemInfo().equals(itemType)) {
+                methodOutput.add(item);
             }
             numberFound++;
             if (numberFound == MaxNumberToFind) {
                 break;
             }
-
-
-            iterator.next();
         }
         return methodOutput;
 

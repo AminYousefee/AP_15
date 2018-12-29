@@ -11,14 +11,24 @@ import java.util.List;
 import java.util.Random;
 
 public class Map {
-    public static final int Num_Of_CELLS_IN_ROW = 5;
-    public static final int Num_Of_CELLS_IN_COLOUM = 5;
+    public static final int Num_Of_CELLS_IN_ROW = 3;
+    public static final int Num_Of_CELLS_IN_COLOUM = 3;
     Integer lifeTime = 0;
     Model.Cell[][] cells = new Model.Cell[Num_Of_CELLS_IN_COLOUM][Num_Of_CELLS_IN_ROW];
 
     public Map(Integer lifeTime, Cell[][] cells) {
         this.lifeTime = lifeTime;
         this.cells = cells;
+        for (Cell[] cells1:cells){
+            for (Cell cell:cells1){
+                for (Item item:cell.items){
+                    item.map= this;
+                    if (item instanceof WildAnimal){
+                        ((WildAnimal) item).getCage().setWildAnimal((WildAnimal) item);
+                    }
+                }
+            }
+        }
     }
 
     public Map() {
@@ -45,7 +55,7 @@ public class Map {
             }
         }
         lifeTime++;
-        if (lifeTime % 200 == 199) {
+        if (lifeTime % 10 == 9) {
             Random random = new Random();
             if (random.nextBoolean()) {
 

@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Scanner;
 
 public class NonAnimalItem extends Model.Item {
@@ -90,16 +92,11 @@ public class NonAnimalItem extends Model.Item {
 
     }
 
-    @Override
-    public void anihilate() {
-        this.map.getCell((MapPosition) this.getPosition()).items.remove(this);
-    }
 
     @Override
-    public boolean turn() {
-        super.turn();
+    public boolean turn(ListIterator<Item> itemIterator) {
         if (Position instanceof MapPosition && lifeTime > MaxLifeTimeInMap) {
-            this.anihilate();
+            itemIterator.remove();
         }
         return false;
     }

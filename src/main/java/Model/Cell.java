@@ -5,6 +5,8 @@ import Model.Animals.WildAnimal;
 import Model.Positions.MapPosition;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 public class Cell {
     Grass grass;
@@ -101,6 +103,7 @@ public class Cell {
 
     public void addItem(Model.Item item) {
         items.add(item);
+        item.setPosition(this.getMapPosition());
 
 
     }
@@ -122,15 +125,13 @@ public class Cell {
         View.Farmys.Cell.PrintCell(items, this.getMapPosition(),this.grass);
     }
 
-    public void turn() {
-        for (int i = 0; i <items.size();) {
-            Item item =items.get(i);
-            System.out.println("ewe");
-            if(item.turn()||item.isRemove){
 
-            }else {
-                i++;
-            }
+    public void turn() {
+        ListIterator<Item> itemIterator =items.listIterator();
+        Item item;
+        while (itemIterator.hasNext()) {
+            item = itemIterator.next();
+            item.turn(itemIterator);
         }
     }
 
