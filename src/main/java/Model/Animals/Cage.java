@@ -1,5 +1,6 @@
 package Model.Animals;
 
+import Model.Farm;
 import Model.Item;
 import Model.Positions.MapPosition;
 import Model.Upgradable;
@@ -82,17 +83,17 @@ public class Cage implements Upgradable {
     }
 
     @Override
-    public boolean upgrade(Integer CurrentMoney) {
+    public boolean upgrade(Farm farm) {
 
         Integer integer = InputProcessor.game.getFarm().getCagesLevel();
         if (integer == 3) {
             System.out.println("More upgrade not possible");
             return false;
-        } else if (CurrentMoney < getUpgradeCost()) {
+        } else if (farm.getCurrentMoney() < getUpgradeCost()) {
             System.out.println("Not Enough money the specified upgrade");
             return false;
         } else {
-            CurrentMoney = CurrentMoney - getUpgradeCost();
+            farm.setCurrentMoney(farm.getCurrentMoney() - getUpgradeCost());
             integer = integer + 1;
 
             return true;

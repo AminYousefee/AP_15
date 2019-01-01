@@ -1,5 +1,6 @@
 package View.VehicleView;
 
+import Model.Farm;
 import Model.Item;
 import Model.Truck;
 
@@ -22,7 +23,7 @@ public class TruckView extends Vehicle {
     }
 
     @Override
-    public boolean upgrade(Integer CurrentMoney) {
+    public boolean upgrade(Farm farm) {
         return false;
     }
 

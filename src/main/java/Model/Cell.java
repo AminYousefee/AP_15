@@ -84,6 +84,8 @@ public class Cell {
             return true;
         }*/
 
+        System.out.println("Couldn't collect anything");
+
         return false;
 
 

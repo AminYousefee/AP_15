@@ -56,11 +56,18 @@ public class ProductiveAnimal extends NonWildAnimal {
     }
 
 
-    public boolean produce() {
+    public boolean produce(ListIterator<Item> itemIterator) {
         ProductiveAnimalInfo productiveAnimalInfo = (ProductiveAnimalInfo) this.itemInfo;
         int ProductionTime = productiveAnimalInfo.getProductionPeriod();
         if (getLifeTime() % ProductionTime == ProductionTime - 1) {
-            map.getCellByPosition((MapPosition) this.getPosition()).addItem(Item.getInstance(productiveAnimalInfo.outputItem));
+            //Item item = Item.getInstance("egg");
+            Item item =Item.getInstance(productiveAnimalInfo.getOutPutItem());
+            item.setPosition(this.getPosition());
+            itemIterator.add(item);
+            /*if (itemIterator.hasPrevious()){
+                itemIterator.previous();
+            }*/
+
             return true;
 
         }
@@ -143,13 +150,16 @@ public class ProductiveAnimal extends NonWildAnimal {
 
     @Override
     public boolean turn(ListIterator<Item> itemIterator) {
+        super.turn(itemIterator);
         if (map.getCellByPosition((MapPosition) this.Position).getItems().contains(this)) {
 
 
-            this.produce();
+
+
             this.fullness -= ((ProductiveAnimalInfo) this.itemInfo).HungrySpeed;
 
-            if (!eat(itemIterator)) {
+            if (!(eat(itemIterator)||this.produce(itemIterator))) {
+                //System.out.println("safda");
                 move(itemIterator);
             }
             return false;
@@ -186,6 +196,17 @@ public class ProductiveAnimal extends NonWildAnimal {
 
         public void setProductionPeriod(int productionPeriod) {
             ProductionPeriod = productionPeriod;
+        }
+
+        public String getOutPutItem() {
+            if (this.getItemName().equalsIgnoreCase("turkey")){
+                return "Egg";
+            }else if (this.getItemName().equalsIgnoreCase("sheep")){
+                return "Wool";
+            }else if (this.getItemName().equalsIgnoreCase("cow")){
+                return "Milk";
+            }
+            return null;
         }
     }
 }

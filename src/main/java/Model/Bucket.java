@@ -79,10 +79,11 @@ public class Bucket implements Upgradable {
 
     //Finished
     @Override
-    public boolean upgrade(Integer CurrentMoney) {
-        if (CurrentMoney < getUpgradeCost()) {
+    public boolean upgrade(Farm farm) {
+        if (farm.getCurrentMoney() < getUpgradeCost()) {
             return false;
         }
+        farm.setCurrentMoney(farm.getCurrentMoney()-getUpgradeCost());
         Level += 1;
         return true;
 

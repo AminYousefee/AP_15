@@ -96,13 +96,7 @@ public abstract class Item {
     public void getCollected() {
 
         if (this instanceof NonAnimalItem) {
-            if (InputProcessor.game.getFarm().getWarehouse().getCapacity() > this.getItemInfo().getDepotSize()) {
 
-                map.getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
-                InputProcessor.game.getFarm().getWarehouse().addItem(this);
-            } else {
-                System.out.println("Not Enough Space in WareHouse");
-            }
         } else if (this instanceof WildAnimal) {
             Item item = Item.getInstance("caged" + this.itemInfo.getItemName());
             if (InputProcessor.game.getFarm().getWarehouse().getCapacity() > item.getItemInfo().getDepotSize()) {

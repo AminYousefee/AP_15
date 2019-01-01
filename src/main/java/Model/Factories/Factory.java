@@ -8,6 +8,7 @@ import Model.Warehouse;
 import View.Factories.FactoryView;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import controller.InputProcessor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,17 +27,27 @@ public class Factory implements Upgradable {
     static {
         File file = new File(FactoriesConfigFilePath);
         try {
-            boolean t = file.createNewFile();
-            FileReader fileReader = new FileReader(file);
-            //todo in this we add the files to the hashmap
-            Scanner scanner = new Scanner(fileReader);
+            FileReader fileReader = new FileReader(FactoriesConfigFilePath);
+            StringBuilder stringBuilder =new StringBuilder();
+            Scanner scanner =new Scanner(fileReader);
+
+            while (scanner.hasNext()){
+                stringBuilder.append(scanner.nextLine());
+            }
+
+            Gson gson = InputProcessor.gson;
+
+            factoryTypeArrayList.addAll( gson.fromJson(stringBuilder.toString(), new TypeToken<ArrayList<FactoryType>>() {}.getType()));
+            //factoryTypeArrayList = (ArrayList<FactoryType>) types;
+            //System.out.println("DSasd");
+
 
         } catch (FileNotFoundException e) {
             FactoryView.permissionDeniedToReadFactoriesConfigFile();
             //todo probably better to move it to view
-        } catch (IOException e) {
+        } /*catch (IOException e) {
             FactoryView.unableToMakeFactoriesConfigFile();
-        }
+        }*/
 
 
     }
@@ -91,16 +103,17 @@ public class Factory implements Upgradable {
     }
 
     public boolean turn() {
-        if (process.getRemainedTurns() > 1) {
-            process.reduceRemainedTurnsByOne();
-        } else if (process.getRemainedTurns() == 1) {
-            process.reduceRemainedTurnsByOne();
-            finishProcess();
-            return true;
-        } else {
-            // doing nothing now but nothing else
+        if (process!=null) {
+            if (process.getRemainedTurns() > 1) {
+                process.reduceRemainedTurnsByOne();
+            } else if (process.getRemainedTurns() == 1) {
+                process.reduceRemainedTurnsByOne();
+                finishProcess();
+                return true;
+            } else {
+                // doing nothing now but nothing else
+            }
         }
-
         return false;
     }
 
@@ -130,9 +143,9 @@ public class Factory implements Upgradable {
 
             }
 
-            min = Math.min( min, num / isp.weight);
+            min = Math.min(min, num / isp.weight);
         }
-        if (min >this.factoryType.Ts.get(Level).ProductionNum){
+        if (min > this.factoryType.Ts.get(Level).ProductionNum) {
             min = this.factoryType.Ts.get(Level).ProductionNum;
         }
         process = new Process(getNeededTurns(), min);
@@ -151,16 +164,17 @@ public class Factory implements Upgradable {
 
     @Override
     public boolean upgrade(Farm farm) {
-        if (Level==this.factoryType.Ts.size()-1){
+        if (Level == this.factoryType.Ts.size() - 1) {
             System.out.println("Fully Upgraded");
             return false;
-        }else {
-            if (farm.getCurrentMoney()<this.factoryType.Ts.get(Level).InGameCost){
+        } else {
+            if (farm.getCurrentMoney() < getUpgradeCost()) {
                 System.out.println("You don't have enough money");
-            }else {
-                Level+=1;
-                farm.setCurrentMoney(farm.getCurrentMoney()-this.factoryType.Ts.get(Level).InGameCost);
-
+                return false;
+            } else {
+                farm.setCurrentMoney(farm.getCurrentMoney() - getUpgradeCost());
+                Level += 1;
+                return true;
             }
         }
 
@@ -168,7 +182,13 @@ public class Factory implements Upgradable {
 
     @Override
     public int getUpgradeCost() {
-        return 0;
+        return this.factoryType.Ts.get(Level).InGameCost;
+    }
+
+    public void print() {
+        System.out.println(factoryType.name);
+        System.out.println("Level = "+Level);
+        //System.out.println(factoryType);
     }
 
     public static class Process {
@@ -179,7 +199,7 @@ public class Factory implements Upgradable {
 
         public Process(double remainedTurns, int numberOfOutputs) {
             this.remainedTurns = remainedTurns;
-            if (numberOfOutputs<)
+            //if (numberOfOutputs<)
             this.numberOfOutputs = numberOfOutputs;
         }
 
@@ -187,11 +207,11 @@ public class Factory implements Upgradable {
             setRemainedTurns(getRemainedTurns() - 1);
         }
 
-        public int getRemainedTurns() {
+        public double getRemainedTurns() {
             return remainedTurns;
         }
 
-        public void setRemainedTurns(int remainedTurns) {
+        public void setRemainedTurns(double remainedTurns) {
             this.remainedTurns = remainedTurns;
         }
 

@@ -12,22 +12,22 @@ import java.util.List;
 
 public class Farm {
     public static final int POSSIBLE_NUMBER_OF_FACTORIES = 6;
+    public Factory[] factories = new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
     long turnsWent;
     Map map;
     Integer CurrentMoney;
     Warehouse warehouse;
     Bucket bucket;
     Integer CagesLevel = 0;
-    private Factory[] factories = new Factory[POSSIBLE_NUMBER_OF_FACTORIES];
     private Truck truck;
     private Helicopter helicopter = null;
 
     public Farm() {
-        CurrentMoney =10000;
+        CurrentMoney = 10000;
         map = new Map();
-        warehouse = new Warehouse(0,new ArrayList<>(0));
-        truck = new Truck(0,0,this,0,new ArrayList<>(0),this.CurrentMoney);
-        helicopter = new Helicopter(0,0,this,0,new ArrayList<>(0),this.CurrentMoney);
+        warehouse = new Warehouse(0, new ArrayList<>(0));
+        truck = new Truck(0, 0, this, 0, new ArrayList<>(0), this.CurrentMoney);
+        helicopter = new Helicopter(0, 0, this, 0, new ArrayList<>(0), this.CurrentMoney);
         bucket = new Bucket(CurrentMoney);
 
 
@@ -45,7 +45,7 @@ public class Farm {
         this.factories = factories;
         this.truck = truck;
         truck.farm = this;
-        truck.FarmMoney  =this.CurrentMoney;
+        truck.FarmMoney = this.CurrentMoney;
         this.helicopter = helicopter;
         helicopter.farm = this;
         helicopter.FarmMoney = this.getCurrentMoney();
@@ -201,6 +201,12 @@ public class Farm {
     }
 
     public void printWorkshops() {
+        for (int i = 0; i < 6; i++) {
+            if (factories[i] != null) {
+                factories[i].print();
+            }
+        }
+
 
     }
 
@@ -209,7 +215,7 @@ public class Farm {
             for (Cell cell : cells) {
                 for (Item item : cell.getItems()) {
                     if (item instanceof Cat) {
-                        ((Cat) item).upgrade(this.getCurrentMoney());
+                        ((Cat) item).upgrade(this);
                     }
                 }
             }
@@ -261,7 +267,8 @@ public class Farm {
         return 0;
 
     }
-    public void pay(int pay){
-        CurrentMoney =CurrentMoney -pay;
+
+    public void pay(int pay) {
+        CurrentMoney = CurrentMoney - pay;
     }
 }

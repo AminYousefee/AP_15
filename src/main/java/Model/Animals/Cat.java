@@ -131,6 +131,7 @@ public class Cat extends NonWildAnimal {
 
     @Override
     public boolean turn(ListIterator<Item> itemIterator) {
+        super.turn(itemIterator);
         return this.move(itemIterator);
     }
 }

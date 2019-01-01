@@ -1,6 +1,7 @@
 package Model.Animals;
 
 import Model.Cell;
+import Model.Farm;
 import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
@@ -93,7 +94,7 @@ public class WildAnimal extends Animal {
 
 
     @Override
-    public boolean upgrade(Integer CurrentMoney) {
+    public boolean upgrade(Farm farm) {
         return false;
     }
 
@@ -123,6 +124,7 @@ public class WildAnimal extends Animal {
 
     @Override
     public boolean turn(ListIterator<Item> itemIterator) {
+        super.turn(itemIterator);
 
         cage.turn(itemIterator);
 

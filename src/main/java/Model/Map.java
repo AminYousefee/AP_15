@@ -55,7 +55,7 @@ public class Map {
             }
         }
         lifeTime++;
-        if (lifeTime % 10 == 9) {
+        /*if (lifeTime % 10 == 9) {
             Random random = new Random();
             if (random.nextBoolean()) {
 
@@ -66,7 +66,7 @@ public class Map {
                 this.addItemInRandom(WildAnimal.getInstance("bear"));
             }
 
-        }
+        }*/
 
 
     }

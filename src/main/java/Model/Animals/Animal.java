@@ -67,13 +67,13 @@ public abstract class Animal extends Item implements Upgradable {
             double deltaX = goalPosition.getX() - ((MapPosition) this.getPosition()).getX();
             double deltaY = goalPosition.getY() - ((MapPosition) this.getPosition()).getY();
             if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
-                moveToPosition(goalPosition,itemIterator);
+                return moveToPosition(goalPosition,itemIterator);
             } else {
                 double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
-                int x = (int) (amplifier * deltaX + ((MapPosition) this.getPosition()).getX());
-                int y = (int) (amplifier * deltaY + ((MapPosition) this.getPosition()).getY());
+                x = (int) (amplifier * deltaX + ((MapPosition) this.getPosition()).getX());
+                y = (int) (amplifier * deltaY + ((MapPosition) this.getPosition()).getY());
                 MapPosition position = new MapPosition(x, y);
-                moveToPosition(position,itemIterator);
+                return moveToPosition(position,itemIterator);
             }
         }
 
@@ -94,7 +94,7 @@ public abstract class Animal extends Item implements Upgradable {
 
 
 
-        x += ((MapPosition) getPosition()).getX();
+   /*     x += ((MapPosition) getPosition()).getX();
         y += ((MapPosition) getPosition()).getY();
         if (x >= Map.Num_Of_CELLS_IN_ROW) {
             x = Map.Num_Of_CELLS_IN_ROW - 1;
@@ -107,7 +107,7 @@ public abstract class Animal extends Item implements Upgradable {
             y = 0;
         }
         MapPosition mapPosition = new MapPosition(x, y);
-        return moveToPosition(mapPosition, itemIterator);
+        return moveToPosition(mapPosition, itemIterator);*/
     }
 
     public int getSpeed() {

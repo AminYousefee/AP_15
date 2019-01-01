@@ -2,15 +2,25 @@ package Model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class Warehouse implements Upgradable {
     int Level;
 
-    private int capacity;
+    private int capacity = this.getMaxCapacity();
     private ArrayList<Item> items = new ArrayList<>(0);
 
+
+    public Warehouse(int level, int capacity, ArrayList<Item> items) {
+        Level = level;
+        this.capacity = capacity;
+        this.items = items;
+    }
+
+    public Warehouse(int level, ArrayList<Item> items) {
+        Level = level;
+        this.items = items;
+    }
 
     public int getCapacity() {
         return capacity;
@@ -24,32 +34,21 @@ public class Warehouse implements Upgradable {
         return Collections.unmodifiableList(items);
     }
 
-    public Warehouse(int level, int capacity, ArrayList<Item> items) {
-        Level = level;
-        this.capacity = capacity;
-        this.items = items;
-    }
-
-    public Warehouse(int level, ArrayList<Item> items) {
-        Level = level;
-        this.items = items;
-    }
-
     public void setItems(ArrayList<Item> items) {
         this.items = items;
     }
 
     //Finished
     @Override
-    public boolean upgrade(Integer CurrentMoney) {
-        if (CurrentMoney < getUpgradeCost()) {
+    public boolean upgrade(Farm farm) {
+        if (farm.getCurrentMoney() < getUpgradeCost()) {
             return false;
         }
         if (Level == 3) {
             System.out.println("Wow you still want a better wareHouse");
             return false;
         }
-        CurrentMoney -= getUpgradeCost();
+        farm.setCurrentMoney(farm.getCurrentMoney() - getUpgradeCost());
         Level += 1;
         return true;
     }
@@ -81,7 +80,7 @@ public class Warehouse implements Upgradable {
     public List<Item> findSpecificItem(Item.ItemInfo itemType, int MaxNumberToFind) {
         ArrayList<Item> methodOutput = new ArrayList<>(0);
         int numberFound = 0;
-        for (Item item:items) {
+        for (Item item : items) {
             if (item.getItemInfo().equals(itemType)) {
                 methodOutput.add(item);
             }
@@ -97,14 +96,17 @@ public class Warehouse implements Upgradable {
 
     public void remove(Item toBeAddedItem) {
         items.remove(toBeAddedItem);
+        capacity+=toBeAddedItem.itemInfo.DepotSize;
     }
 
     public void addItem(Item item) {
         items.add(item);
+        capacity-= item.itemInfo.DepotSize;
     }
 
     public void print() {
         System.out.println("WareHouse :");
+        System.out.println("Capacity = "+capacity);
         for (Item item : items) {
             item.Print();
         }

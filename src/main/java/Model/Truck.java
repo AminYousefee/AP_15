@@ -41,7 +41,7 @@ public class Truck extends Vehicle {
     }
 
     public ArrayList<Item> getItems() {
-        return (ArrayList<Item>) Collections.unmodifiableList(items);
+        return items;
     }
 
 
@@ -52,15 +52,16 @@ public class Truck extends Vehicle {
 
 
     @Override
-    public boolean upgrade(Integer CurrentMoney) {
-        if (CurrentMoney < getUpgradeCost()) {
+    public boolean upgrade(Farm farm) {
+        if (farm.getCurrentMoney() < getUpgradeCost()) {
             return false;
         }
         if (getLevel() == 3) {
             System.out.println("Unable to do update on truck as it's updated to level 3");
             return false;
         }
-        CurrentMoney -= getUpgradeCost();
+        farm.setCurrentMoney(farm.getCurrentMoney() - getUpgradeCost());
+
         Level += 1;
         return true;
 

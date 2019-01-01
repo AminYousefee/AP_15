@@ -6,6 +6,7 @@ import View.NonAnimalItemView;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import controller.InputProcessor;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,7 +18,7 @@ import java.util.Scanner;
 
 public class NonAnimalItem extends Model.Item {
     public static final String NonAnimalItemsConfigFilePath = "NonAnimalItemsConfigFile.json";
-    private static final int MaxLifeTimeInMap = 10;  //todo
+    private static final int MaxLifeTimeInMap = 100;  //todo
     public static HashSet<NonAnimalItemInfo> nonAnimalItemInfos = new HashSet<>(0);
 
     static {
@@ -49,7 +50,7 @@ public class NonAnimalItem extends Model.Item {
             FileReader fileReader = new FileReader(NonAnimalItemsConfigFilePath);
             Scanner scanner = new Scanner(fileReader);
             String Json = scanner.nextLine();
-            Gson gson = new Gson();
+            Gson gson = InputProcessor.gson;
             Type collectionType = new TypeToken<HashSet<NonAnimalItemInfo>>() {
             }.getType();
             HashSet<NonAnimalItemInfo> II = (gson.fromJson(Json, collectionType));
@@ -85,9 +86,17 @@ public class NonAnimalItem extends Model.Item {
 
 
     }*/
-
+    @Override
     public void getCollected() {
-        this.setPosition(NonMapPosition.getInstance());
+        if (InputProcessor.game.getFarm().getWarehouse().getCapacity() > this.getItemInfo().getDepotSize()) {
+
+            map.getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
+            this.setPosition(NonMapPosition.getInstance());
+            InputProcessor.game.getFarm().getWarehouse().addItem(this);
+        } else {
+            System.out.println("Not Enough Space in WareHouse");
+        }
+        //this.setPosition(NonMapPosition.getInstance());
         //todo Now I am here
 
     }
@@ -95,6 +104,7 @@ public class NonAnimalItem extends Model.Item {
 
     @Override
     public boolean turn(ListIterator<Item> itemIterator) {
+        super.turn(itemIterator);
         if (Position instanceof MapPosition && lifeTime > MaxLifeTimeInMap) {
             itemIterator.remove();
         }

@@ -8,7 +8,9 @@ public interface Upgradable {
      */
 
 
-    boolean upgrade(Integer CurrentMoney);
+    //boolean upgrade(Integer CurrentMoney);
+
+    boolean upgrade(Farm farm);
 
     int getUpgradeCost();
 

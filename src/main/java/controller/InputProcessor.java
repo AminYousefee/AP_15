@@ -33,6 +33,7 @@ public class InputProcessor {
         GsonBuilder gsonBuilder = new GsonBuilder();
 
         RuntimeTypeAdapterFactory<Item> typeAdapterFactory = RuntimeTypeAdapterFactory.of(Item.class, "type")
+                .registerSubtype(NonAnimalItem.class, "na")
                 .registerSubtype(ProductiveAnimal.class, "pro")
                 .registerSubtype(Cat.class, "cat")
                 .registerSubtype(Dog.class, "dog")
@@ -403,7 +404,7 @@ public class InputProcessor {
         String regex = "\\s+upgrade\\s+(\\.*)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
             if (matcher.group(1).equalsIgnoreCase("well")) {
-                game.getFarm().getBucket().upgrade(game.getFarm().getCurrentMoney());
+                game.getFarm().getBucket().upgrade(game.getFarm());
 
                 return true;
             }
@@ -415,7 +416,7 @@ public class InputProcessor {
             if (matcher.group(1).equalsIgnoreCase("truck")) {
                 Truck truck = game.getFarm().getTruck();
                 if (truck != null) {
-                    truck.upgrade(game.getFarm().getCurrentMoney());
+                    truck.upgrade(game.getFarm());
                 } else {
                     System.out.println("Truck Not Found");
                 }
@@ -425,14 +426,14 @@ public class InputProcessor {
             if (matcher.group(1).equalsIgnoreCase("helicopter")) {
                 Helicopter helicopter = game.getFarm().getHelicopter();
                 if (helicopter != null) {
-                    helicopter.upgrade(game.getFarm().getCurrentMoney());
+                    helicopter.upgrade(game.getFarm());
                 } else {
                     System.out.println("Helicopter Not Found");
                 }
                 return true;
             }
             if (matcher.group(1).equalsIgnoreCase("wareHouse")) {
-                game.getFarm().getWarehouse().upgrade(game.getFarm().getCurrentMoney());
+                game.getFarm().getWarehouse().upgrade(game.getFarm());
 
 
                 return true;
@@ -476,7 +477,7 @@ public class InputProcessor {
 
     private static boolean addToVehicle(String input) {
         Matcher matcher;
-        String regex = "\\s*(\\S+)\\s+add(\\S+)\\s+(\\d+)";
+        String regex = "\\s*(\\S+)\\s+add\\s+(\\S+)\\s+(\\d+)";
         if ((matcher = getMatched(regex, input)) != null) {
             String itemName = matcher.group(2);
             int count = Integer.parseInt(matcher.group(3));
@@ -512,7 +513,8 @@ public class InputProcessor {
                     } else if (count * item.getItemInfo().getDepotSize() > game.getFarm().getWarehouse().getCapacity()) {
                         System.out.println("Not Enough Space in the wareHouse");
                     } else {
-                        for (Item toBeAddedItem : toBeAddedItems) {
+                        for (int i = 0; i < count; i++) {
+                            Item toBeAddedItem = toBeAddedItems.get(i);
                             game.getFarm().getWarehouse().remove(toBeAddedItem);
                             game.getFarm().getTruck().addItem(toBeAddedItem);
                         }
@@ -537,9 +539,11 @@ public class InputProcessor {
                 }
 
 
-            }
+            } else {
 
-            System.out.println("I don't know that vehicle");
+                System.out.println("I don't know that vehicle");
+            }
+            return true;
         }
         return false;
     }
@@ -751,6 +755,22 @@ public class InputProcessor {
     }
 */
 
+    @Test
+    public void tr() {
+        ArrayList<Integer> integers = new ArrayList<>(0);
+        integers.add(3);
+        integers.add(5);
+        integers.add(3);
+        Iterator<Integer> iterator = integers.iterator();
+        iterator.next();
+        System.out.println("Ds");
+        iterator.remove();
+        iterator.hasNext();
+        System.out.println("ds");
+        iterator.remove();
+        System.out.println("dsd");
+
+    }
 
     public static class GameDeserializer implements JsonDeserializer<Game> {
 
@@ -880,6 +900,15 @@ public class InputProcessor {
             return new Mission(goal);
         }
     }
+   /* public static class WildAnimalDeserializer implements JsonDeserializer<WildAnimal>{
+
+        @Override
+        public WildAnimal deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject =jsonElement.getAsJsonObject();
+            Cage cage =jsonDeserializationContext.deserialize(jsonObject.get("cage"),Cage.class);
+
+        }
+    }*/
 
     public static class MapDeserializer implements JsonDeserializer<Map> {
 
@@ -893,15 +922,14 @@ public class InputProcessor {
 
         }
     }
-   /* public static class WildAnimalDeserializer implements JsonDeserializer<WildAnimal>{
+  /*  public static class FactoryTypeDeserializer implements JsonDeserializer<Factory.FactoryType>{
 
         @Override
-        public WildAnimal deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject jsonObject =jsonElement.getAsJsonObject();
-            Cage cage =jsonDeserializationContext.deserialize(jsonObject.get("cage"),Cage.class);
+        public Factory.FactoryType deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 
         }
-    }*/
+    }
+*/
 
     public static class CellDeserializer implements JsonDeserializer<Cell> {
 
@@ -915,32 +943,5 @@ public class InputProcessor {
             return new Cell(grass, mapPosition, items);
         }
     }
-  /*  public static class FactoryTypeDeserializer implements JsonDeserializer<Factory.FactoryType>{
-
-        @Override
-        public Factory.FactoryType deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-
-        }
-    }
-*/
-
-
-
-  @Test
-    public void tr(){
-      ArrayList<Integer> integers=new ArrayList<>(0);
-      integers.add(3);
-      integers.add(5);
-      integers.add(3);
-      Iterator<Integer> iterator =integers.iterator();
-      iterator.next();
-      System.out.println("Ds");
-      iterator.remove();
-      iterator.hasNext();
-      System.out.println("ds");
-      iterator.remove();
-      System.out.println("dsd");
-
-  }
 
 }

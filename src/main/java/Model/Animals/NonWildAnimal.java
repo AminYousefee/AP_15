@@ -1,5 +1,6 @@
 package Model.Animals;
 
+import Model.Farm;
 import Model.GameMenu.Missions.Mission;
 import Model.Map;
 import View.GameMenu.Missions.MissionView;
@@ -35,11 +36,11 @@ public abstract class NonWildAnimal extends Model.Animals.Animal {
 
 
     @Override
-    public boolean upgrade(Integer CurrentMoney) {
-        if (CurrentMoney < getUpgradeCost()) {
+    public boolean upgrade(Farm farm) {
+        if (farm.getCurrentMoney() < getUpgradeCost()) {
             return false;
         }
-        CurrentMoney -= getUpgradeCost();
+        farm.setCurrentMoney(farm.getCurrentMoney() - getUpgradeCost());
         Level += 1;
         return true;
     }
