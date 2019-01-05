@@ -24,6 +24,8 @@ public class main {
         Mission mission1 = new Mission(new Mission.Goal(ees));
         Farm farm1 = new Farm();
         farm1.factories[0] =new Factory(Factory.findFactoryType("Egg Powder Plant"),new MapPosition(0,0),null,0);
+        farm1.factories[0].getFactoryType().setInputItems(new ArrayList<>(0));
+        farm1.factories[0].getFactoryType().getInputItems().add(new Factory.FactoryType.Isp(1,Item.getInstance("Egg").getItemInfo()));
         Game game = new Game("Empty", mission1, farm1);
         Game.loadedGames.add(game);
 

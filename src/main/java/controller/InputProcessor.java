@@ -178,10 +178,10 @@ public class InputProcessor {
                     if (!(item instanceof NonWildAnimal)) {
                         game.getFarm().getWarehouse().addItem(item);
                     }
-                    game.getFarm().getTruck().clear();
 
 
                 }
+                game.getFarm().getTruck().clear();
 
 
             } else if (matcher.group(1).equalsIgnoreCase("helicopter")) {
@@ -262,6 +262,7 @@ public class InputProcessor {
         if (upgrade(input)) {
             return true;
         }
+
         if (buyAnimal(input)) {
             return true;
         }
@@ -301,6 +302,9 @@ public class InputProcessor {
             return true;
         }
         if (turn(input)) {
+            return true;
+        }
+        if (clearVehicle(input)){
             return true;
         }
         if (saveGame(input)) {
@@ -401,7 +405,7 @@ public class InputProcessor {
 
     private static boolean upgrade(String input) {
         Matcher matcher;
-        String regex = "\\s+upgrade\\s+(\\.*)\\s*";
+        String regex = "\\s*upgrade\\s+(.+)\\s*";
         if ((matcher = getMatched(regex, input)) != null) {
             if (matcher.group(1).equalsIgnoreCase("well")) {
                 game.getFarm().getBucket().upgrade(game.getFarm());
@@ -548,7 +552,7 @@ public class InputProcessor {
         return false;
     }
 
-    /* private boolean clearVehicle(String input) {
+ /*    private boolean clearVehicle(String input) {
          Matcher matcher;
          String regex = "\\s*(.*)\\s+clear\\s*";
          if ((matcher = getMatched(regex, input)) != null) {

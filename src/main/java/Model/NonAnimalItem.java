@@ -90,7 +90,7 @@ public class NonAnimalItem extends Model.Item {
     public void getCollected() {
         if (InputProcessor.game.getFarm().getWarehouse().getCapacity() > this.getItemInfo().getDepotSize()) {
 
-            map.getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
+            InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
             this.setPosition(NonMapPosition.getInstance());
             InputProcessor.game.getFarm().getWarehouse().addItem(this);
         } else {

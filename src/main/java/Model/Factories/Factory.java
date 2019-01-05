@@ -148,8 +148,13 @@ public class Factory implements Upgradable {
         if (min > this.factoryType.Ts.get(Level).ProductionNum) {
             min = this.factoryType.Ts.get(Level).ProductionNum;
         }
-        process = new Process(getNeededTurns(), min);
-        return true;
+        if (min>0) {
+            process = new Process(getNeededTurns(), min);
+            return true;
+        }else {
+            System.out.println("Not Any Ingredients");
+            return false;
+        }
 
 
     }
@@ -252,6 +257,15 @@ public class Factory implements Upgradable {
     public static class FactoryType {
         String name;
         Item.ItemInfo OutputItem;
+
+        public ArrayList<Isp> getInputItems() {
+            return InputItems;
+        }
+
+        public void setInputItems(ArrayList<Isp> inputItems) {
+            InputItems = inputItems;
+        }
+
         ArrayList<Isp> InputItems;
         int numberOfInputItems;
         int numberOfOutputItems;
@@ -320,9 +334,14 @@ public class Factory implements Upgradable {
             }
         }
 
-        static class Isp {
+        public static class Isp {
             Integer weight;
             Item.ItemInfo itemInfo;
+
+            public Isp(Integer weight, Item.ItemInfo itemInfo) {
+                this.weight = weight;
+                this.itemInfo = itemInfo;
+            }
         }
 
 
