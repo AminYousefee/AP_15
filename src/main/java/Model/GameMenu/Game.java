@@ -2,65 +2,69 @@ package Model.GameMenu;
 
 import Model.Farm;
 import Model.GameMenu.Missions.Mission;
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
+import controller.InputProcessor;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Game {
 
-
+    public static ArrayList<Game> loadedGames = new ArrayList<>(0);
+    String name;
     private Mission mission;
     private Farm farm;
 
-    public static Game loadGame(String filename) {
-        try {
-            File file = new File(filename);
-            FileReader fileReader = new FileReader(file);
-            JsonReader jsonReader = new JsonReader(fileReader);
-            Gson gson = new Gson();
-            Game game = gson.fromJson(jsonReader, Game.class);
-            return game;
-        } catch (IOException e) {
-            //todo something in view
-        } catch (JsonIOException e) {
-            //todo the file is not Json
-        } catch (JsonSyntaxException e) {
-            //todo Syntax Error in Json File
-        }
-        return null;
 
+    public Game(String name, Mission mission, Farm farm) {
+        this.name = name;
+        this.mission = mission;
+        this.farm = farm;
     }
 
-    public boolean saveGame(String filename) {
-        Gson gson = new Gson();
-        String Json = gson.toJson(this);
-        try {
-
-            FileWriter fileWriter = new FileWriter(filename);
-            fileWriter.write(Json);
-            fileWriter.close();
-            return true;
-        } catch (IOException e) {
-            //todo something in view
-        } finally {
-
+    public static Game findLoadedGame(String farmName) {
+        for (Game game : loadedGames) {
+            if (game.name.equalsIgnoreCase(farmName)) {
+                return game;
+            }
         }
-
-        return false;
+        return null;
     }
 
     public Farm getFarm() {
         return farm;
     }
 
+    public void setFarm(Farm farm) {
+        this.farm = farm;
+    }
 
     public void printInfo() {
+        System.out.println("Game = "+name );
+        System.out.println("Money = " + this.getFarm().getCurrentMoney());
+        System.out.println("Time Gone = " + this.getFarm().getTurnsWent());
+        System.out.println(mission.goal);
+
 
     }
+
+    public void turn() {
+        System.out.println("Turn = " +this.getFarm().getTurnsWent());
+        if (mission.isSatisfied()) {
+            System.out.println("Mission Satisfied");
+            System.out.println("Do you Want To Continue?");
+            System.out.println("Enter y/n");
+            Scanner scanner = new Scanner(System.in);
+            String string = scanner.nextLine();
+            if (string.equalsIgnoreCase("n")) {
+                System.exit(0);
+            } else {
+                InputProcessor.game = null;
+                InputProcessor.GameNotSpecifiedMode();
+            }
+        } else {
+            farm.turn();
+        }
+    }
+
+
 }

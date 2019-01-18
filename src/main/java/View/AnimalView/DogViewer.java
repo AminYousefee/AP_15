@@ -3,9 +3,7 @@ package View.AnimalView;
 public class DogViewer extends NonProductiveFarmAnimalViewer {
 
 
-
-
-    public void defend(){
+    public void defend() {
 
 
     }

@@ -1,15 +1,17 @@
 package Model;
 
-public interface Upgradable  {
+public interface Upgradable {
     /*
-    any thing extending this should have field level
+    any thing extending this should have field Level
 
 
      */
 
 
+    //boolean upgrade(Integer CurrentMoney);
 
-    public boolean upgrade();
-    public boolean getUpgradeCost();
+    boolean upgrade(Farm farm);
+
+    int getUpgradeCost();
 
 }
