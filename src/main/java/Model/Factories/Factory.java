@@ -18,9 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Factory implements Upgradable {
     public static final String FactoriesConfigFilePath = "FactoriesConfigFile.json";
@@ -205,7 +203,8 @@ public class Factory implements Upgradable {
     public void show() {
         if (imageView == null) {
             imageView = new ImageView(factoryType.image);
-            imageView.setOnKeyPressed(keyEvent -> {
+            gridPane.add(imageView, Arrays.asList(InputProcessor.game.getFarm().factories).indexOf(this),0);
+            imageView.setOnMouseClicked(keyEvent -> {
                 this.startProcess(InputProcessor.game.getFarm().getWarehouse());
             });
 

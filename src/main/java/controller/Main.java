@@ -12,9 +12,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -55,9 +57,27 @@ public class Main extends Application {
         pane.setPadding(new Insets(25, 25, 25, 25));
         Button btn = new Button("PLAY ME!");
         pane.add(btn, 0, 0);
+
+
+        String path = new String("./static/back.png");
+        FileInputStream input = new FileInputStream(path);
+        Image image = new Image(input);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);
+        Background background = new Background(backgroundImage);
+
+
+        pane.setBackground(background);
+
         btn.setOnAction(actionEvent -> {
             gameStarts(stage);
         });
+        Main.gridPane = pane;
+
+
         Scene scene = new Scene(pane, 600, 400);
         stage.setScene(scene);
         stage.show();

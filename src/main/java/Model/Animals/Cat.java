@@ -6,6 +6,7 @@ import Model.NonAnimalItem;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
+import controller.Main;
 import controller.Print;
 
 import java.util.Iterator;
@@ -109,7 +110,7 @@ public class Cat extends NonWildAnimal {
 
 
     private boolean collect(Item item) {
-        ((NonAnimalItem) item).getCollected();
+        ((NonAnimalItem) item).getCollected(Main.gridPane);
         map.getCell((MapPosition) item.getPosition()).removeItem(item);
 
         return true;

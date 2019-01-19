@@ -41,7 +41,7 @@ public abstract class Item {
     public void show(GridPane gridPane) {
         if (imageView == null) {
             imageView = new ImageView(itemInfo.image);
-            imageView.setOnKeyPressed(keyEvent -> {
+            imageView.setOnMouseClicked(keyEvent -> {
                 this.getCollected(gridPane);
             });
             gridPane.add(imageView, ((MapPosition)position).getX(), ((MapPosition)position).getY());
