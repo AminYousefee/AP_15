@@ -9,14 +9,16 @@ import View.Factories.FactoryView;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import controller.InputProcessor;
+import controller.Main;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,16 +30,17 @@ public class Factory implements Upgradable {
         File file = new File(FactoriesConfigFilePath);
         try {
             FileReader fileReader = new FileReader(FactoriesConfigFilePath);
-            StringBuilder stringBuilder =new StringBuilder();
-            Scanner scanner =new Scanner(fileReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            Scanner scanner = new Scanner(fileReader);
 
-            while (scanner.hasNext()){
+            while (scanner.hasNext()) {
                 stringBuilder.append(scanner.nextLine());
             }
 
             Gson gson = InputProcessor.gson;
 
-            factoryTypeArrayList.addAll( gson.fromJson(stringBuilder.toString(), new TypeToken<ArrayList<FactoryType>>() {}.getType()));
+            factoryTypeArrayList.addAll(gson.fromJson(stringBuilder.toString(), new TypeToken<ArrayList<FactoryType>>() {
+            }.getType()));
             //factoryTypeArrayList = (ArrayList<FactoryType>) types;
             //System.out.println("DSasd");
 
@@ -56,12 +59,15 @@ public class Factory implements Upgradable {
     MapPosition outputPosition;
     Process process;
     int Level;
+    GridPane gridPane;
+    ImageView imageView;
 
     public Factory(FactoryType factoryType, MapPosition outputPosition, Process process, int level) {
         this.factoryType = factoryType;
         this.outputPosition = outputPosition;
         this.process = process;
         Level = level;
+        gridPane = Main.gridPane;
     }
 
     public static FactoryType findFactoryType(String name) {
@@ -73,7 +79,7 @@ public class Factory implements Upgradable {
         return null;
     }
 
-    /*public static void main(String[] args) {
+    /*public static void controller.Main(String[] args) {
 
         try {
             FileReader fileReader = new FileReader(FactoriesConfigFilePath);
@@ -103,7 +109,7 @@ public class Factory implements Upgradable {
     }
 
     public boolean turn() {
-        if (process!=null) {
+        if (process != null) {
             if (process.getRemainedTurns() > 1) {
                 process.reduceRemainedTurnsByOne();
             } else if (process.getRemainedTurns() == 1) {
@@ -148,10 +154,10 @@ public class Factory implements Upgradable {
         if (min > this.factoryType.Ts.get(Level).ProductionNum) {
             min = this.factoryType.Ts.get(Level).ProductionNum;
         }
-        if (min>0) {
+        if (min > 0) {
             process = new Process(getNeededTurns(), min);
             return true;
-        }else {
+        } else {
             System.out.println("Not Any Ingredients");
             return false;
         }
@@ -192,8 +198,18 @@ public class Factory implements Upgradable {
 
     public void print() {
         System.out.println(factoryType.name);
-        System.out.println("Level = "+Level);
+        System.out.println("Level = " + Level);
         //System.out.println(factoryType);
+    }
+
+    public void show() {
+        if (imageView == null) {
+            imageView = new ImageView(factoryType.image);
+            imageView.setOnKeyPressed(keyEvent -> {
+                this.startProcess(InputProcessor.game.getFarm().getWarehouse());
+            });
+
+        }
     }
 
     public static class Process {
@@ -237,7 +253,6 @@ public class Factory implements Upgradable {
         }
     }
 
-
     public static class FactoryTypeDeserializer implements JsonDeserializer<FactoryType> {
 
 
@@ -255,8 +270,19 @@ public class Factory implements Upgradable {
     }
 
     public static class FactoryType {
+        public Image image;
         String name;
         Item.ItemInfo OutputItem;
+        ArrayList<Isp> InputItems;
+        int numberOfInputItems;
+        int numberOfOutputItems;
+        int ProcessTurns;
+        ArrayList<FactoryType.t> Ts = new ArrayList<>(0);
+
+        public FactoryType(String name, ArrayList<t> ts) {
+            this.name = name;
+            Ts = ts;
+        }
 
         public ArrayList<Isp> getInputItems() {
             return InputItems;
@@ -264,18 +290,6 @@ public class Factory implements Upgradable {
 
         public void setInputItems(ArrayList<Isp> inputItems) {
             InputItems = inputItems;
-        }
-
-        ArrayList<Isp> InputItems;
-        int numberOfInputItems;
-        int numberOfOutputItems;
-        int ProcessTurns;
-        ArrayList<FactoryType.t> Ts = new ArrayList<>(0);
-
-
-        public FactoryType(String name, ArrayList<t> ts) {
-            this.name = name;
-            Ts = ts;
         }
 
         public String getName() {
@@ -347,6 +361,5 @@ public class Factory implements Upgradable {
 
         //todo Item input
     }
-
-
 }
+

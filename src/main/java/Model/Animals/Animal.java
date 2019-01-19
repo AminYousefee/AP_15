@@ -5,7 +5,13 @@ import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
 import Model.Upgradable;
+import controller.Main;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Random;
@@ -19,6 +25,8 @@ public abstract class Animal extends Item implements Upgradable {
     MapPosition goalPosition;
     int fullness;
     int Level;
+    int directive;
+    ImageView imageView;
 
     //Finished
     public Animal(AnimalInfo animalInfo, Map map) {
@@ -55,9 +63,9 @@ public abstract class Animal extends Item implements Upgradable {
         Random random = new Random();
         int x = Math.abs(random.nextInt());
         int y = Math.abs(random.nextInt());
-        x = x % Map.Num_Of_CELLS_IN_COLOUM ;
-        y = y % Map.Num_Of_CELLS_IN_ROW ;
-        MapPosition goalPosition = new MapPosition(x,y);
+        x = x % Map.Num_Of_CELLS_IN_COLOUM;
+        y = y % Map.Num_Of_CELLS_IN_ROW;
+        MapPosition goalPosition = new MapPosition(x, y);
 
 
         MapPosition CurrentPosition = (MapPosition) this.getPosition();
@@ -67,13 +75,13 @@ public abstract class Animal extends Item implements Upgradable {
             double deltaX = goalPosition.getX() - ((MapPosition) this.getPosition()).getX();
             double deltaY = goalPosition.getY() - ((MapPosition) this.getPosition()).getY();
             if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
-                return moveToPosition(goalPosition,itemIterator);
+                return moveToPosition(goalPosition, itemIterator);
             } else {
                 double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
                 x = (int) (amplifier * deltaX + ((MapPosition) this.getPosition()).getX());
                 y = (int) (amplifier * deltaY + ((MapPosition) this.getPosition()).getY());
                 MapPosition position = new MapPosition(x, y);
-                return moveToPosition(position,itemIterator);
+                return moveToPosition(position, itemIterator);
             }
         }
 
@@ -124,21 +132,51 @@ public abstract class Animal extends Item implements Upgradable {
             return false;
         }
         itemIterator.remove();
+        Main.gridPane.getChildren().remove(this.imageView);
+        int tempX = goalCell.getMapPosition().getX() - CurrentCell.getMapPosition().getX();
+        int tempY = goalCell.getMapPosition().getY() - CurrentCell.getMapPosition().getY();
+        if (Math.abs(tempX) > Math.abs(tempY)) {
+            if (tempX > 0) {
+                directive = 0;
+            } else {
+                directive = 1;
+            }
+        } else {
+            if (tempY > 0) {
+                directive = 2;
+            } else {
+                directive = 3;
+            }
+
+        }
+
+        Main.gridPane.add(imageView,goalCell.getMapPosition().getX(),goalCell.getMapPosition().getY());
         goalCell.getItems().add(this);
         setPosition(position);
 
         return true;
     }
 
+    @Override
+    public void show(GridPane gridPane) {
+        imageView.setImage(((AnimalInfo) itemInfo).images[directive]);
+    }
+
     public static class AnimalInfo extends ItemInfo {
         int Speed;
+        Image[] images;
 
 
         public AnimalInfo(String itemName, int depotSize, int buyCost, int SaleCost, int speed) {
             super(itemName, depotSize, buyCost, SaleCost);
             Speed = speed;
+            for (int i = 0; i < 4; i++) {
+                try {
+                    images[i] = new Image(new FileInputStream(itemName + i + ".png"));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
-
 }

@@ -66,12 +66,14 @@ public class WildAnimal extends Animal {
         while (itemIterator.hasNext()) {
             item = itemIterator.next();
             if (!(item instanceof WildAnimal)) {
+                item.die();
                 itemIterator.remove();
             }
         }
         while (itemIterator.hasPrevious()) {
             item = itemIterator.previous();
             if (!(item instanceof WildAnimal)) {
+                item.die();
                 itemIterator.remove();
             }
         }
@@ -80,6 +82,7 @@ public class WildAnimal extends Animal {
             item = itemIterator.next();
             if (item == this) {
                 if (isThereADog) {
+                    item.die();
                     itemIterator.remove();
                     return true;
                 }

@@ -10,7 +10,6 @@ import controller.InputProcessor;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.Random;
 
 public class ProductiveAnimal extends NonWildAnimal {
     public static final String ProductiveAnimalConfigFilePath = "./ProductiveAnimalConfigFile.json";
@@ -151,7 +150,7 @@ public class ProductiveAnimal extends NonWildAnimal {
     @Override
     public boolean turn(ListIterator<Item> itemIterator) {
         super.turn(itemIterator);
-        if (map.getCellByPosition((MapPosition) this.Position).getItems().contains(this)) {
+        if (map.getCellByPosition((MapPosition) this.position).getItems().contains(this)) {
 
 
 

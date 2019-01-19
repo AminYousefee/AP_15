@@ -5,16 +5,25 @@ import Model.Animals.WildAnimal;
 import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import controller.InputProcessor;
+import controller.Main;
+import javafx.event.EventHandler;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ListIterator;
 
 public abstract class Item {
     protected transient Map map;
     protected ItemInfo itemInfo;
-    protected Position Position;
+    protected Position position;
     int ID;
     int lifeTime;
     boolean isRemove = false;
+    ImageView imageView;
 
     public static Item getInstance(String name) {
         Item result = NonAnimalItem.getInstance(name);
@@ -29,6 +38,17 @@ public abstract class Item {
 
     }
 
+    public void show(GridPane gridPane) {
+        if (imageView == null) {
+            imageView = new ImageView(itemInfo.image);
+            imageView.setOnKeyPressed(keyEvent -> {
+                this.getCollected(gridPane);
+            });
+            gridPane.add(imageView, ((MapPosition)position).getX(), ((MapPosition)position).getY());
+
+        }
+    }
+
     public ItemInfo getItemInfo() {
         return itemInfo;
     }
@@ -38,11 +58,11 @@ public abstract class Item {
     }
 
     public Position getPosition() {
-        return Position;
+        return position;
     }
 
     public void setPosition(Position position) {
-        this.Position = position;
+        this.position = position;
     }
 
     public double getVolume() {
@@ -93,7 +113,8 @@ public abstract class Item {
         return itemInfo.BuyCost;
     }
 
-    public void getCollected() {
+    public void getCollected(GridPane gridPane) {
+        gridPane.getChildren().remove(imageView);
 
         if (this instanceof NonAnimalItem) {
 
@@ -108,17 +129,27 @@ public abstract class Item {
         }
     }
 
+    public void die() {
+        Main.gridPane.getChildren().remove(this.imageView);
+    }
+
     public static class ItemInfo {
         protected String ItemName;
         protected double DepotSize;
         protected int BuyCost;
         protected int SaleCost;
+        Image image;
 
         public ItemInfo(String itemName, double depotSize, int buyCost, int SaleCost) {
             ItemName = itemName;
             DepotSize = depotSize;
             this.BuyCost = buyCost;
             this.SaleCost = SaleCost;
+            try {
+                image = new Image(new FileInputStream(ItemName + ".png"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         public int getBuyCost() {
