@@ -12,6 +12,7 @@ import Model.Positions.Position;
 import Model.Warehouse;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import com.sun.jdi.event.StepEvent;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class InputProcessor {
     public static Game game;
     public static Gson gson;
+    private static int speed;
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -255,7 +257,7 @@ public class InputProcessor {
         return false;
     }
 
-    public static boolean process(String input) {
+    public synchronized static boolean process(String input) {
         if (startFactory(input)) {
             return true;
         }
@@ -304,7 +306,7 @@ public class InputProcessor {
         if (turn(input)) {
             return true;
         }
-        if (clearVehicle(input)){
+        if (clearVehicle(input)) {
             return true;
         }
         if (saveGame(input)) {
@@ -479,7 +481,7 @@ public class InputProcessor {
 
     }
 
-    private static boolean addToVehicle(String input) {
+    public static boolean addToVehicle(String input) {
         Matcher matcher;
         String regex = "\\s*(\\S+)\\s+add\\s+(\\S+)\\s+(\\d+)";
         if ((matcher = getMatched(regex, input)) != null) {
@@ -514,6 +516,7 @@ public class InputProcessor {
                     }
                     if (toBeAddedItems.size() < count) {
                         System.out.println("Not Enough Number Of " + itemName);
+
                     } else if (count * item.getItemInfo().getDepotSize() > game.getFarm().getWarehouse().getCapacity()) {
                         System.out.println("Not Enough Space in the wareHouse");
                     } else {
@@ -552,23 +555,23 @@ public class InputProcessor {
         return false;
     }
 
- /*    private boolean clearVehicle(String input) {
-         Matcher matcher;
-         String regex = "\\s*(.*)\\s+clear\\s*";
-         if ((matcher = getMatched(regex, input)) != null) {
-             if (matcher.group(1).equalsIgnoreCase("Helicopter")) {
-                 game.getFarm().getHelicopter().clear();
+    /*    private boolean clearVehicle(String input) {
+            Matcher matcher;
+            String regex = "\\s*(.*)\\s+clear\\s*";
+            if ((matcher = getMatched(regex, input)) != null) {
+                if (matcher.group(1).equalsIgnoreCase("Helicopter")) {
+                    game.getFarm().getHelicopter().clear();
 
 
-             } else if (matcher.group(1).equalsIgnoreCase("Truck")) {
-                 game.getFarm().getTruck().clear();
+                } else if (matcher.group(1).equalsIgnoreCase("Truck")) {
+                    game.getFarm().getTruck().clear();
 
-             }
-             return true;
-         }
-         return false;
-     }
- */
+                }
+                return true;
+            }
+            return false;
+        }
+    */
     private static boolean plant(String input) {
         Matcher matcher;
         String regex = "plant\\s+(\\d+)\\s+(\\d+)\\s*";
@@ -664,6 +667,108 @@ public class InputProcessor {
             return true;
         }
         return false;
+    }
+
+
+    public static boolean addToVehicle2 (String input){
+
+
+
+        Matcher matcher;
+        String regex = "\\s*(\\S+)\\s+add\\s+(\\S+)\\s+(\\d+)";
+        if ((matcher = getMatched(regex, input)) != null) {
+            String itemName = matcher.group(2);
+            int count = Integer.parseInt(matcher.group(3));
+            if (matcher.group(1).equalsIgnoreCase("helicopter")) {
+                Item.ItemInfo itemInfo = Helicopter.findItem(itemName);
+                if (itemInfo == null) {
+                    System.out.println("Item not buyable");
+                    return false;
+                } else {
+                    for (int i = 0; i < count; i++) {
+                        game.getFarm().getHelicopter().addItem(Item.getInstance(itemName));
+                    }
+                }
+
+
+            } else if (matcher.group(1).equalsIgnoreCase("truck")) {
+
+                Item item = Item.getInstance(itemName);
+                if (item == null) {
+                    System.out.println("Item doesn't exits");
+                    return false;
+                }
+                if (item instanceof NonAnimalItem) {
+                    ArrayList<Item> toBeAddedItems = new ArrayList<>(0);
+                    List<Item> wareHouseItems = game.getFarm().getWarehouse().getItems();
+                    for (Item wareHouseItem : wareHouseItems) {
+                        if (wareHouseItem.getItemInfo().getItemName().equalsIgnoreCase(itemName)) {
+                            toBeAddedItems.add(wareHouseItem);
+                        }
+                    }
+                    if (toBeAddedItems.size() < count) {
+                        System.out.println("Not Enough Number Of " + itemName);
+                        return false;
+
+                    } else if (count * item.getItemInfo().getDepotSize() > game.getFarm().getWarehouse().getCapacity()) {
+                        System.out.println("Not Enough Space in the wareHouse");
+                        return false;
+                    } else {
+                        for (int i = 0; i < count; i++) {
+                            Item toBeAddedItem = toBeAddedItems.get(i);
+                            game.getFarm().getWarehouse().remove(toBeAddedItem);
+                            game.getFarm().getTruck().addItem(toBeAddedItem);
+                        }
+                    }
+
+
+                } else {
+                    Map map = game.getFarm().getMap();
+                    List<Item> toBeAddedItems = map.getItemOfSpecifiedType(itemName);
+                    if (toBeAddedItems.size() < count) {
+                        System.out.println("Not Enough Number Of " + itemName);
+                        return false;
+                    } else if (count * item.getItemInfo().getDepotSize() > game.getFarm().getWarehouse().getCapacity()) {
+                        System.out.println("Not Enough Space in the WareHouse");
+                        return false;
+                    } else {
+                        for (Item toBeAddedItem : toBeAddedItems) {
+                            map.getCellByPosition((MapPosition) toBeAddedItem.getPosition()).removeItem(toBeAddedItem);
+                            game.getFarm().getTruck().addItem(toBeAddedItem);
+                        }
+                    }
+
+
+                }
+
+
+            } else {
+
+                System.out.println("I don't know that vehicle");
+                return false;
+            }
+            return true;
+        }
+        return false;
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+    public static void setSpeed(int speed) {
+        InputProcessor.speed = speed;
+    }
+
+    public static int getSpeed() {
+        return speed;
     }
 
     @Test
@@ -795,7 +900,7 @@ public class InputProcessor {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Map map = jsonDeserializationContext.deserialize(jsonObject.get("map"), Map.class);
             Truck truck = jsonDeserializationContext.deserialize(jsonObject.get("truck"), Truck.class);
-            Model.Warehouse warehouse = jsonDeserializationContext.deserialize(jsonObject.get("warehouse"), Warehouse.class);
+            Warehouse warehouse = jsonDeserializationContext.deserialize(jsonObject.get("warehouse"), Warehouse.class);
             Helicopter helicopter = jsonDeserializationContext.deserialize(jsonObject.get("helicopter"), Helicopter.class);
             Integer CurrentMoney = jsonDeserializationContext.deserialize(jsonObject.get("CurrentMoney"), Integer.class);
             long turnsWent = jsonDeserializationContext.deserialize(jsonObject.get("turnsWent"), long.class);

@@ -33,7 +33,7 @@ public class Dog extends NonWildAnimal {
             }else {
                 double deltaX = goalItemPosition.getX()-((MapPosition)this.getPosition()).getX();
                 double deltaY = goalItemPosition.getY()-((MapPosition)this.getPosition()).getY();
-                if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())){
+                /*if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())){
                     moveToPosition(goalItemPosition,itemIterator);
 
                 }else {
@@ -42,7 +42,11 @@ public class Dog extends NonWildAnimal {
                     int y = (int) (amplifier*deltaY + ((MapPosition)this.getPosition()).getX());
                     MapPosition position=new MapPosition(x,y);
                     moveToPosition(position,itemIterator);
-                }
+                }*/
+                deltaX = Math.signum(deltaX);
+                deltaY = Math.signum(deltaY);
+                MapPosition p = new MapPosition((int)deltaX,(int)deltaY);
+                moveToPosition(p,itemIterator);
                 return true;
             }
         }else {
@@ -56,7 +60,7 @@ public class Dog extends NonWildAnimal {
 
 
     @Override
-    public boolean turn(ListIterator<Item> itemIterator) {
+    public boolean turner(ListIterator<Item> itemIterator) {
         super.turn(itemIterator);
         return this.move(itemIterator);
 

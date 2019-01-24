@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Random;
 
 public class Map {
-    public static final int Num_Of_CELLS_IN_ROW = 3;
-    public static final int Num_Of_CELLS_IN_COLOUM = 3;
+    public static final int Num_Of_CELLS_IN_ROW = 30;
+    public static final int Num_Of_CELLS_IN_COLOUM = 30;
     Integer lifeTime = 0;
     Model.Cell[][] cells = new Model.Cell[Num_Of_CELLS_IN_COLOUM][Num_Of_CELLS_IN_ROW];
 

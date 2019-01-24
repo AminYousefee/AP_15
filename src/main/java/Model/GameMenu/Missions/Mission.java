@@ -2,39 +2,55 @@ package Model.GameMenu.Missions;
 
 import Model.Item;
 import controller.InputProcessor;
+import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class Mission {
     public static final String MissionsConfigFilePath = "./MissionsConfigFile.json";
     //private static HashSet<Mission> missions = new HashSet<>(0);
     public Goal goal;
 
-   /* static {
-        try {
-            Gson gson = new Gson();
-            FileReader fileReader = new FileReader(MissionsConfigFilePath);
-            Scanner scanner = new Scanner(fileReader);
-            while (scanner.hasNext()) {
-                String string = scanner.nextLine();
-                missions.add(gson.fromJson(string, Mission.class));
-            }
-        } catch (FileNotFoundException e) {
-            MissionView.FileNotFoundException();
-        } catch (JsonSyntaxException e) {
-            MissionView.JsonSyntaxException();
-        }
+    /* static {
+         try {
+             Gson gson = new Gson();
+             FileReader fileReader = new FileReader(MissionsConfigFilePath);
+             Scanner scanner = new Scanner(fileReader);
+             while (scanner.hasNext()) {
+                 String string = scanner.nextLine();
+                 missions.add(gson.fromJson(string, Mission.class));
+             }
+         } catch (FileNotFoundException e) {
+             MissionView.FileNotFoundException();
+         } catch (JsonSyntaxException e) {
+             MissionView.JsonSyntaxException();
+         }
 
 
-    }
+     }
 
- */
-
+  */
+    Text text;
 
     public Mission(Goal goal) {
         this.goal = goal;
     }
+
+    public void setText(Text text) {
+        this.text = text;
+        text.setText(this.goal.toString());
+        new Thread(this::update).start();
+    }
+
+    public void update() {
+        if (!text.getText().equals(this.goal.toString())) {
+            text.setText(this.goal.toString());
+        }
+    }
+
+
+
 
     /*public static Mission findMission(int ID) {
         for (Mission mission : missions) {
@@ -44,7 +60,6 @@ public class Mission {
         }
         return null;
     }*/
-
 
 
     public boolean isSatisfied() {

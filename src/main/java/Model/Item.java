@@ -130,7 +130,7 @@ public abstract class Item {
     }
 
     public void die() {
-        Main.gridPane.getChildren().remove(this.imageView);
+        //Main.gridPane.getChildren().remove(this.imageView);
     }
 
     public static class ItemInfo {

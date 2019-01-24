@@ -271,4 +271,16 @@ public class Farm {
     public void pay(int pay) {
         CurrentMoney = CurrentMoney - pay;
     }
+
+    public void show() {
+        truck.show();
+        helicopter.show();
+        warehouse.show();
+
+        for (int i=0;i<6;i++){
+            if (factories[i]!=null){
+                factories[i].show();
+            }
+        }
+    }
 }

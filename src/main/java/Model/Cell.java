@@ -50,7 +50,7 @@ public class Cell {
             }
         }
         if (toBeCollectedItem != null) {
-            toBeCollectedItem.getCollected(Main.gridPane);
+            //toBeCollectedItem.getCollected(Main.gridPane);
 
             return true;
         }
@@ -62,7 +62,7 @@ public class Cell {
             }
         }
         if (toBeCollectedItem != null) {
-            toBeCollectedItem.getCollected(Main.gridPane);
+            //toBeCollectedItem.getCollected(Main.gridPane);
             return true;
         }
 

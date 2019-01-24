@@ -3,6 +3,13 @@ package Model.GameMenu;
 import Model.Farm;
 import Model.GameMenu.Missions.Mission;
 import controller.InputProcessor;
+import controller.Main;
+import javafx.scene.control.Label;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -67,4 +74,15 @@ public class Game {
     }
 
 
+    public void show() {
+
+        Text text = new Text();
+        mission.setText(text);
+        text.setFill(Color.YELLOW);
+        text.setBlendMode(BlendMode.OVERLAY);
+        AnchorPane.setLeftAnchor(text,450.0);
+        AnchorPane.setTopAnchor(text,10.0);
+        Main.pane.getChildren().add(text);
+        farm.show();
+    }
 }

@@ -5,7 +5,6 @@ import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
 import Model.Upgradable;
-import controller.Main;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -63,8 +62,11 @@ public abstract class Animal extends Item implements Upgradable {
         Random random = new Random();
         int x = Math.abs(random.nextInt());
         int y = Math.abs(random.nextInt());
-        x = x % Map.Num_Of_CELLS_IN_COLOUM;
-        y = y % Map.Num_Of_CELLS_IN_ROW;
+        x = x % /*Map.Num_Of_CELLS_IN_COLOUM*/3;
+        y = y % /*Map.Num_Of_CELLS_IN_ROW*/3;
+        x += ((MapPosition) getPosition()).getX();
+        y += ((MapPosition) getPosition()).getY();
+
         MapPosition goalPosition = new MapPosition(x, y);
 
 
@@ -132,7 +134,7 @@ public abstract class Animal extends Item implements Upgradable {
             return false;
         }
         itemIterator.remove();
-        Main.gridPane.getChildren().remove(this.imageView);
+        //Main.gridPane.getChildren().remove(this.imageView);
         int tempX = goalCell.getMapPosition().getX() - CurrentCell.getMapPosition().getX();
         int tempY = goalCell.getMapPosition().getY() - CurrentCell.getMapPosition().getY();
         if (Math.abs(tempX) > Math.abs(tempY)) {
@@ -150,7 +152,7 @@ public abstract class Animal extends Item implements Upgradable {
 
         }
 
-        Main.gridPane.add(imageView,goalCell.getMapPosition().getX(),goalCell.getMapPosition().getY());
+        //Main.gridPane.add(imageView,goalCell.getMapPosition().getX(),goalCell.getMapPosition().getY());
         goalCell.getItems().add(this);
         setPosition(position);
 
@@ -178,5 +180,15 @@ public abstract class Animal extends Item implements Upgradable {
                 }
             }
         }
+    }
+
+    public abstract boolean turner(ListIterator<Item> listIterator);
+
+    public boolean turn(ListIterator<Item> listIterator){
+        int t= (int)(getSpeed()/50.0);
+        for (int i = 0; i < t; i++) {
+            this.turner(listIterator);
+        }
+        return false;
     }
 }

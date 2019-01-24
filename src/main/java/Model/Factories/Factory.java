@@ -12,9 +12,10 @@ import controller.InputProcessor;
 import controller.Main;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.AnchorPane;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
@@ -53,11 +54,11 @@ public class Factory implements Upgradable {
 
     }
 
+    String path = "/home/a/Projects/AP_Project/AP_15/static/Workshops";
     FactoryType factoryType;
     MapPosition outputPosition;
     Process process;
     int Level;
-    GridPane gridPane;
     ImageView imageView;
 
     public Factory(FactoryType factoryType, MapPosition outputPosition, Process process, int level) {
@@ -65,7 +66,18 @@ public class Factory implements Upgradable {
         this.outputPosition = outputPosition;
         this.process = process;
         Level = level;
-        gridPane = Main.gridPane;
+        File file = new File("./static/Workshops");
+        for (File file1 : Objects.requireNonNull(file.listFiles())) {
+            if (file1.getName().contains(this.factoryType.name)) {
+                try {
+                    factoryType.image = new Image(new FileInputStream(file1.getAbsolutePath() + "/0" + String.valueOf(level+1) + ".png"));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+        //gridPane = Main.gridPane;
     }
 
     public static FactoryType findFactoryType(String name) {
@@ -203,10 +215,11 @@ public class Factory implements Upgradable {
     public void show() {
         if (imageView == null) {
             imageView = new ImageView(factoryType.image);
-            gridPane.add(imageView, Arrays.asList(InputProcessor.game.getFarm().factories).indexOf(this),0);
-            imageView.setOnMouseClicked(keyEvent -> {
-                this.startProcess(InputProcessor.game.getFarm().getWarehouse());
-            });
+            Main.pane.getChildren().add(imageView);
+            AnchorPane.setTopAnchor(imageView, Arrays.asList(InputProcessor.game.getFarm().factories).indexOf(this) * 50.0);
+            AnchorPane.setLeftAnchor(imageView, 50.0);
+
+            imageView.setOnMouseClicked(keyEvent -> this.startProcess(InputProcessor.game.getFarm().getWarehouse()));
 
         }
     }
@@ -281,6 +294,7 @@ public class Factory implements Upgradable {
         public FactoryType(String name, ArrayList<t> ts) {
             this.name = name;
             Ts = ts;
+
         }
 
         public ArrayList<Isp> getInputItems() {

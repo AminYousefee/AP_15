@@ -126,7 +126,7 @@ public class WildAnimal extends Animal {
     }
 
     @Override
-    public boolean turn(ListIterator<Item> itemIterator) {
+    public boolean turner(ListIterator<Item> itemIterator) {
         super.turn(itemIterator);
 
         cage.turn(itemIterator);

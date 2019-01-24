@@ -60,7 +60,7 @@ public class ProductiveAnimal extends NonWildAnimal {
         int ProductionTime = productiveAnimalInfo.getProductionPeriod();
         if (getLifeTime() % ProductionTime == ProductionTime - 1) {
             //Item item = Item.getInstance("egg");
-            Item item =Item.getInstance(productiveAnimalInfo.getOutPutItem());
+            Item item = Item.getInstance(productiveAnimalInfo.getOutPutItem());
             item.setPosition(this.getPosition());
             itemIterator.add(item);
             /*if (itemIterator.hasPrevious()){
@@ -97,7 +97,7 @@ public class ProductiveAnimal extends NonWildAnimal {
                 } else {
                     double deltaX = goalItemPosition.getX() - ((MapPosition) this.getPosition()).getX();
                     double deltaY = goalItemPosition.getY() - ((MapPosition) this.getPosition()).getY();
-                    if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
+                    /*if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
                         return moveToPosition(goalItemPosition,itemIterator);
 
                     } else {
@@ -106,7 +106,12 @@ public class ProductiveAnimal extends NonWildAnimal {
                         int y = (int) (amplifier * deltaY + ((MapPosition) getPosition()).getY());
                         MapPosition position = new MapPosition(x, y);
                         return moveToPosition(position,itemIterator);
-                    }
+                    }*/
+                    deltaX = Math.signum(deltaX);
+                    deltaY = Math.signum(deltaY);
+                    MapPosition p = new MapPosition((int) deltaX, (int) deltaY);
+                    return moveToPosition(p, itemIterator);
+
                 }
 
             }
@@ -128,7 +133,7 @@ public class ProductiveAnimal extends NonWildAnimal {
     public boolean eat(Iterator<Item> itemIterator) {
         if (fullness <= 0) {
             itemIterator.remove();
-            System.out.println(itemInfo.getItemName()+" in cell " + ((MapPosition) this.getPosition()).getX() + " " + ((MapPosition) this.getPosition()).getY() + " died.");
+            System.out.println(itemInfo.getItemName() + " in cell " + ((MapPosition) this.getPosition()).getX() + " " + ((MapPosition) this.getPosition()).getY() + " died.");
 
             return true;//well this bad smell I should do it
         }
@@ -148,21 +153,19 @@ public class ProductiveAnimal extends NonWildAnimal {
     }
 
     @Override
-    public boolean turn(ListIterator<Item> itemIterator) {
+    public boolean turner(ListIterator<Item> itemIterator) {
         super.turn(itemIterator);
         if (map.getCellByPosition((MapPosition) this.position).getItems().contains(this)) {
 
 
-
-
             this.fullness -= ((ProductiveAnimalInfo) this.itemInfo).HungrySpeed;
 
-            if (!(eat(itemIterator)||this.produce(itemIterator))) {
+            if (!(eat(itemIterator) || this.produce(itemIterator))) {
                 //System.out.println("safda");
                 move(itemIterator);
             }
             return false;
-        }else {
+        } else {
             //it is dead so shouldn't do anything
             return false;
         }
@@ -198,11 +201,11 @@ public class ProductiveAnimal extends NonWildAnimal {
         }
 
         public String getOutPutItem() {
-            if (this.getItemName().equalsIgnoreCase("turkey")){
+            if (this.getItemName().equalsIgnoreCase("turkey")) {
                 return "Egg";
-            }else if (this.getItemName().equalsIgnoreCase("sheep")){
+            } else if (this.getItemName().equalsIgnoreCase("sheep")) {
                 return "Wool";
-            }else if (this.getItemName().equalsIgnoreCase("cow")){
+            } else if (this.getItemName().equalsIgnoreCase("cow")) {
                 return "Milk";
             }
             return null;
