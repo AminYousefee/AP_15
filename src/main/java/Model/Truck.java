@@ -45,6 +45,7 @@ public class Truck extends Vehicle {
 
             Button addButton = new Button("Add");
             Button backButton = new Button("Back");
+            backButton.setOnAction(ev->Main.continueSingleGame());
             addButton.setOnAction(new EventHandler<ActionEvent>() {
                 boolean flag;
 
@@ -52,6 +53,7 @@ public class Truck extends Vehicle {
                 public void handle(ActionEvent actionEvent) {
                     if (!flag) {
                         flag = true;
+                        Main.stopGame();
                         Stage stage = new Stage();
                         GridPane gridPane = new GridPane();
                         TextField itemName = new TextField("ItemName");

@@ -10,7 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Random;
@@ -31,6 +31,7 @@ public abstract class Animal extends Item implements Upgradable {
     public Animal(AnimalInfo animalInfo, Map map) {
         itemInfo = animalInfo;
         this.map = map;
+        this.show();
     }
 
 /*    public static AnimalInfo findAnimalType(String name) {
@@ -160,8 +161,18 @@ public abstract class Animal extends Item implements Upgradable {
     }
 
     @Override
-    public void show(GridPane gridPane) {
-        imageView.setImage(((AnimalInfo) itemInfo).images[directive]);
+    public void show() {
+
+    }
+
+    public abstract boolean turner(ListIterator<Item> listIterator);
+
+    public boolean turn(ListIterator<Item> listIterator) {
+        int t = (int) (getSpeed() / 50.0);
+        for (int i = 0; i < t; i++) {
+            this.turner(listIterator);
+        }
+        return false;
     }
 
     public static class AnimalInfo extends ItemInfo {
@@ -172,23 +183,28 @@ public abstract class Animal extends Item implements Upgradable {
         public AnimalInfo(String itemName, int depotSize, int buyCost, int SaleCost, int speed) {
             super(itemName, depotSize, buyCost, SaleCost);
             Speed = speed;
-            for (int i = 0; i < 4; i++) {
+            /*for (int i = 0; i < 4; i++) {
                 try {
                     images[i] = new Image(new FileInputStream(itemName + i + ".png"));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
+            }*/
+            String str = itemName;
+            if (str.equalsIgnoreCase("turkey")) {
+                str = "Ostrich";
             }
+            final String path = "/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/" + str +"/eat.png";
+            try {
+                images[0] = new Image(new FileInputStream(path));
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            //this.show();
         }
     }
 
-    public abstract boolean turner(ListIterator<Item> listIterator);
+    //public void show()
 
-    public boolean turn(ListIterator<Item> listIterator){
-        int t= (int)(getSpeed()/50.0);
-        for (int i = 0; i < t; i++) {
-            this.turner(listIterator);
-        }
-        return false;
-    }
+
 }

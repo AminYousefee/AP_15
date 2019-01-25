@@ -8,6 +8,7 @@ import Model.Warehouse;
 import View.Factories.FactoryView;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import controller.ImageViewSprite;
 import controller.InputProcessor;
 import controller.Main;
 import javafx.scene.image.Image;
@@ -70,7 +71,7 @@ public class Factory implements Upgradable {
         for (File file1 : Objects.requireNonNull(file.listFiles())) {
             if (file1.getName().contains(this.factoryType.name)) {
                 try {
-                    factoryType.image = new Image(new FileInputStream(file1.getAbsolutePath() + "/0" + String.valueOf(level+1) + ".png"));
+                    factoryType.image = new Image(new FileInputStream(file1.getAbsolutePath() + "/0" + String.valueOf(level + 1) + ".png"));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -134,6 +135,11 @@ public class Factory implements Upgradable {
     }
 
     private void finishProcess() {
+        sprite.stop();
+        sprite= new ImageViewSprite(imageView, factoryType.image, 4, 4,16, (int)(factoryType.image.getWidth()/4.0), (int)(factoryType.image.getHeight()/4), 30,0,0);
+        sprite.start() ;
+        sprite.stop();
+
 
         Item outputItem = Item.getInstance(factoryType.OutputItem.getItemName());
         outputItem.setPosition(outputPosition);
@@ -166,6 +172,8 @@ public class Factory implements Upgradable {
         }
         if (min > 0) {
             process = new Process(getNeededTurns(), min);
+            sprite= new ImageViewSprite(imageView, factoryType.image, 4, 4,16, (int)(factoryType.image.getWidth()/4.0), (int)(factoryType.image.getHeight()/4), 30,0,0);
+            sprite.start();
             return true;
         } else {
             System.out.println("Not Any Ingredients");
@@ -195,6 +203,18 @@ public class Factory implements Upgradable {
             } else {
                 farm.setCurrentMoney(farm.getCurrentMoney() - getUpgradeCost());
                 Level += 1;
+                File file = new File("./static/Workshops");
+                for (File file1 : Objects.requireNonNull(file.listFiles())) {
+                    if (file1.getName().contains(this.factoryType.name)) {
+                        try {
+                            factoryType.image = new Image(new FileInputStream(file1.getAbsolutePath() + "/0" + String.valueOf(Level + 1) + ".png"));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+                sprite.imageView.setImage(factoryType.image);
                 return true;
             }
         }
@@ -212,16 +232,30 @@ public class Factory implements Upgradable {
         //System.out.println(factoryType);
     }
 
+    ImageViewSprite sprite;
     public void show() {
         if (imageView == null) {
             imageView = new ImageView(factoryType.image);
             Main.pane.getChildren().add(imageView);
-            AnchorPane.setTopAnchor(imageView, Arrays.asList(InputProcessor.game.getFarm().factories).indexOf(this) * 50.0);
-            AnchorPane.setLeftAnchor(imageView, 50.0);
+            AnchorPane.setTopAnchor(imageView, Arrays.asList(InputProcessor.game.getFarm().factories).indexOf(this) * 50.0+100.0);
+            AnchorPane.setLeftAnchor(imageView, 70.0);
 
             imageView.setOnMouseClicked(keyEvent -> this.startProcess(InputProcessor.game.getFarm().getWarehouse()));
 
         }
+
+
+        //ImageView imageView = new ImageView();
+        //Image image1 = new Image((new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Workshops/Cake (Cookie Bakery)/01.png")));
+        sprite = new ImageViewSprite(imageView, factoryType.image, 4, 4,16, (int)(factoryType.image.getWidth()/4.0), (int)(factoryType.image.getHeight()/4), 30,0,0);
+        //Main.pane.getChildren().add(imageView);
+        sprite.start();
+        if (process==null) {
+            sprite.stop();
+        }
+
+
+
     }
 
     public static class Process {
@@ -294,6 +328,9 @@ public class Factory implements Upgradable {
         public FactoryType(String name, ArrayList<t> ts) {
             this.name = name;
             Ts = ts;
+            switch (name){
+
+            }
 
         }
 

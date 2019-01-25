@@ -55,12 +55,14 @@ public class Helicopter extends Vehicle {
 
             Button addButton = new Button("Add");
             Button backButton = new Button("Back");
+            backButton.setOnAction(ev->Main.continueSingleGame());
             addButton.setOnAction(new EventHandler<ActionEvent>() {
                 boolean flag;
 
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     if (!flag) {
+                        Main.stopGame();
                         flag = true;
                         Stage stage = new Stage();
                         GridPane gridPane = new GridPane();

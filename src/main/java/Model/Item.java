@@ -5,11 +5,8 @@ import Model.Animals.WildAnimal;
 import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import controller.InputProcessor;
-import controller.Main;
-import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 
 import java.io.FileInputStream;
@@ -38,14 +35,12 @@ public abstract class Item {
 
     }
 
-    public void show(GridPane gridPane) {
+    public void show() {
         if (imageView == null) {
-            imageView = new ImageView(itemInfo.image);
-            imageView.setOnMouseClicked(keyEvent -> {
-                this.getCollected(gridPane);
-            });
-            gridPane.add(imageView, ((MapPosition)position).getX(), ((MapPosition)position).getY());
+            if (this.getItemInfo().getItemName().equalsIgnoreCase("egg") || this.getItemInfo().getItemName().equalsIgnoreCase("horn") || this.getItemInfo().getItemName().equalsIgnoreCase("plume") || this.getItemInfo().getItemName().equalsIgnoreCase("wool")) {
+                imageView = new ImageView(new FileInputStream("./static/Products/"+itemInfo.getItemName())+"/normal.png");
 
+            }
         }
     }
 

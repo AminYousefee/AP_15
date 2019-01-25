@@ -24,12 +24,10 @@ import java.util.List;
 import java.util.Random;
 
 public class Warehouse implements Upgradable {
+    static String path = "/home/a/Projects/AP_Project/AP_15/static/Service/Depot/";
     int Level;
-
     private int capacity = this.getMaxCapacity();
     private ArrayList<Item> items = new ArrayList<>(0);
-    static String path = "/home/a/Projects/AP_Project/AP_15/static/Service/Depot/";
-
 
 
     public Warehouse(int level, int capacity, ArrayList<Item> items) {
@@ -117,35 +115,28 @@ public class Warehouse implements Upgradable {
 
     public void remove(Item toBeAddedItem) {
         items.remove(toBeAddedItem);
-        capacity+=toBeAddedItem.itemInfo.DepotSize;
+        capacity += toBeAddedItem.itemInfo.DepotSize;
     }
 
     public void addItem(Item item) {
         items.add(item);
-        capacity-= item.itemInfo.DepotSize;
+        capacity -= item.itemInfo.DepotSize;
     }
 
     public void print() {
         System.out.println("WareHouse :");
-        System.out.println("Capacity = "+capacity);
+        System.out.println("Capacity = " + capacity);
         for (Item item : items) {
             item.Print();
         }
     }
 
 
-
-
-
-
-
-
-
-
-    private static void viewDepotMenu() {
+    private void viewDepotMenu() {
 
 
         {
+            Main.stopGame();
 
             final Random rng = new Random();
             VBox content = new VBox(5);
@@ -154,6 +145,7 @@ public class Warehouse implements Upgradable {
 
             Button addButton = new Button("Add");
             Button backButton = new Button("Back");
+            backButton.setOnAction(ev->Main.continueSingleGame());
             addButton.setDisable(true);
             addButton.setOnAction(new EventHandler<ActionEvent>() {
                 boolean flag;
@@ -170,7 +162,7 @@ public class Warehouse implements Upgradable {
                         gridPane.add(Count, 0, 1);
                         Button btn = new Button("Click");
 
-                        backButton.setOnAction(event->Main.continueSingleGame());
+                        backButton.setOnAction(event -> Main.continueSingleGame());
                         gridPane.add(btn, 0, 2);
                         Label label = new Label();
 
@@ -197,7 +189,7 @@ public class Warehouse implements Upgradable {
 
                 }
             });
-            for (Item item : /*this.getItems()*/new ArrayList<Item>()) {
+            for (Item item : this.getItems()) {
                 AnchorPane anchorPane = new AnchorPane();
                 String style = String.format("-fx-background: rgb(%d, %d, %d);" +
                                 "-fx-background-color: -fx-background;",
@@ -208,10 +200,11 @@ public class Warehouse implements Upgradable {
                 Label label = new Label(item.itemInfo.ItemName);
                 AnchorPane.setLeftAnchor(label, 5.0);
                 AnchorPane.setTopAnchor(label, 5.0);
-                Button button = new Button("Remove");
+                Button button = new Button("Truck");
                 button.setOnAction(evt -> {
                     content.getChildren().remove(anchorPane);
-                    /*this.getItems().remove(item);*/
+                    //this.getItems().remove(item);
+                    InputProcessor.process("truck add " + item.getItemInfo().getItemName() + " 1");
 
 
                 });
@@ -222,8 +215,8 @@ public class Warehouse implements Upgradable {
                 content.getChildren().add(anchorPane);
             }
             VBox vBox = new VBox();
-            vBox.getChildren().add(0,addButton);
-            vBox.getChildren().add(1,backButton);
+            vBox.getChildren().add(0, addButton);
+            vBox.getChildren().add(1, backButton);
 
             Scene scene = new Scene(new BorderPane(scroller, null, null, vBox, null), 400, 400);
             Main.stage.setScene(scene);
@@ -233,7 +226,7 @@ public class Warehouse implements Upgradable {
 
     }
 
-    public static void show() {
+    public void show() {
         Image image = null;
         try {
             image = new Image(new FileInputStream(path + "01" + ".png"));

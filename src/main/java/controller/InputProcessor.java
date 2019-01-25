@@ -105,7 +105,7 @@ public class InputProcessor {
         }
     }
 
-    private static boolean runNewGame(String string) {
+    public static boolean runNewGame(String string) {
         Matcher matcher;
         String regex = "\\s*run\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, string)) != null) {
@@ -121,7 +121,7 @@ public class InputProcessor {
         return false;
     }
 
-    private static boolean loadGame(String string) {
+    public static boolean loadGame(String string) {
         Matcher matcher;
         String regex = "\\s*load\\s+game\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, string)) != null) {
@@ -206,7 +206,7 @@ public class InputProcessor {
 
     }
 
-    private static boolean loadCustom(String string) {
+    public static boolean loadCustom(String string) {
         Matcher matcher;
         String regex = "\\s*load\\s+custom\\s+(\\S+)\\s*";
         if ((matcher = getMatched(regex, string)) != null) {
@@ -646,7 +646,7 @@ public class InputProcessor {
         return false;
     }
 
-    private static boolean saveGame(String string) {
+    public static boolean saveGame(String string) {
         Matcher matcher;
         //Gson gson = new Gson();
         String regex = "\\s*save\\s+game\\s+(\\S+)\\s*";
