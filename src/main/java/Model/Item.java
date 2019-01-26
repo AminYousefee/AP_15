@@ -5,8 +5,10 @@ import Model.Animals.WildAnimal;
 import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import controller.InputProcessor;
+import controller.Main;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
 import java.io.FileInputStream;
@@ -25,6 +27,7 @@ public abstract class Item {
     public static Item getInstance(String name) {
         Item result = NonAnimalItem.getInstance(name);
         if (result != null) {
+
             return result;
         }
         result = Animal.getInstance(name);
@@ -38,10 +41,25 @@ public abstract class Item {
     public void show() {
         if (imageView == null) {
             if (this.getItemInfo().getItemName().equalsIgnoreCase("egg") || this.getItemInfo().getItemName().equalsIgnoreCase("horn") || this.getItemInfo().getItemName().equalsIgnoreCase("plume") || this.getItemInfo().getItemName().equalsIgnoreCase("wool")) {
-                imageView = new ImageView(new FileInputStream("./static/Products/"+itemInfo.getItemName())+"/normal.png");
+                try {
+                    imageView = new ImageView(new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Products/"+this.itemInfo.getItemName()+"/normal.png")));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            }else {
+                try {
+                    imageView =  new ImageView(new Image(new FileInputStream("./static/Products/"+itemInfo.getItemName()+".png")));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
 
             }
+
         }
+        AnchorPane.setTopAnchor(imageView,InputProcessor.game.getFarm().getMap().getCellByPosition(((MapPosition) this.getPosition())).getX());
+        AnchorPane.setLeftAnchor(imageView,InputProcessor.game.getFarm().getMap().getCellByPosition(((MapPosition) this.getPosition())).getY());
+        Main.pane.getChildren().add(imageView);
     }
 
     public ItemInfo getItemInfo() {
@@ -108,8 +126,8 @@ public abstract class Item {
         return itemInfo.BuyCost;
     }
 
-    public void getCollected(GridPane gridPane) {
-        gridPane.getChildren().remove(imageView);
+    public void getCollected() {
+        Main.pane.getChildren().remove(imageView);
 
         if (this instanceof NonAnimalItem) {
 

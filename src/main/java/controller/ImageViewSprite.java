@@ -24,7 +24,7 @@ public class ImageViewSprite extends AnimationTimer {
 
     private long lastFrame = 0;
 
-    public ImageViewSprite(ImageView imageView, Image image, int columns, int rows, int totalFrames, int frameWidth, int frameHeight, float framesPerSecond, int deltaX, int deltaY) {
+    public ImageViewSprite(ImageView imageView, Image image, int columns, int rows, int totalFrames, int frameWidth, int frameHeight, float framesPerSecond, int deltaX, int deltaY, boolean rotate) {
         this.imageView = imageView;
         imageView.setImage(image);
         imageView.setViewport(new Rectangle2D(0, 0, frameWidth, frameHeight));
@@ -39,6 +39,14 @@ public class ImageViewSprite extends AnimationTimer {
         this.deltaY = deltaY;
 
         lastFrame = System.nanoTime();
+        //rotate=true;
+        if (rotate) {
+            //imageView.setRotate(180.0);
+            imageView.setScaleX(-1);
+        }
+    }
+    public ImageViewSprite(ImageView imageView,Keep keep){
+        this(imageView,keep.image,keep.col,keep.row,keep.totalFrames,keep.frameWidth,keep.frameHeight,keep.framePerSecond,keep.deltaX,keep.deltaY,keep.rotate);
     }
 
     @Override
@@ -67,11 +75,37 @@ public class ImageViewSprite extends AnimationTimer {
             }
 
             imageView.setViewport(new Rectangle2D(currentCol * frameWidth, currentRow * frameHeight, frameWidth, frameHeight));
-            AnchorPane.setTopAnchor(imageView, imageView.getX() + 5);
+            //imageView.setY( imageView.getX() + 5);
             imageView.setX(imageView.getX() + deltaX);
             imageView.setY(imageView.getY() + deltaY);
-            AnchorPane.setLeftAnchor(imageView, imageView.getY() + 5);
+            //imageView.setX( imageView.getY() + 5);
 
+        }
+    }
+
+    public static class Keep {
+        public Image image;
+        public int col;
+        public int row;
+        public int totalFrames;
+        public int frameWidth;
+        public int frameHeight;
+        public float framePerSecond;
+        public int deltaX;
+        public int deltaY;
+        public boolean rotate;
+
+        public Keep(Image image, int col, int row, int totalFrames, int frameWidth, int frameHeight, float framePerSecond, int deltaX, int deltaY, boolean rotate) {
+            this.image = image;
+            this.col = col;
+            this.row = row;
+            this.totalFrames = totalFrames;
+            this.frameWidth = frameWidth;
+            this.frameHeight = frameHeight;
+            this.framePerSecond = framePerSecond;
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
+            this.rotate = rotate;
         }
     }
 }

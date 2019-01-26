@@ -1,5 +1,6 @@
 package Model;
 
+import Model.GameMenu.Game;
 import controller.InputProcessor;
 import controller.Main;
 import javafx.event.ActionEvent;
@@ -43,7 +44,7 @@ public class Helicopter extends Vehicle {
         return null;
     }
 
-    private static void viewHelicopterMenu() {
+    private void viewHelicopterMenu() {
 
 
         {
@@ -96,7 +97,7 @@ public class Helicopter extends Vehicle {
 
                 }
             });
-            for (Item item : /*this.getItems()*/new ArrayList<Item>()) {
+            for (Item item : this.getItems()) {
                 AnchorPane anchorPane = new AnchorPane();
                 String style = String.format("-fx-background: rgb(%d, %d, %d);" +
                                 "-fx-background-color: -fx-background;",
@@ -131,7 +132,7 @@ public class Helicopter extends Vehicle {
 
     }
 
-    public static void show() {
+    public void show() {
         Image image = null;
         try {
             image = new Image(new FileInputStream(path + "01" + ".png"));
@@ -196,19 +197,22 @@ public class Helicopter extends Vehicle {
     }
 
     public void turn() {
-        if (getRemainingTurns() > 1) {
-            setRemainingTurns(getRemainingTurns() - 1);
-        } else if (getRemainingTurns() == 1) {
-            setRemainingTurns(getRemainingTurns() - 1);
-            for (Item item : items) {
-                farm.getMap().addItemInRandom(item);
-            }
-            items.clear();
+        synchronized (Game.obj) {
+            if (getRemainingTurns() > 1) {
+                setRemainingTurns(getRemainingTurns() - 1);
+            } else if (getRemainingTurns() == 1) {
+                setRemainingTurns(getRemainingTurns() - 1);
+                for (Item item : items) {
+                    farm.getMap().addItemInRandom(item);
+                }
+                items.clear();
 
-            setPrice(0);
-        } else {
-            // do nothing
+                setPrice(0);
+            } else {
+                // do nothing
+            }
         }
+        InputProcessor.game.getFarm().getMap().threads.add(new Thread(() -> turn()));
     }
 
     public void addItem(Item item) {

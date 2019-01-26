@@ -69,6 +69,11 @@ public class Main extends Application {
         game.getFarm().getWarehouse().addItem(Item.getInstance("Egg"));
         game.getFarm().getWarehouse().addItem(Item.getInstance("Horn"));
         game.getFarm().getWarehouse().addItem(Item.getInstance("Horn"));
+        for (int i = 0; i < Map.Num_Of_CELLS_IN_COLOUM; i++) {
+            for (int j = 0; j < Map.Num_Of_CELLS_IN_ROW; j++) {
+                //game.getFarm().getMap().getCellByPosition(new MapPosition(i, j)).getGrass().setNum(100);
+            }
+        }
         Game.loadedGames.add(game);
     }
 
@@ -430,7 +435,7 @@ public class Main extends Application {
     }
 
     public synchronized static void stopGame() {
-        InputProcessor.game.w.flag =  true;
+        InputProcessor.game.w.flag = true;
 
     }
 
@@ -448,6 +453,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
+        stage.setOnCloseRequest(windowEvent -> System.exit(0));
         stage.setTitle("Farm Frenzy");
         GridPane pane = new GridPane();
         pane.setAlignment(Pos.CENTER);

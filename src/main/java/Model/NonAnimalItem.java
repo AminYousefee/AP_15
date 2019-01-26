@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import controller.InputProcessor;
+import controller.Main;
 import javafx.scene.layout.GridPane;
 
 import java.io.FileNotFoundException;
@@ -29,6 +30,7 @@ public class NonAnimalItem extends Model.Item {
     //Finished
     public NonAnimalItem(NonAnimalItemInfo info) {
         itemInfo = info;
+        //this.show();
     }
 
     //Finished
@@ -87,11 +89,11 @@ public class NonAnimalItem extends Model.Item {
 
     }*/
     @Override
-    public void getCollected(GridPane gridPane) {
+    public void getCollected() {
         if (InputProcessor.game.getFarm().getWarehouse().getCapacity() > this.getItemInfo().getDepotSize()) {
 
             InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
-            gridPane.getChildren().remove(imageView);
+            Main.pane.getChildren().remove(imageView);
             this.setPosition(NonMapPosition.getInstance());
             InputProcessor.game.getFarm().getWarehouse().addItem(this);
         } else {

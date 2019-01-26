@@ -1,5 +1,6 @@
 package Model;
 
+import Model.GameMenu.Game;
 import View.VehicleView.TruckView;
 import controller.InputProcessor;
 import controller.Main;
@@ -170,15 +171,18 @@ public class Truck extends Vehicle {
     }
 
     public void turn() {
-        if (RemainingTurns > 1) {
-            RemainingTurns -= 1;
-        } else if (RemainingTurns == 1) {
-            RemainingTurns -= 1;
-            FarmMoney = FarmMoney + Price;
-            Price = 0;
-        } else {
-            // do nothing
+        synchronized (Game.obj) {
+            if (RemainingTurns > 1) {
+                RemainingTurns -= 1;
+            } else if (RemainingTurns == 1) {
+                RemainingTurns -= 1;
+                FarmMoney = FarmMoney + Price;
+                Price = 0;
+            } else {
+                // do nothing
+            }
         }
+        InputProcessor.game.getFarm().getMap().threads.add(new Thread(() -> turn()));
     }
 
     public void printTruck() {

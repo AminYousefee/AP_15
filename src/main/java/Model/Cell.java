@@ -3,11 +3,7 @@ package Model;
 import Model.Animals.ProductiveAnimal;
 import Model.Animals.WildAnimal;
 import Model.Positions.MapPosition;
-import controller.Main;
-import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
@@ -17,17 +13,18 @@ public class Cell {
     Grass grass;
     MapPosition mapPosition;
     ArrayList<Item> items = new ArrayList<>(0);
-    private GridPane gridPane;
     Rectangle grassRect;
+    private GridPane gridPane;
 
     public Cell(int x, int y) {
-        grass = new Grass();
+        grass = new Grass(this);
         mapPosition = new MapPosition(x, y);
         items = new ArrayList<>(0);
     }
 
     public Cell(Grass grass, MapPosition mapPosition, ArrayList<Item> items) {
         this.grass = grass;
+        grass.cell = this;
         this.mapPosition = mapPosition;
         this.items = items;
     }
@@ -164,12 +161,9 @@ public class Cell {
     }
 
     public void show() {
-        if (grassRect==null){
-            grassRect  = new Rectangle(25, 25, Color.rgb(0, ((int) ((double) grass.getNum() / 100 * 255)), 0));
-            gridPane.add(grassRect,mapPosition.getX(),mapPosition.getY());
-
-        }else {
-            grassRect.setFill(Color.rgb(0, ((int) ((double) grass.getNum()) / 100 * 255),0));
+        grass.show();
+        for (Item item : items) {
+            item.show();
         }
     }
 
@@ -180,4 +174,13 @@ public class Cell {
     public void setGridPane(GridPane gridPane) {
         this.gridPane = gridPane;
     }
+
+    public Double getX() {
+        return (double) (150 + mapPosition.getX() * 40);
+    }
+
+    public Double getY() {
+        return (double) (150 + mapPosition.getY() * 30);
+    }
+
 }

@@ -25,6 +25,7 @@ import java.util.Scanner;
 
 public class Game {
 
+    public static final Object obj = new Object();
     public static ArrayList<Game> loadedGames = new ArrayList<>(0);
     public ev.W w;
     String name;
@@ -85,6 +86,7 @@ public class Game {
 
 
     public void show() {
+
 
         AnchorPane pane = new AnchorPane();
         Main.pane = pane;
@@ -159,8 +161,7 @@ public class Game {
         Main.stage.setScene(scene);
         w = new ev.W();
         new Thread(w).start();
-
-
+        InputProcessor.process("turn 1");
 
         Text text = new Text();
         mission.setText(text);
@@ -202,24 +203,9 @@ class ev implements EventHandler<ActionEvent> {
 
         @Override
         public void run() {
-            while (true) {
-                synchronized (this) {
-                    if (flag) {
-                        try {
-                            this.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    InputProcessor.process("turn 1");
-                    try {
-                        this.wait(InputProcessor.getSpeed() * 10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+            Thread t = InputProcessor.game.getFarm().getMap().threads.poll();
+            if (t != null) {
+                t.start();
             }
 
         }

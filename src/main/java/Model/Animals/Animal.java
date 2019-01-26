@@ -1,50 +1,642 @@
 package Model.Animals;
 
 import Model.Cell;
+import Model.GameMenu.Game;
 import Model.Item;
 import Model.Map;
 import Model.Positions.MapPosition;
 import Model.Upgradable;
+import controller.ImageViewSprite;
+import controller.InputProcessor;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.Random;
+import java.util.*;
 
 public abstract class Animal extends Item implements Upgradable {
-
     public static final int CAT_VOLUME = 0;
     public static final NonWildAnimal.NonWildAnimalInfo Cat_Info = Cat.CatInfo.getInstance();
     public static final int DOG_VOLUME = 0;
     public static final NonWildAnimal.NonWildAnimalInfo Dog_Info = Dog.DogInfo.getInstance();
+    static HashMap<String, ImageViewSprite.Keep> keepHashMap;
+
+    static {
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add("death.png");
+        strings.add("down.png");
+        strings.add("eat.png");
+        strings.add("left.png");
+        strings.add("up.png");
+        strings.add("up_left.png");
+        strings.add("down_left.png");
+        File file = new File("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa");
+
+
+        Image image = null;
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/death.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        ImageViewSprite.Keep keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("TurkeyDeath", keep);
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("TurkeyDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("TurkeyDown_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/eat.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("TurkeyEat", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("TurkeyLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("TurkeyRight", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("TurkeyUp", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("TurkeyUp_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, true);
+        keepHashMap.put("TurkeyDown_right", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, true);
+        keepHashMap.put("TurkeyDown_right", keep);
+
+
+
+
+
+
+
+
+
+
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("LionDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("LionDown_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/caged.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("LionCaged", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keepHashMap.put("LionLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keepHashMap.put("LionRight", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("LionUp", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("LionUp_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, true);
+        keepHashMap.put("LionDown_right", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Lion/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, true);
+        keepHashMap.put("LionDown_right", keep);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("GrizzlyDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("GrizzlyDown_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/caged.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("GrizzlyCaged", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("GrizzlyLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("GrizzlyRight", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("GrizzlyUp", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("GrizzlyUp_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, true);
+        keepHashMap.put("GrizzlyDown_right", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, true);
+        keepHashMap.put("GrizzlyDown_right", keep);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("DogDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("DogDown_left", keep);
+
+
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("DogLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("DogRight", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("DogUp", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("DogUp_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, true);
+        keepHashMap.put("DogDown_right", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, true);
+        keepHashMap.put("DogDown_right", keep);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("CatDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("CatDown_left", keep);
+
+
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("CatLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("CatRight", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("CatUp", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("CatUp_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, true);
+        keepHashMap.put("CatDown_right", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, true);
+        keepHashMap.put("CatDown_right", keep);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/death.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        ImageViewSprite.Keep keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keepHashMap.put("CowDeath", keep);
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keepHashMap.put("CowDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keepHashMap.put("CowDown_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/eat.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("CowEat", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keepHashMap.put("CowLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keepHashMap.put("CowRight", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("CowUp", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keepHashMap.put("CowUp_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, true);
+        keepHashMap.put("CowDown_right", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, true);
+        keepHashMap.put("CowDown_right", keep);
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
     MapPosition goalPosition;
     int fullness;
     int Level;
     int directive;
     ImageView imageView;
 
+    /*    public static AnimalInfo findAnimalType(String name) {
+            if (name.equalsIgnoreCase("cat")) {
+                return Cat_Info;
+            } else if (name.equalsIgnoreCase("dog")) {
+                return Dog_Info;
+            } else {
+                return ProductiveAnimal.findAnimalType(name);
+            }
+
+
+        }*/
+    ImageViewSprite sprite;
+
     //Finished
     public Animal(AnimalInfo animalInfo, Map map) {
         itemInfo = animalInfo;
         this.map = map;
-        this.show();
+        //this.show();
     }
-
-/*    public static AnimalInfo findAnimalType(String name) {
-        if (name.equalsIgnoreCase("cat")) {
-            return Cat_Info;
-        } else if (name.equalsIgnoreCase("dog")) {
-            return Dog_Info;
-        } else {
-            return ProductiveAnimal.findAnimalType(name);
-        }
-
-
-    }*/
 
     //Finished
     public static Animal getInstance(String name) {
@@ -160,20 +752,59 @@ public abstract class Animal extends Item implements Upgradable {
         return true;
     }
 
-    @Override
-    public void show() {
+    //@Override
+    public void show(String state) {
+
+
+        sprite = new ImageViewSprite(imageView, keepHashMap.get(state));
+        sprite.start();
+        new Thread(new Runnable() {
+            Object object = new Object();
+
+            @Override
+            public void run() {
+                sprite.start();
+                synchronized (object) {
+                    try {
+                        object.wait(InputProcessor.getSpeed());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                sprite.stop();
+                imageView.setViewport(new Rectangle2D(0, 0, keepHashMap.get(state).frameWidth, keepHashMap.get(state).frameHeight));
+
+            }
+        });
+
 
     }
 
     public abstract boolean turner(ListIterator<Item> listIterator);
 
     public boolean turn(ListIterator<Item> listIterator) {
-        int t = (int) (getSpeed() / 50.0);
+        //int t = (int) (getSpeed() / 50.0);
+        /*
         for (int i = 0; i < t; i++) {
             this.turner(listIterator);
+        }*/
+
+        synchronized (Game.obj) {
+            turner(listIterator);
         }
+        Object obj = new Object();
+        synchronized (obj) {
+            try {
+                obj.wait(InputProcessor.getSpeed());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        new Thread(() -> turn(listIterator));
         return false;
     }
+
+    //public void show()
 
     public static class AnimalInfo extends ItemInfo {
         int Speed;
@@ -194,17 +825,15 @@ public abstract class Animal extends Item implements Upgradable {
             if (str.equalsIgnoreCase("turkey")) {
                 str = "Ostrich";
             }
-            final String path = "/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/" + str +"/eat.png";
+            final String path = "/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/" + str + "/eat.png";
             try {
                 images[0] = new Image(new FileInputStream(path));
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             //this.show();
         }
     }
-
-    //public void show()
 
 
 }

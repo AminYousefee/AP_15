@@ -19,7 +19,6 @@ import javafx.stage.Stage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -50,7 +49,7 @@ public class Warehouse implements Upgradable {
     }
 
     public List<Item> getItems() {
-        return Collections.unmodifiableList(items);
+        return items;
     }
 
     public void setItems(ArrayList<Item> items) {
@@ -145,7 +144,7 @@ public class Warehouse implements Upgradable {
 
             Button addButton = new Button("Add");
             Button backButton = new Button("Back");
-            backButton.setOnAction(ev->Main.continueSingleGame());
+            backButton.setOnAction(ev -> Main.continueSingleGame());
             addButton.setDisable(true);
             addButton.setOnAction(new EventHandler<ActionEvent>() {
                 boolean flag;

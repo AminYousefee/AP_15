@@ -9,21 +9,23 @@ import View.Farmys.MapView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Map {
-    public static final int Num_Of_CELLS_IN_ROW = 30;
-    public static final int Num_Of_CELLS_IN_COLOUM = 30;
+    public ConcurrentLinkedQueue<Thread> threads = new ConcurrentLinkedQueue<>();
+    public static final int Num_Of_CELLS_IN_ROW = 15;
+    public static final int Num_Of_CELLS_IN_COLOUM = 15;
     Integer lifeTime = 0;
     Model.Cell[][] cells = new Model.Cell[Num_Of_CELLS_IN_COLOUM][Num_Of_CELLS_IN_ROW];
 
     public Map(Integer lifeTime, Cell[][] cells) {
         this.lifeTime = lifeTime;
         this.cells = cells;
-        for (Cell[] cells1:cells){
-            for (Cell cell:cells1){
-                for (Item item:cell.items){
-                    item.map= this;
-                    if (item instanceof WildAnimal){
+        for (Cell[] cells1 : cells) {
+            for (Cell cell : cells1) {
+                for (Item item : cell.items) {
+                    item.map = this;
+                    if (item instanceof WildAnimal) {
                         ((WildAnimal) item).getCage().setWildAnimal((WildAnimal) item);
                     }
                 }
@@ -34,7 +36,7 @@ public class Map {
     public Map() {
         for (int i = 0; i < Num_Of_CELLS_IN_ROW; i++) {
             for (int j = 0; j < Num_Of_CELLS_IN_COLOUM; j++) {
-                cells[i][j] = new Cell(i, j);
+                cells[j][i] = new Cell(i, j);
             }
         }
     }
@@ -221,5 +223,13 @@ public class Map {
         MapPosition mapPosition = new MapPosition(x, y);
         item.setPosition(mapPosition);
         this.cells[x][y].addItem(item);
+    }
+
+    public void show() {
+        for (Cell[] cells1 : cells) {
+            for (Cell cell : cells1) {
+                cell.show();
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 package Model.Factories;
 
 import Model.Farm;
+import Model.GameMenu.Game;
 import Model.Item;
 import Model.Positions.MapPosition;
 import Model.Upgradable;
@@ -13,7 +14,6 @@ import controller.InputProcessor;
 import controller.Main;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,6 +61,7 @@ public class Factory implements Upgradable {
     Process process;
     int Level;
     ImageView imageView;
+    ImageViewSprite sprite;
 
     public Factory(FactoryType factoryType, MapPosition outputPosition, Process process, int level) {
         this.factoryType = factoryType;
@@ -79,15 +80,6 @@ public class Factory implements Upgradable {
             }
         }
         //gridPane = Main.gridPane;
-    }
-
-    public static FactoryType findFactoryType(String name) {
-        for (FactoryType factoryType : factoryTypeArrayList) {
-            if (factoryType.getName().equalsIgnoreCase(name)) {
-                return factoryType;
-            }
-        }
-        return null;
     }
 
     /*public static void controller.Main(String[] args) {
@@ -111,6 +103,15 @@ public class Factory implements Upgradable {
 
     }*/
 
+    public static FactoryType findFactoryType(String name) {
+        for (FactoryType factoryType : factoryTypeArrayList) {
+            if (factoryType.getName().equalsIgnoreCase(name)) {
+                return factoryType;
+            }
+        }
+        return null;
+    }
+
     public FactoryType getFactoryType() {
         return factoryType;
     }
@@ -120,24 +121,27 @@ public class Factory implements Upgradable {
     }
 
     public boolean turn() {
-        if (process != null) {
-            if (process.getRemainedTurns() > 1) {
-                process.reduceRemainedTurnsByOne();
-            } else if (process.getRemainedTurns() == 1) {
-                process.reduceRemainedTurnsByOne();
-                finishProcess();
-                return true;
-            } else {
-                // doing nothing now but nothing else
+        synchronized (Game.obj) {
+            if (process != null) {
+                if (process.getRemainedTurns() > 1) {
+                    process.reduceRemainedTurnsByOne();
+                } else if (process.getRemainedTurns() == 1) {
+                    process.reduceRemainedTurnsByOne();
+                    finishProcess();
+                    return true;
+                } else {
+                    // doing nothing now but nothing else
+                }
             }
         }
+        InputProcessor.game.getFarm().getMap().threads.add(new Thread(() -> turn()));
         return false;
     }
 
     private void finishProcess() {
         sprite.stop();
-        sprite= new ImageViewSprite(imageView, factoryType.image, 4, 4,16, (int)(factoryType.image.getWidth()/4.0), (int)(factoryType.image.getHeight()/4), 30,0,0);
-        sprite.start() ;
+        sprite = new ImageViewSprite(imageView, factoryType.image, 4, 4, 16, (int) (factoryType.image.getWidth() / 4.0), (int) (factoryType.image.getHeight() / 4), 30, 0, 0, false);
+        sprite.start();
         sprite.stop();
 
 
@@ -171,8 +175,30 @@ public class Factory implements Upgradable {
             min = this.factoryType.Ts.get(Level).ProductionNum;
         }
         if (min > 0) {
+
+
+            Outer:
+            for (FactoryType.Isp isp : this.getFactoryType().InputItems) {
+                Iterator<Item> itemIterator = items.iterator();
+                Item item;
+                while (itemIterator.hasNext()) {
+                    item = itemIterator.next();
+                    int temp = 0;
+                    if (item.getItemInfo().equals(isp.itemInfo)) {
+                        itemIterator.remove();
+                        temp += 1;
+                        if (temp == min) {
+                            continue Outer;
+                        }
+                    }
+                }
+
+
+            }
+
+
             process = new Process(getNeededTurns(), min);
-            sprite= new ImageViewSprite(imageView, factoryType.image, 4, 4,16, (int)(factoryType.image.getWidth()/4.0), (int)(factoryType.image.getHeight()/4), 30,0,0);
+            sprite = new ImageViewSprite(imageView, factoryType.image, 4, 4, 16, (int) (factoryType.image.getWidth() / 4.0), (int) (factoryType.image.getHeight() / 4), 30, 0, 0, false);
             sprite.start();
             return true;
         } else {
@@ -232,14 +258,14 @@ public class Factory implements Upgradable {
         //System.out.println(factoryType);
     }
 
-    ImageViewSprite sprite;
     public void show() {
-        if (imageView == null) {
+        if (imageView == null || !(Main.pane.getChildren().contains(imageView))) {
             imageView = new ImageView(factoryType.image);
             Main.pane.getChildren().add(imageView);
-            AnchorPane.setTopAnchor(imageView, Arrays.asList(InputProcessor.game.getFarm().factories).indexOf(this) * 50.0+100.0);
-            AnchorPane.setLeftAnchor(imageView, 70.0);
-
+            //AnchorPane.setTopAnchor(imageView, Arrays.asList(InputProcessor.game.getFarm().factories).indexOf(this) * 50.0 + 100.0);
+            //AnchorPane.setLeftAnchor(imageView, 70.0);
+            imageView.setX(70.0);
+            imageView.setY(Arrays.asList(InputProcessor.game.getFarm().factories).indexOf(this) * 50.0 + 100.0);
             imageView.setOnMouseClicked(keyEvent -> this.startProcess(InputProcessor.game.getFarm().getWarehouse()));
 
         }
@@ -247,13 +273,12 @@ public class Factory implements Upgradable {
 
         //ImageView imageView = new ImageView();
         //Image image1 = new Image((new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Workshops/Cake (Cookie Bakery)/01.png")));
-        sprite = new ImageViewSprite(imageView, factoryType.image, 4, 4,16, (int)(factoryType.image.getWidth()/4.0), (int)(factoryType.image.getHeight()/4), 30,0,0);
+        sprite = new ImageViewSprite(imageView, factoryType.image, 4, 4, 16, (int) (factoryType.image.getWidth() / 4.0), (int) (factoryType.image.getHeight() / 4), 30, 0, 0, false);
         //Main.pane.getChildren().add(imageView);
         sprite.start();
-        if (process==null) {
+        if (process == null) {
             sprite.stop();
         }
-
 
 
     }
@@ -328,7 +353,7 @@ public class Factory implements Upgradable {
         public FactoryType(String name, ArrayList<t> ts) {
             this.name = name;
             Ts = ts;
-            switch (name){
+            switch (name) {
 
             }
 

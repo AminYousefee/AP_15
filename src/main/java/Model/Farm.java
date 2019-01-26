@@ -282,5 +282,6 @@ public class Farm {
                 factories[i].show();
             }
         }
+        map.show();
     }
 }
