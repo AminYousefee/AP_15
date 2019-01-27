@@ -106,10 +106,10 @@ public class NonAnimalItem extends Model.Item {
 
 
     @Override
-    public boolean turn(ListIterator<Item> itemIterator) {
-        super.turn(itemIterator);
+    public boolean turner() {
+        super.turner();
         if (position instanceof MapPosition && lifeTime > MaxLifeTimeInMap) {
-            itemIterator.remove();
+            InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).removeItem(this);
         }
         return false;
     }

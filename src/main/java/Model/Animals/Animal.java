@@ -8,6 +8,7 @@ import Model.Positions.MapPosition;
 import Model.Upgradable;
 import controller.ImageViewSprite;
 import controller.InputProcessor;
+import controller.Main;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -25,7 +26,7 @@ public abstract class Animal extends Item implements Upgradable {
     public static final NonWildAnimal.NonWildAnimalInfo Dog_Info = Dog.DogInfo.getInstance();
     static HashMap<String, ImageViewSprite.Keep> keepHashMap;
 
-    static {
+    /*static {
         ArrayList<String> strings = new ArrayList<>();
         strings.add("death.png");
         strings.add("down.png");
@@ -44,14 +45,14 @@ public abstract class Animal extends Item implements Upgradable {
             e.printStackTrace();
         }
 
-        ImageViewSprite.Keep keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        ImageViewSprite.Keep keep = new ImageViewSprite.Keep(image, 6, 4, 24, (int) (image.getWidth() / 6), (int) (image.getWidth() / 4), 30, 0, 0, false);
         keepHashMap.put("TurkeyDeath", keep);
         try {
             image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Ostrich/down.png"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, 0, 30 / (30 * InputProcessor.getSpeed()), false);
         keepHashMap.put("TurkeyDown", keep);
 
         try {
@@ -59,7 +60,7 @@ public abstract class Animal extends Item implements Upgradable {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, -40 / (30 * InputProcessor.getSpeed()), 30 / (30 * InputProcessor.getSpeed()), false);
         keepHashMap.put("TurkeyDown_left", keep);
 
 
@@ -121,16 +122,6 @@ public abstract class Animal extends Item implements Upgradable {
         }
         keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, true);
         keepHashMap.put("TurkeyDown_right", keep);
-
-
-
-
-
-
-
-
-
-
 
 
         try {
@@ -210,27 +201,6 @@ public abstract class Animal extends Item implements Upgradable {
         keepHashMap.put("LionDown_right", keep);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         try {
             image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Grizzly/down.png"));
         } catch (FileNotFoundException e) {
@@ -308,31 +278,6 @@ public abstract class Animal extends Item implements Upgradable {
         keepHashMap.put("GrizzlyDown_right", keep);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         try {
             image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Dog/down.png"));
         } catch (FileNotFoundException e) {
@@ -348,8 +293,6 @@ public abstract class Animal extends Item implements Upgradable {
         }
         keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
         keepHashMap.put("DogDown_left", keep);
-
-
 
 
         try {
@@ -404,23 +347,6 @@ public abstract class Animal extends Item implements Upgradable {
         keepHashMap.put("DogDown_right", keep);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         try {
             image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cat/down.png"));
         } catch (FileNotFoundException e) {
@@ -436,8 +362,6 @@ public abstract class Animal extends Item implements Upgradable {
         }
         keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
         keepHashMap.put("CatDown_left", keep);
-
-
 
 
         try {
@@ -492,35 +416,13 @@ public abstract class Animal extends Item implements Upgradable {
         keepHashMap.put("CatDown_right", keep);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         try {
             image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/death.png"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        ImageViewSprite.Keep keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
+        keep = new ImageViewSprite.Keep(image, 3, 8, 24, 144, 128, 30, false);
         keepHashMap.put("CowDeath", keep);
         try {
             image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Cow/down.png"));
@@ -599,19 +501,263 @@ public abstract class Animal extends Item implements Upgradable {
         keepHashMap.put("CowDown_right", keep);
 
 
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/death.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("SheepDeath", keep);
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("SheepDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("SheepDown_left", keep);
 
 
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/eat.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("SheepEat", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("SheepLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("SheepRight", keep);
 
 
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("SheepUp", keep);
 
 
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("SheepUp_left", keep);
 
 
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, true);
+        keepHashMap.put("SheepDown_right", keep);
 
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Sheep/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, true);
+        keepHashMap.put("SheepDown_right", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/death.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        keep = new ImageViewSprite.Keep(image, 5, 6, 30, 144, 128, 30, false);
+        keepHashMap.put("BuffaloDeath", keep);
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("BuffaloDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("BuffaloDown_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/eat.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 22, 144, 128, 30, false);
+        keepHashMap.put("BuffaloEat", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("BuffaloLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("BuffaloRight", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, false);
+        keepHashMap.put("BuffaloUp", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, false);
+        keepHashMap.put("BuffaloUp_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 4, 6, 24, 144, 128, 30, true);
+        keepHashMap.put("BuffaloDown_right", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/Buffalo/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 6, 4, 24, 144, 128, 30, true);
+        keepHashMap.put("BuffaloDown_right", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/death.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("GuineaFowlDeath", keep);
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/down.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5 24, 144, 128, 30, false);
+        keepHashMap.put("GuineaFowlDown", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("GuineaFowlDown_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/eat.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 22, 144, 128, 30, false);
+        keepHashMap.put("GuineaFowlEat", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("GuineaFowlLeft", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("GuineaFowlRight", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/up.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, , 5, 24, 144, 128, 30, false);
+        keepHashMap.put("GuineaFowlUp", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, false);
+        keepHashMap.put("GuineaFowlUp_left", keep);
+
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/up_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, true);
+        keepHashMap.put("GuineaFowlDown_right", keep);
+
+        try {
+            image = new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Animals/Africa/GuineaFowl/down_left.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        keep = new ImageViewSprite.Keep(image, 5, 5, 24, 144, 128, 30, true);
+        keepHashMap.put("GuineaFowlDown_right", keep);
 
 
     }
-
+*/
     MapPosition goalPosition;
     int fullness;
     int Level;
@@ -651,7 +797,7 @@ public abstract class Animal extends Item implements Upgradable {
         return null;
     }
 
-    public boolean move(ListIterator<Item> itemIterator) {
+    public boolean move() {
         Random random = new Random();
         int x = Math.abs(random.nextInt());
         int y = Math.abs(random.nextInt());
@@ -670,13 +816,13 @@ public abstract class Animal extends Item implements Upgradable {
             double deltaX = goalPosition.getX() - ((MapPosition) this.getPosition()).getX();
             double deltaY = goalPosition.getY() - ((MapPosition) this.getPosition()).getY();
             if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
-                return moveToPosition(goalPosition, itemIterator);
+                return moveToPosition(goalPosition);
             } else {
                 double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
                 x = (int) (amplifier * deltaX + ((MapPosition) this.getPosition()).getX());
                 y = (int) (amplifier * deltaY + ((MapPosition) this.getPosition()).getY());
                 MapPosition position = new MapPosition(x, y);
-                return moveToPosition(position, itemIterator);
+                return moveToPosition(position);
             }
         }
 
@@ -718,7 +864,7 @@ public abstract class Animal extends Item implements Upgradable {
 
     }
 
-    public boolean moveToPosition(MapPosition position, Iterator<Item> itemIterator) {
+    public boolean moveToPosition(MapPosition position) {
         Cell goalCell = map.getCell(position);
         Cell CurrentCell = map.getCell((MapPosition) this.getPosition());
 
@@ -726,34 +872,47 @@ public abstract class Animal extends Item implements Upgradable {
         if (goalCell == CurrentCell) {
             return false;
         }
-        itemIterator.remove();
+        //itemIterator.remove();
+        InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).removeItem(this);
+
         //Main.gridPane.getChildren().remove(this.imageView);
         int tempX = goalCell.getMapPosition().getX() - CurrentCell.getMapPosition().getX();
         int tempY = goalCell.getMapPosition().getY() - CurrentCell.getMapPosition().getY();
-        if (Math.abs(tempX) > Math.abs(tempY)) {
-            if (tempX > 0) {
-                directive = 0;
-            } else {
-                directive = 1;
-            }
-        } else {
-            if (tempY > 0) {
-                directive = 2;
-            } else {
-                directive = 3;
-            }
-
+        if (tempX == 1 && tempY == 1) {
+            show(itemInfo.getItemName() + "Up_right");
+        } else if (tempX == 1 && tempY == 0) {
+            show(itemInfo.getItemName() + "Right");
+        } else if (tempX == 0 && tempY == 1) {
+            show(itemInfo.getItemName() + "Up");
+        } else if (tempX == 0 && tempY == 0) {
+            //do nothing
+        } else if (tempX == -1 && tempY == 0) {
+            show(itemInfo.getItemName() + "Left");
+        } else if (tempX == -1 && tempY == -1) {
+            show(itemInfo.getItemName() + "Down_left");
+        } else if (tempX == 0 & tempY == -1) {
+            show(itemInfo.getItemName() + "Down");
+        } else if (tempX == 1 && tempY == -1) {
+            show(itemInfo.getItemName() + "Down_right");
+        } else if (tempX == -1 && tempY == 1) {
+            show(itemInfo.getItemName() + "Up_right");
         }
 
         //Main.gridPane.add(imageView,goalCell.getMapPosition().getX(),goalCell.getMapPosition().getY());
         goalCell.getItems().add(this);
         setPosition(position);
 
+
         return true;
     }
 
     //@Override
     public void show(String state) {
+        if (imageView == null){
+            imageView =  new ImageView();
+            imageView.setX(InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).getX());
+            imageView.setY(InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).getY());
+        }
 
 
         sprite = new ImageViewSprite(imageView, keepHashMap.get(state));
@@ -772,43 +931,25 @@ public abstract class Animal extends Item implements Upgradable {
                     }
                 }
                 sprite.stop();
-                imageView.setViewport(new Rectangle2D(0, 0, keepHashMap.get(state).frameWidth, keepHashMap.get(state).frameHeight));
-
+                if (state.endsWith("Death")) {
+                    Main.pane.getChildren().remove(imageView);
+                } else {
+                    imageView.setViewport(new Rectangle2D(0, 0, keepHashMap.get(state).frameWidth, keepHashMap.get(state).frameHeight));
+                }
             }
         });
 
 
     }
 
-    public abstract boolean turner(ListIterator<Item> listIterator);
 
-    public boolean turn(ListIterator<Item> listIterator) {
-        //int t = (int) (getSpeed() / 50.0);
-        /*
-        for (int i = 0; i < t; i++) {
-            this.turner(listIterator);
-        }*/
 
-        synchronized (Game.obj) {
-            turner(listIterator);
-        }
-        Object obj = new Object();
-        synchronized (obj) {
-            try {
-                obj.wait(InputProcessor.getSpeed());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        new Thread(() -> turn(listIterator));
-        return false;
-    }
 
     //public void show()
 
     public static class AnimalInfo extends ItemInfo {
         int Speed;
-        Image[] images;
+        //Image[] images;
 
 
         public AnimalInfo(String itemName, int depotSize, int buyCost, int SaleCost, int speed) {
@@ -821,7 +962,7 @@ public abstract class Animal extends Item implements Upgradable {
                     e.printStackTrace();
                 }
             }*/
-            String str = itemName;
+            /*String str = itemName;
             if (str.equalsIgnoreCase("turkey")) {
                 str = "Ostrich";
             }
@@ -830,7 +971,7 @@ public abstract class Animal extends Item implements Upgradable {
                 images[0] = new Image(new FileInputStream(path));
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
             //this.show();
         }
     }

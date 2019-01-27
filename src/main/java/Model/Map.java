@@ -56,7 +56,7 @@ public class Map {
                 cell1.turn();
             }
         }
-        lifeTime++;
+        //lifeTime++;
         /*if (lifeTime % 10 == 9) {
             Random random = new Random();
             if (random.nextBoolean()) {

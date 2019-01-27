@@ -52,7 +52,7 @@ public class WildAnimal extends Animal {
         this.cage = cage;
     }
 
-    public boolean kill(ListIterator<Item> itemIterator) {
+    public boolean kill() {
         Cell cell = map.getCellByPosition((MapPosition) this.getPosition());
         List<Item> items = cell.getItems();
         boolean isThereADog = false;
@@ -62,33 +62,16 @@ public class WildAnimal extends Animal {
             }
 
         }
-        Item item;
-        while (itemIterator.hasNext()) {
-            item = itemIterator.next();
+
+        for (Item item:items) {
             if (!(item instanceof WildAnimal)) {
                 item.die();
-                itemIterator.remove();
-            }
-        }
-        while (itemIterator.hasPrevious()) {
-            item = itemIterator.previous();
-            if (!(item instanceof WildAnimal)) {
-                item.die();
-                itemIterator.remove();
+                InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.getPosition()).removeItem(item);
             }
         }
 
-        while (itemIterator.hasNext()) {
-            item = itemIterator.next();
-            if (item == this) {
-                if (isThereADog) {
-                    item.die();
-                    itemIterator.remove();
-                    return true;
-                }
-                break;
-
-            }
+        if (isThereADog){
+            InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).removeItem(this);
         }
         return false;
 
@@ -111,31 +94,34 @@ public class WildAnimal extends Animal {
         // setCage(new Cage(((MapPosition) getPosition()).getX(), ((MapPosition) getPosition()).getY()));
     }
 
-    public void escape(ListIterator<Item> itemListIterator) {
+    public void escape() {
         setCage(null);
-        itemListIterator.remove();
+        InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).removeItem(this);
 
     }
 
     @Override
-    public boolean move(ListIterator<Item> itemIterator) {
+    public boolean move() {
         if (getPosition() instanceof NonMapPosition) {
             return false;
         }
-        return super.move(itemIterator);
+        return super.move();
     }
 
     @Override
-    public boolean turner(ListIterator<Item> itemIterator) {
-        super.turn(itemIterator);
+    public boolean turner() {
+        super.turner();
 
-        cage.turn(itemIterator);
+        cage.turn();
 
         if (!this.isCaged()) {
-            if (!this.kill(itemIterator)) {
-                this.move(itemIterator);
+            if (!this.kill()) {
+                this.move();
             }
+        }else {
+            show(this.itemInfo.getItemName()+ "Caged");
         }
+
         return false;
     }
 

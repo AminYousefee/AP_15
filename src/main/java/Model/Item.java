@@ -2,6 +2,7 @@ package Model;
 
 import Model.Animals.Animal;
 import Model.Animals.WildAnimal;
+import Model.GameMenu.Game;
 import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import controller.InputProcessor;
@@ -9,11 +10,9 @@ import controller.Main;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ListIterator;
 
 public abstract class Item {
     protected transient Map map;
@@ -38,18 +37,40 @@ public abstract class Item {
 
     }
 
+    public final boolean turn() {
+        //int t = (int) (getSpeed() / 50.0);
+        /*
+        for (int i = 0; i < t; i++) {
+            this.turner(listIterator);
+        }*/
+
+        synchronized (Game.obj) {
+            turner();
+        }
+        Object obj = new Object();
+        synchronized (obj) {
+            try {
+                obj.wait(InputProcessor.getSpeed() * 10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        InputProcessor.game.getFarm().getMap().threads.add(new Thread(this::turn));
+        return false;
+    }
+
     public void show() {
         if (imageView == null) {
             if (this.getItemInfo().getItemName().equalsIgnoreCase("egg") || this.getItemInfo().getItemName().equalsIgnoreCase("horn") || this.getItemInfo().getItemName().equalsIgnoreCase("plume") || this.getItemInfo().getItemName().equalsIgnoreCase("wool")) {
                 try {
-                    imageView = new ImageView(new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Products/"+this.itemInfo.getItemName()+"/normal.png")));
+                    imageView = new ImageView(new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Products/" + this.itemInfo.getItemName() + "/normal.png")));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
 
-            }else {
+            } else {
                 try {
-                    imageView =  new ImageView(new Image(new FileInputStream("./static/Products/"+itemInfo.getItemName()+".png")));
+                    imageView = new ImageView(new Image(new FileInputStream("./static/Products/" + itemInfo.getItemName() + ".png")));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -57,8 +78,8 @@ public abstract class Item {
             }
 
         }
-        AnchorPane.setTopAnchor(imageView,InputProcessor.game.getFarm().getMap().getCellByPosition(((MapPosition) this.getPosition())).getX());
-        AnchorPane.setLeftAnchor(imageView,InputProcessor.game.getFarm().getMap().getCellByPosition(((MapPosition) this.getPosition())).getY());
+        AnchorPane.setTopAnchor(imageView, InputProcessor.game.getFarm().getMap().getCellByPosition(((MapPosition) this.getPosition())).getX());
+        AnchorPane.setLeftAnchor(imageView, InputProcessor.game.getFarm().getMap().getCellByPosition(((MapPosition) this.getPosition())).getY());
         Main.pane.getChildren().add(imageView);
     }
 
@@ -107,7 +128,7 @@ public abstract class Item {
 
     }
 
-    public boolean turn(ListIterator<Item> itemIterator) {
+    public boolean turner() {
         lifeTime++;
         return false;
     }
@@ -158,11 +179,11 @@ public abstract class Item {
             DepotSize = depotSize;
             this.BuyCost = buyCost;
             this.SaleCost = SaleCost;
-            try {
+            /*try {
                 image = new Image(new FileInputStream(ItemName + ".png"));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
 
         public int getBuyCost() {

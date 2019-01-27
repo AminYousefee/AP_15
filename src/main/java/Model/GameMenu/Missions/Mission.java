@@ -2,7 +2,7 @@ package Model.GameMenu.Missions;
 
 import Model.Item;
 import controller.InputProcessor;
-import javafx.scene.control.Label;
+import controller.Main;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -63,11 +63,14 @@ public class Mission {
 
 
     public boolean isSatisfied() {
+
         for (Goal.EE ee : goal.ees) {
             if (!ee.isSatisfied()) {
+                InputProcessor.game.getFarm().getMap().threads.add(new Thread(this::isSatisfied));
                 return false;
             }
         }
+        Main.gameEnded();
         return true;
     }
 

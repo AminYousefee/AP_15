@@ -66,7 +66,7 @@ public class Game {
     }
 
     public void turn() {
-        System.out.println("Turn = " + this.getFarm().getTurnsWent());
+        /*System.out.println("Turn = " + this.getFarm().getTurnsWent());
         if (mission.isSatisfied()) {
             System.out.println("Mission Satisfied");
             System.out.println("Do you Want To Continue?");
@@ -80,6 +80,11 @@ public class Game {
                 InputProcessor.GameNotSpecifiedMode();
             }
         } else {
+            farm.turn();
+        }*/
+        if (mission.isSatisfied()){
+
+        }else {
             farm.turn();
         }
     }
@@ -160,8 +165,11 @@ public class Game {
         Scene scene = new Scene(pane, 800, 600);
         Main.stage.setScene(scene);
         w = new ev.W();
+        InputProcessor.game.turn();
         new Thread(w).start();
-        InputProcessor.process("turn 1");
+
+        //InputProcessor.process("turn 1");
+
 
         Text text = new Text();
         mission.setText(text);
@@ -197,15 +205,18 @@ class ev implements EventHandler<ActionEvent> {
             return flag;
         }
 
-        public void setFlag(boolean flag) {
+        public synchronized void setFlag(boolean flag) {
             this.flag = flag;
         }
 
         @Override
         public void run() {
-            Thread t = InputProcessor.game.getFarm().getMap().threads.poll();
-            if (t != null) {
-                t.start();
+
+            while (!flag) {
+                Thread t = InputProcessor.game.getFarm().getMap().threads.poll();
+                if (t != null) {
+                    t.start();
+                }
             }
 
         }

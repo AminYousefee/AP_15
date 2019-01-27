@@ -19,7 +19,7 @@ public class Dog extends NonWildAnimal {
     }
 
     @Override
-    public boolean move(ListIterator<Item> itemIterator) {
+    public boolean move() {
         if (getPosition() instanceof NonMapPosition){
             return false;
         }
@@ -46,11 +46,11 @@ public class Dog extends NonWildAnimal {
                 deltaX = Math.signum(deltaX);
                 deltaY = Math.signum(deltaY);
                 MapPosition p = new MapPosition((int)deltaX,(int)deltaY);
-                moveToPosition(p,itemIterator);
+                moveToPosition(p);
                 return true;
             }
         }else {
-            return super.move(itemIterator);
+            return super.move();
         }
 
 
@@ -60,9 +60,9 @@ public class Dog extends NonWildAnimal {
 
 
     @Override
-    public boolean turner(ListIterator<Item> itemIterator) {
-        super.turn(itemIterator);
-        return this.move(itemIterator);
+    public boolean turner() {
+        super.turn();
+        return this.move();
 
     }
 

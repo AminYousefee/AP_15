@@ -3,6 +3,7 @@ package Model;
 import Model.Animals.ProductiveAnimal;
 import Model.Animals.WildAnimal;
 import Model.Positions.MapPosition;
+import controller.InputProcessor;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 
@@ -134,11 +135,9 @@ public class Cell {
 
 
     public void turn() {
-        ListIterator<Item> itemIterator = items.listIterator();
-        Item item;
-        while (itemIterator.hasNext()) {
-            item = itemIterator.next();
-            item.turn(itemIterator);
+        //Item item;
+        for (Item item : items) {
+            InputProcessor.game.getFarm().getMap().threads.add(new Thread(item::turn));
         }
     }
 

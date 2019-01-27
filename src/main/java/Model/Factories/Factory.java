@@ -134,6 +134,15 @@ public class Factory implements Upgradable {
                 }
             }
         }
+        System.out.println("Weefsjdfhk");
+        Object obj = new Object();
+        synchronized (obj) {
+            try {
+                obj.wait(InputProcessor.getSpeed()*10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         InputProcessor.game.getFarm().getMap().threads.add(new Thread(() -> turn()));
         return false;
     }

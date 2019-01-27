@@ -12,7 +12,6 @@ import Model.Positions.Position;
 import Model.Warehouse;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.sun.jdi.event.StepEvent;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -328,6 +327,7 @@ public class InputProcessor {
                 System.out.println("Animal Type Not Found");
             } else {
                 game.getFarm().buyAnimal(animal);
+                InputProcessor.game.getFarm().getMap().threads.add(new Thread(animal::turn));
             }
             return true;
         }
@@ -670,8 +670,7 @@ public class InputProcessor {
     }
 
 
-    public static boolean addToVehicle2 (String input){
-
+    public static boolean addToVehicle2(String input) {
 
 
         Matcher matcher;
@@ -752,23 +751,14 @@ public class InputProcessor {
         return false;
 
 
-
-
-
-
-
-
-
-
-
-    }
-
-    public static void setSpeed(int speed) {
-        InputProcessor.speed = speed;
     }
 
     public static int getSpeed() {
         return speed;
+    }
+
+    public static void setSpeed(int speed) {
+        InputProcessor.speed = speed;
     }
 
     @Test

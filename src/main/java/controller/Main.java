@@ -265,6 +265,7 @@ public class Main extends Application {
     public synchronized static void continueSingleGame() {
         InputProcessor.game.show();
         synchronized (InputProcessor.game.w) {
+            InputProcessor.game.w.setFlag(false);
             InputProcessor.game.w.notify();
         }
 
@@ -435,8 +436,12 @@ public class Main extends Application {
     }
 
     public synchronized static void stopGame() {
-        InputProcessor.game.w.flag = true;
+        InputProcessor.game.w.setFlag(true);
 
+    }
+
+    public static void gameEnded() {
+        //todo gameEndedEnded
     }
 
     public void singlePlayerGame() {

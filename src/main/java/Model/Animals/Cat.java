@@ -25,7 +25,7 @@ public class Cat extends NonWildAnimal {
     }
 
     @Override
-    public boolean move(ListIterator<Item> itemIterator) {
+    public boolean move() {
         if (getPosition() instanceof NonMapPosition) {
             return false;
         }
@@ -75,7 +75,7 @@ public class Cat extends NonWildAnimal {
                 y= 0;
             }
             MapPosition mapPosition = new MapPosition(x,y);
-            return moveToPosition(mapPosition,itemIterator);
+            return moveToPosition(mapPosition);
         } else {
 
             MapPosition goalItemPosition = (MapPosition) goalItem.getPosition();
@@ -97,7 +97,7 @@ public class Cat extends NonWildAnimal {
                 deltaX = Math.signum(deltaX);
                 deltaY = Math.signum(deltaY);
                 MapPosition p = new MapPosition(((int)deltaX),((int)deltaY));
-                moveToPosition(p,itemIterator);
+                moveToPosition(p);
             }
             return true;
         }
@@ -135,8 +135,8 @@ public class Cat extends NonWildAnimal {
     }
 
     @Override
-    public boolean turner(ListIterator<Item> itemIterator) {
-        super.turn(itemIterator);
-        return this.move(itemIterator);
+    public boolean turner() {
+        super.turner();
+        return this.move();
     }
 }
