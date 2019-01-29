@@ -102,6 +102,7 @@ public class Truck extends Vehicle {
                 button.setOnAction(evt -> {
                     content.getChildren().remove(anchorPane);
                     this.getItems().remove(item);
+                    InputProcessor.game.getFarm().getWarehouse().addItem(item);
 
 
                 });

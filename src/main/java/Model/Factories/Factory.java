@@ -121,6 +121,7 @@ public class Factory implements Upgradable {
     }
 
     public boolean turn() {
+        boolean flag=false;
         synchronized (Game.obj) {
             if (process != null) {
                 if (process.getRemainedTurns() > 1) {
@@ -128,7 +129,8 @@ public class Factory implements Upgradable {
                 } else if (process.getRemainedTurns() == 1) {
                     process.reduceRemainedTurnsByOne();
                     finishProcess();
-                    return true;
+
+                    flag= true;
                 } else {
                     // doing nothing now but nothing else
                 }
@@ -144,7 +146,8 @@ public class Factory implements Upgradable {
             }
         }
         InputProcessor.game.getFarm().getMap().threads.add(new Thread(() -> turn()));
-        return false;
+
+        return flag;
     }
 
     private void finishProcess() {

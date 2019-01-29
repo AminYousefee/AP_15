@@ -44,6 +44,7 @@ public abstract class Item {
             this.turner(listIterator);
         }*/
 
+        System.out.println(this.getClass());
         synchronized (Game.obj) {
             turner();
         }

@@ -66,11 +66,19 @@ public class Mission {
 
         for (Goal.EE ee : goal.ees) {
             if (!ee.isSatisfied()) {
+                Object object = new Object();
+                synchronized (object){
+                    try {
+                        object.wait(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 InputProcessor.game.getFarm().getMap().threads.add(new Thread(this::isSatisfied));
                 return false;
             }
         }
-        Main.gameEnded();
+        Main.InGameMenu(false);
         return true;
     }
 

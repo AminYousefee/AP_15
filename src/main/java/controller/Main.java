@@ -208,6 +208,31 @@ public class Main extends Application {
     private static void multiplayerGame() {
         GridPane gridPane = new GridPane();
         Button hostButton = new Button("Host");
+        hostButton.setOnAction(event -> {
+            GridPane pane1 = new GridPane();
+            TextField tx = new TextField();
+            tx.setText("Port");
+            pane1.add(tx,0,0);
+            tx.setOnAction(event1 -> {
+                Server server =Server.getInstance();
+                GridPane gridPane1 = new GridPane();
+                TextField username = new TextField("Username");
+                TextField realname = new TextField("Real Name");
+                Button enter = new Button("Enter");
+                enter.setOnAction(event2 -> {
+                    server.serverClient = new Server.ServerClient(username.getCharacters().toString(),realname.getCharacters().toString(),0,0);
+                    server.clients.put(server.serverClient.getUsername(), server.serverClient);
+                    new Thread(server).start();
+                    server.show();
+
+                });
+                gridPane1.add(username,0,0);
+                gridPane1.add(realname,0,1);
+                gridPane1.add(enter,0,2);
+                stage.setScene(new Scene(gridPane1));
+            });
+            stage.setScene(new Scene(pane1));
+        });
         Button clientButton = new Button("Client");
         Button backButton = new Button("Back");
         backButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -442,6 +467,95 @@ public class Main extends Application {
 
     public static void gameEnded() {
         //todo gameEndedEnded
+    }
+
+    public static void InGameMenu(boolean flag) {
+        Stage stage = Main.stage;
+        GridPane gridPane = new GridPane();
+        Button continueButton = new Button("Continue");
+        continueButton.setOnAction(actionEvent -> {
+            continueSingleGame();
+        });
+        if (flag) {
+            continueButton.setDisable(true);
+        }
+        gridPane.add(continueButton, 0, 0);
+        Button SingleGame = new Button("SinglePlayer");
+        SingleGame.setOnAction(new EventHandler<ActionEvent>() {
+            boolean flag;
+            Stage stage;
+
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (flag == false) {
+                    stage = new Stage();
+                    GridPane gridPane = new GridPane();
+                    gridPane.add(new Label("Input a number from 0 to 100"), 0, 0);
+                    TextField textField = new TextField();
+                    textField.setOnAction(actionEvent1 -> {
+                        try {
+                            int num = Integer.parseInt(textField.getCharacters().toString());
+                            if (num >= 0 && num <= 100) {
+                                stage.close();
+                                flag = false;
+                                InputProcessor.setSpeed(num);
+                                //singleGameStarted(num);
+                                InSingleMenu();
+
+                            } else {
+                                textField.setText("");
+                            }
+                        } catch (Exception e) {
+                            textField.setText("");
+                        }
+                    });
+                    gridPane.add(textField, 0, 1);
+                    flag = true;
+                    stage.setScene(new Scene(gridPane));
+                    stage.show();
+                    stage.setOnCloseRequest(windowEvent -> flag = false);
+
+                } else {
+
+                }
+            }
+        });
+        gridPane.add(SingleGame, 0, 1);
+
+
+        Button btn2 = new Button("Multiplayer");
+        btn2.setOnAction(actionEvent -> {
+            multiplayerGame();
+        });
+        gridPane.add(btn2, 1, 1);
+
+        Button btn3 = new Button("Exit");
+        btn3.setOnAction(actionEvent -> {
+            System.exit(0);
+        });
+        gridPane.add(btn3, 2, 1);
+
+        String backpath = "./static/back.png";
+        FileInputStream input = null;
+        try {
+            input = new FileInputStream(backpath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Image image = new Image(input);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);
+        Background background = new Background(backgroundImage);
+
+        gridPane.setBackground(background);
+
+        Scene scene = new Scene(gridPane, image.getWidth(), image.getHeight());
+        stage.setScene(scene);
+
+
     }
 
     public void singlePlayerGame() {

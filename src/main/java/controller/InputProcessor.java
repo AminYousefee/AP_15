@@ -876,7 +876,7 @@ public class InputProcessor {
         @Override
         public Game deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            final String name = jsonObject.get("name").getAsString();
+            final String name = jsonObject.get("username").getAsString();
             final Mission mission = jsonDeserializationContext.deserialize(jsonObject.get("mission"), Mission.class);
             final Farm farm = jsonDeserializationContext.deserialize(jsonObject.get("farm"), Farm.class);
             return new Game(name, mission, farm);

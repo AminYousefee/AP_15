@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -265,5 +266,9 @@ public class Warehouse implements Upgradable {
                 viewDepotMenu();
             }
         });
+    }
+
+    public void removeItem(String itemName) {
+        items.removeIf(item -> item.getItemInfo().getItemName().equals(itemName));
     }
 }

@@ -36,7 +36,7 @@ public class Map {
     public Map() {
         for (int i = 0; i < Num_Of_CELLS_IN_ROW; i++) {
             for (int j = 0; j < Num_Of_CELLS_IN_COLOUM; j++) {
-                cells[j][i] = new Cell(i, j);
+                cells[i][j] = new Cell(i, j);
             }
         }
     }

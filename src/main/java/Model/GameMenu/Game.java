@@ -114,6 +114,7 @@ public class Game {
         pane.setBackground(background);
 
         Button btn = new Button("Menu");
+        btn.setOnAction(event -> Main.InGameMenu(false));
         Button buyAnimalButton = new Button("Buy Animal");
         AnchorPane.setTopAnchor(buyAnimalButton, 50.0);
         Main.pane.getChildren().add(buyAnimalButton);

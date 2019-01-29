@@ -10,19 +10,20 @@ import javafx.scene.layout.AnchorPane;
 public class ImageViewSprite extends AnimationTimer {
 
 
-    private final int totalFrames; //Total number of frames in the sequence
-    private final float fps; //frames per second I.E. 24
-    private final int cols; //Number of columns on the sprite sheet
-    private final int rows; //Number of rows on the sprite sheet
-    private final int frameWidth; //Width of an individual frame
-    private final int frameHeight; //Height of an individual frame
-    private final int deltaX;
-    private final int deltaY;
+    public int totalFrames; //Total number of frames in the sequence
+    public float fps; //frames per second I.E. 24
+    public int cols; //Number of columns on the sprite sheet
+    public int rows; //Number of rows on the sprite sheet
+    public int frameWidth; //Width of an individual frame
+    public int frameHeight; //Height of an individual frame
+    public int deltaX;
+    public int deltaY;
     public /*private final*/ ImageView imageView; //Image view that will display our sprite
-    private int currentCol = 0;
-    private int currentRow = 0;
+    public int currentCol = 0;
+    public int currentRow = 0;
 
-    private long lastFrame = 0;
+    public long lastFrame = 0;
+    public boolean rotate;
 
     public ImageViewSprite(ImageView imageView, Image image, int columns, int rows, int totalFrames, int frameWidth, int frameHeight, float framesPerSecond, int deltaX, int deltaY, boolean rotate) {
         this.imageView = imageView;
@@ -39,6 +40,7 @@ public class ImageViewSprite extends AnimationTimer {
         this.deltaY = deltaY;
 
         lastFrame = System.nanoTime();
+        this.rotate = rotate;
         //rotate=true;
         if (rotate) {
             //imageView.setRotate(180.0);

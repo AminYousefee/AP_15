@@ -162,7 +162,7 @@ public class ProductiveAnimal extends NonWildAnimal {
 
     @Override
     public boolean turner() {
-        super.turn();
+        super.turner();
         if (map.getCellByPosition((MapPosition) this.position).getItems().contains(this)) {
 
 
@@ -209,14 +209,19 @@ public class ProductiveAnimal extends NonWildAnimal {
         }
 
         public String getOutPutItem() {
-            if (this.getItemName().equalsIgnoreCase("turkey")) {
+            if (this.getItemName().equalsIgnoreCase("Ostrich")) {
+                return "Egg";
+            } else if (this.getItemName().equalsIgnoreCase("guineaFowl")){
                 return "Egg";
             } else if (this.getItemName().equalsIgnoreCase("sheep")) {
                 return "Wool";
             } else if (this.getItemName().equalsIgnoreCase("cow")) {
                 return "Milk";
+            } else if (this.getItemName().equalsIgnoreCase("buffalo")) {
+                return "Horn";
             }
             return null;
         }
+
     }
 }
