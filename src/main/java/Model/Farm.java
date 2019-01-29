@@ -6,6 +6,7 @@ import Model.Animals.NonWildAnimal;
 import Model.Animals.WildAnimal;
 import Model.Factories.Factory;
 import Model.Positions.MapPosition;
+import controller.InputProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,13 +146,16 @@ public class Farm {
     public void turn() {
         for (Factory factory : factories) {
             if (factory != null) {
-                factory.turn();
+                //factory.turn();
+                InputProcessor.game.getFarm().getMap().threads.add(new Thread(factory::turn));
             }
         }
         map.turn();
-        truck.turn();
-        helicopter.turn();
-        turnsWent += 1;
+        InputProcessor.game.getFarm().getMap().threads.add(new Thread(() -> truck.turn()));
+        //truck.turn();
+        InputProcessor.game.getFarm().getMap().threads.add(new Thread(() -> helicopter.turn()));
+        //helicopter.turn();
+        //turnsWent += 1;
 
 
     }
@@ -270,5 +274,18 @@ public class Farm {
 
     public void pay(int pay) {
         CurrentMoney = CurrentMoney - pay;
+    }
+
+    public void show() {
+        truck.show();
+        helicopter.show();
+        warehouse.show();
+
+        for (int i = 0; i < 6; i++) {
+            if (factories[i] != null) {
+                factories[i].show();
+            }
+        }
+        map.show();
     }
 }

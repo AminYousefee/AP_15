@@ -1,0 +1,30 @@
+Egg Powder Plant	0	1	15	100	150
+Egg Powder Plant	1	2	14	200	250
+Egg Powder Plant	2	3	13	300	350
+Egg Powder Plant	3	4	11	400	450
+Egg Powder Plant	4	5	8	500	550
+Cookie Bakery	0	1	15	200	200
+Cookie Bakery	1	2	14	300	300
+Cookie Bakery	2	3	13	400	400
+Cookie Bakery	3	4	11	500	500
+Cookie Bakery	4	5	8	600	600
+Cake Bakery	0	1	15	300	300
+Cake Bakery	1	2	14	400	400
+Cake Bakery	2	3	13	500	500
+Cake Bakery	3	4	11	600	600
+Cake Bakery	4	5	7.5	700	700
+Spinnery	0	1	15	1000	1500
+Spinnery	1	2	14	1100	2000
+Spinnery	2	3	13	1200	2500
+Spinnery	3	4	11	1300	3000
+Spinnery	4	5	7.5	1400	3500
+Weaving Factory	0	1	15	1500	2000
+Weaving Factory	1	2	14	1600	2500
+Weaving Factory	2	3	13	1700	3000
+Weaving Factory	3	4	11	1800	3500
+Weaving Factory	4	5	7.5	1900	4000
+Sewing Factory	0	1	15	2000	2500
+Sewing Factory	1	2	14	2100	3000
+Sewing Factory	2	3	13	2200	3500
+Sewing Factory	3	4	11	2300	4000
+Sewing Factory	4	5	8	2400	4500

@@ -6,6 +6,7 @@ import Model.NonAnimalItem;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
+import controller.Main;
 import controller.Print;
 
 import java.util.Iterator;
@@ -24,7 +25,7 @@ public class Cat extends NonWildAnimal {
     }
 
     @Override
-    public boolean move(ListIterator<Item> itemIterator) {
+    public boolean move() {
         if (getPosition() instanceof NonMapPosition) {
             return false;
         }
@@ -59,8 +60,8 @@ public class Cat extends NonWildAnimal {
             Random random = new Random();
             int x = Math.abs(random.nextInt());
             int y = Math.abs(random.nextInt());
-            x = x % 3 - 1;
-            y = y % 3 - 1;
+            x = x % Map.Num_Of_CELLS_IN_ROW - 1;
+            y = y % Map.Num_Of_CELLS_IN_COLOUM - 1;
             x += ((MapPosition)getPosition()).getX();
             y += ((MapPosition)getPosition()).getY();
             if (x >= Map.Num_Of_CELLS_IN_ROW) {
@@ -74,7 +75,7 @@ public class Cat extends NonWildAnimal {
                 y= 0;
             }
             MapPosition mapPosition = new MapPosition(x,y);
-            return moveToPosition(mapPosition,itemIterator);
+            return moveToPosition(mapPosition);
         } else {
 
             MapPosition goalItemPosition = (MapPosition) goalItem.getPosition();
@@ -84,7 +85,7 @@ public class Cat extends NonWildAnimal {
             } else {
                 double deltaX = goalItemPosition.getX() - ((MapPosition) this.getPosition()).getX();
                 double deltaY = goalItemPosition.getY() - ((MapPosition) this.getPosition()).getY();
-                if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
+                /*if (((deltaX * deltaX) + (deltaY * deltaY)) < (this.getSpeed() * this.getSpeed())) {
                     moveToPosition(goalItemPosition,itemIterator);
                 } else {
                     double amplifier = Math.sqrt((this.getSpeed() * this.getSpeed()) / ((deltaX * deltaX) + (deltaY * deltaY)));
@@ -92,7 +93,11 @@ public class Cat extends NonWildAnimal {
                     int y = (int) (amplifier * deltaY + ((MapPosition) this.getPosition()).getY());
                     MapPosition position = new MapPosition(x, y);
                     moveToPosition(position,itemIterator);
-                }
+                }*/
+                deltaX = Math.signum(deltaX);
+                deltaY = Math.signum(deltaY);
+                MapPosition p = new MapPosition(((int)deltaX),((int)deltaY));
+                moveToPosition(p);
             }
             return true;
         }
@@ -109,7 +114,7 @@ public class Cat extends NonWildAnimal {
 
 
     private boolean collect(Item item) {
-        ((NonAnimalItem) item).getCollected();
+        //((NonAnimalItem) item).getCollected(Main.gridPane);
         map.getCell((MapPosition) item.getPosition()).removeItem(item);
 
         return true;
@@ -130,8 +135,8 @@ public class Cat extends NonWildAnimal {
     }
 
     @Override
-    public boolean turn(ListIterator<Item> itemIterator) {
-        super.turn(itemIterator);
-        return this.move(itemIterator);
+    public boolean turner() {
+        super.turner();
+        return this.move();
     }
 }

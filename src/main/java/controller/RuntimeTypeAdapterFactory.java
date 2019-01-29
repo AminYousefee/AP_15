@@ -90,19 +90,19 @@ import com.google.gson.stream.JsonWriter;
  *       "y": 1
  *     }
  *   }}</pre>
- * Both the type field name ({@code "type"}) and the type labels ({@code
+ * Both the type field username ({@code "type"}) and the type labels ({@code
  * "Rectangle"}) are configurable.
  *
  * <h3>Registering Types</h3>
  * Create a {@code RuntimeTypeAdapterFactory} by passing the base type and type field
- * name to the {@link #of} factory method. If you don't supply an explicit type
- * field name, {@code "type"} will be used. <pre>   {@code
+ * username to the {@link #of} factory method. If you don't supply an explicit type
+ * field username, {@code "type"} will be used. <pre>   {@code
  *   RuntimeTypeAdapterFactory<Shape> shapeAdapterFactory
  *       = RuntimeTypeAdapterFactory.of(Shape.class, "type");
  * }</pre>
  * Next register all of your subtypes. Every subtype must be explicitly
  * registered. This protects your application from injection attacks. If you
- * don't supply an explicit type label, the type's simple name will be used.
+ * don't supply an explicit type label, the type's simple username will be used.
  * <pre>   {@code
  *   shapeAdapterFactory.registerSubtype(Rectangle.class, "Rectangle");
  *   shapeAdapterFactory.registerSubtype(Circle.class, "Circle");
@@ -139,7 +139,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     /**
      * Creates a new runtime type adapter using for {@code baseType} using {@code
-     * typeFieldName} as the type field name. Type field names are case sensitive.
+     * typeFieldName} as the type field username. Type field names are case sensitive.
      * {@code maintainType} flag decide if the type will be stored in pojo or not.
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName, boolean maintainType) {
@@ -148,7 +148,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     /**
      * Creates a new runtime type adapter using for {@code baseType} using {@code
-     * typeFieldName} as the type field name. Type field names are case sensitive.
+     * typeFieldName} as the type field username. Type field names are case sensitive.
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName) {
         return new RuntimeTypeAdapterFactory<T>(baseType, typeFieldName, false);
@@ -156,7 +156,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     /**
      * Creates a new runtime type adapter for {@code baseType} using {@code "type"} as
-     * the type field name.
+     * the type field username.
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType) {
         return new RuntimeTypeAdapterFactory<T>(baseType, "type", false);
@@ -183,9 +183,9 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     /**
      * Registers {@code type} identified by its {@link Class#getSimpleName simple
-     * name}. Labels are case sensitive.
+     * username}. Labels are case sensitive.
      *
-     * @throws IllegalArgumentException if either {@code type} or its simple name
+     * @throws IllegalArgumentException if either {@code type} or its simple username
      *     have already been registered on this type adapter.
      */
     public RuntimeTypeAdapterFactory<T> registerSubtype(Class<? extends T> type) {

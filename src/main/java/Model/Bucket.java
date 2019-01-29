@@ -1,8 +1,22 @@
 package Model;
 
 import View.Farmys.BucketView;
+import controller.Main;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import org.junit.jupiter.api.Test;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public class Bucket implements Upgradable {
+    static String path = "./static/Service/Well/";
+
+
+
+
+
     int Level;
     Integer farmMoney;
     private int CurrentWater;
@@ -98,6 +112,21 @@ public class Bucket implements Upgradable {
 
     public boolean hasEnoughWater() {
         return CurrentWater >= 1;
+    }
+
+
+
+
+    public static void show(){
+        try {
+            Image image =  new Image(new FileInputStream(path+"01.png"));
+            ImageView imageView = new ImageView(image);
+            AnchorPane.setTopAnchor(imageView,50.0);
+            AnchorPane.setLeftAnchor(imageView,50.0);
+            Main.pane.getChildren().add(imageView);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 

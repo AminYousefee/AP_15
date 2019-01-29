@@ -2,23 +2,31 @@ package Model;
 
 import Model.Animals.Animal;
 import Model.Animals.WildAnimal;
+import Model.GameMenu.Game;
 import Model.Positions.MapPosition;
 import Model.Positions.Position;
 import controller.InputProcessor;
+import controller.Main;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 
-import java.util.ListIterator;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public abstract class Item {
     protected transient Map map;
     protected ItemInfo itemInfo;
-    protected Position Position;
+    protected Position position;
     int ID;
     int lifeTime;
     boolean isRemove = false;
+    ImageView imageView;
 
     public static Item getInstance(String name) {
         Item result = NonAnimalItem.getInstance(name);
         if (result != null) {
+
             return result;
         }
         result = Animal.getInstance(name);
@@ -27,6 +35,53 @@ public abstract class Item {
         }
         return null;
 
+    }
+
+    public final boolean turn() {
+        //int t = (int) (getSpeed() / 50.0);
+        /*
+        for (int i = 0; i < t; i++) {
+            this.turner(listIterator);
+        }*/
+
+        System.out.println(this.getClass());
+        synchronized (Game.obj) {
+            turner();
+        }
+        Object obj = new Object();
+        synchronized (obj) {
+            try {
+                obj.wait(InputProcessor.getSpeed() * 10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        InputProcessor.game.getFarm().getMap().threads.add(new Thread(this::turn));
+        return false;
+    }
+
+    public void show() {
+        if (imageView == null) {
+            if (this.getItemInfo().getItemName().equalsIgnoreCase("egg") || this.getItemInfo().getItemName().equalsIgnoreCase("horn") || this.getItemInfo().getItemName().equalsIgnoreCase("plume") || this.getItemInfo().getItemName().equalsIgnoreCase("wool")) {
+                try {
+                    imageView = new ImageView(new Image(new FileInputStream("/home/a/Projects/AP_Project/AP_15/static/Products/" + this.itemInfo.getItemName() + "/normal.png")));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                try {
+                    imageView = new ImageView(new Image(new FileInputStream("./static/Products/" + itemInfo.getItemName() + ".png")));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+        AnchorPane.setTopAnchor(imageView, InputProcessor.game.getFarm().getMap().getCellByPosition(((MapPosition) this.getPosition())).getX());
+        AnchorPane.setLeftAnchor(imageView, InputProcessor.game.getFarm().getMap().getCellByPosition(((MapPosition) this.getPosition())).getY());
+        Main.pane.getChildren().add(imageView);
     }
 
     public ItemInfo getItemInfo() {
@@ -38,11 +93,11 @@ public abstract class Item {
     }
 
     public Position getPosition() {
-        return Position;
+        return position;
     }
 
     public void setPosition(Position position) {
-        this.Position = position;
+        this.position = position;
     }
 
     public double getVolume() {
@@ -74,7 +129,7 @@ public abstract class Item {
 
     }
 
-    public boolean turn(ListIterator<Item> itemIterator) {
+    public boolean turner() {
         lifeTime++;
         return false;
     }
@@ -94,6 +149,7 @@ public abstract class Item {
     }
 
     public void getCollected() {
+        Main.pane.getChildren().remove(imageView);
 
         if (this instanceof NonAnimalItem) {
 
@@ -108,17 +164,27 @@ public abstract class Item {
         }
     }
 
+    public void die() {
+        //Main.gridPane.getChildren().remove(this.imageView);
+    }
+
     public static class ItemInfo {
         protected String ItemName;
         protected double DepotSize;
         protected int BuyCost;
         protected int SaleCost;
+        Image image;
 
         public ItemInfo(String itemName, double depotSize, int buyCost, int SaleCost) {
             ItemName = itemName;
             DepotSize = depotSize;
             this.BuyCost = buyCost;
             this.SaleCost = SaleCost;
+            /*try {
+                image = new Image(new FileInputStream(ItemName + ".png"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }*/
         }
 
         public int getBuyCost() {

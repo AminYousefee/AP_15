@@ -7,12 +7,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import controller.InputProcessor;
+import controller.Main;
+import javafx.scene.layout.GridPane;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Scanner;
 
@@ -29,6 +30,7 @@ public class NonAnimalItem extends Model.Item {
     //Finished
     public NonAnimalItem(NonAnimalItemInfo info) {
         itemInfo = info;
+        //this.show();
     }
 
     //Finished
@@ -66,7 +68,7 @@ public class NonAnimalItem extends Model.Item {
     }
 
     /*@Test
-    public static void main(String[] args) {
+    public static void controller.Main(String[] args) {
 
         try {
             FileReader fileReader = new FileReader(NonAnimalItemsConfigFilePath);
@@ -91,6 +93,7 @@ public class NonAnimalItem extends Model.Item {
         if (InputProcessor.game.getFarm().getWarehouse().getCapacity() > this.getItemInfo().getDepotSize()) {
 
             InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.getPosition()).removeItem(this);
+            Main.pane.getChildren().remove(imageView);
             this.setPosition(NonMapPosition.getInstance());
             InputProcessor.game.getFarm().getWarehouse().addItem(this);
         } else {
@@ -103,10 +106,10 @@ public class NonAnimalItem extends Model.Item {
 
 
     @Override
-    public boolean turn(ListIterator<Item> itemIterator) {
-        super.turn(itemIterator);
-        if (Position instanceof MapPosition && lifeTime > MaxLifeTimeInMap) {
-            itemIterator.remove();
+    public boolean turner() {
+        super.turner();
+        if (position instanceof MapPosition && lifeTime > MaxLifeTimeInMap) {
+            InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).removeItem(this);
         }
         return false;
     }
@@ -121,7 +124,7 @@ public class NonAnimalItem extends Model.Item {
 
     }
 /*
-    public static void main(String[] args) {
+    public static void controller.Main(String[] args) {
         UploadNonAnimalItemInfos();
         System.out.println(nonAnimalItemInfos);
     }*/

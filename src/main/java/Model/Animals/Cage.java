@@ -61,18 +61,19 @@ public class Cage implements Upgradable {
 
     }
 
-    public void turn(ListIterator<Item> itemListIterator) {
+    public void turn() {
         if (wildAnimal.isCaged()){
             turnsCompleted++;
         }
         if (turnsCompleted == getEscapeTurn() && wildAnimal.getPosition() instanceof MapPosition) {
-            wildAnimal.escape(itemListIterator);
+            wildAnimal.escape();
         }
         if (getCompletnessPercetage() != getProgressMaxValue()) {
 
             setCompletnessPercetage(getCompletnessPercetage() - 5);
         }
         if (getCompletnessPercetage() <= 0) {
+            wildAnimal.setCage(null);
             setCompletnessPercetage(0);
         }
 
