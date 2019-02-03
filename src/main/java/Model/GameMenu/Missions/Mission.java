@@ -8,6 +8,7 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 
 public class Mission {
+    public int level;
     public static final String MissionsConfigFilePath = "./MissionsConfigFile.json";
     //private static HashSet<Mission> missions = new HashSet<>(0);
     public Goal goal;
