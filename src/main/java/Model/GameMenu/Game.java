@@ -21,15 +21,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Game {
 
     public static final Object obj = new Object();
     public static ArrayList<Game> loadedGames = new ArrayList<>(0);
     public ev.W w;
+    public Mission mission;
     String name;
-    private Mission mission;
     private Farm farm;
 
 
@@ -82,9 +81,9 @@ public class Game {
         } else {
             farm.turn();
         }*/
-        if (mission.isSatisfied()){
+        if (mission.isSatisfied()) {
 
-        }else {
+        } else {
             farm.turn();
         }
     }

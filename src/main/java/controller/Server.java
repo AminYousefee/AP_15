@@ -1,6 +1,7 @@
 package controller;
 
 import Model.Item;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -26,9 +27,9 @@ public class Server implements Runnable {
     HashMap<String, Client> clients = new HashMap<>();
     Listener listener;
     int port;
-    Market market = new Market();
+    Market market = new Market(true);
     ChatRoom chatRoom = new ChatRoom(true);
-    LeaderBoard leaderBoard = new LeaderBoard();
+    LeaderBoard leaderBoard = new LeaderBoard(true);
 
     {
         //clients.put(serverClient.getUsername(), serverClient);
@@ -52,14 +53,42 @@ public class Server implements Runnable {
         Button leaderboard = new Button("leaderboard");
         Button market = new Button("market");
         Button people = new Button("people");
+        Button play = new Button("Play");
+        play.setOnAction(event -> {
+            InputProcessor.process( "run empty");
+            InputProcessor.game.show();
+            VBox vBox = new VBox();
+            vBox.getChildren().addAll(chatroom,leaderboard,people,market);
+            AnchorPane.setTopAnchor(vBox,100.0);
+            Main.pane.getChildren().addAll(vBox);
+
+        });
         gp.add(chatroom, 0, 0);
         gp.add(leaderboard, 0, 1);
         gp.add(market, 0, 2);
         gp.add(people, 0, 3);
+        gp.add(play,0,4);
         chatroom.setOnAction(event -> {
             Server.getInstance().chatRoom.show();
         });
-        //leaderboard.setOnAction(event ->Server.getInstance().leaderBoard.show());
+        leaderboard.setOnAction(event -> {
+            Stage stage1 = new Stage();
+            stage1.setTitle("Leaderboard");
+            GridPane gridPane = new GridPane();
+            Button level = new Button("Level");
+            Button money = new Button("Money");
+            level.setOnAction(event1 -> {
+                Server.getInstance().leaderBoard.update("Level", stage1);
+
+            });
+            gridPane.addRow(2,
+                    level, money);
+            money.setOnAction(event1 -> {
+                Server.getInstance().leaderBoard.update("Money", stage1);
+            });
+            stage1.setScene(new Scene(gridPane));
+            stage1.show();
+        });
         market.setOnAction(event -> Server.getInstance().market.show());
         //people.setOnAction(event -> Server.getInstance().showPeople());
         stage.setScene(new Scene(gp));
@@ -114,9 +143,8 @@ public class Server implements Runnable {
         int currentMoney;
         ClientServerRelation clientServerRelation;
         ArrayList<Client> allies = new ArrayList<>();
-        private String userName;
         private int numOfTeamGames;
-        private String numOfDeals;
+        private int numOfDeals;
 
         public Client(String username, String realName, int level, int currentMoney) {
             this.username = username;
@@ -170,13 +198,6 @@ public class Server implements Runnable {
             clientServerRelation.msgSender.sendMessage(msg);
         }
 
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
 
         public int getNumOfTeamGames() {
             return numOfTeamGames;
@@ -186,11 +207,11 @@ public class Server implements Runnable {
             this.numOfTeamGames = numOfTeamGames;
         }
 
-        public String getNumOfDeals() {
+        public int getNumOfDeals() {
             return numOfDeals;
         }
 
-        public void setNumOfDeals(String numOfDeals) {
+        public void setNumOfDeals(int numOfDeals) {
             this.numOfDeals = numOfDeals;
         }
     }
@@ -227,6 +248,8 @@ class Listener implements Runnable {
             Socket socket = null;
             try {
                 serverSocket = new ServerSocket(port);
+                System.out.println("Socket Started");
+                System.out.println(port);
                 while (true) {
                     socket = serverSocket.accept();
                     ClientServerRelation clientServerRelation = new ClientServerRelation(socket);
@@ -245,7 +268,7 @@ class Listener implements Runnable {
 
 class ClientServerRelation implements Runnable {
     Socket socket;
-    MessageReciever msgReciever;
+    MessageReceiever msgReciever;
     MessageSender msgSender;
 
     public ClientServerRelation(Socket socket) {
@@ -255,7 +278,8 @@ class ClientServerRelation implements Runnable {
     @Override
     public void run() {
         msgSender = new MessageSender(this);
-        msgReciever = new MessageReciever(this);
+        msgReciever = new MessageReceiever(this);
+        msgSender.sendMessage(new ClientAddedToServer(Server.getInstance().serverClient.username, Server.getInstance().serverClient.username, Server.getInstance().serverClient.realName, Server.getInstance().serverClient.currentMoney, Server.getInstance().serverClient.level));
 
         Thread t = new Thread(msgReciever);
         t.setDaemon(true);
@@ -272,7 +296,6 @@ class ClientServerRelation implements Runnable {
 
 class MessageSender implements Runnable {
     ConcurrentLinkedQueue<Message> toBeSentMessages = new ConcurrentLinkedQueue<>();
-    Socket socket;
     ClientServerRelation clientServerRelation;
 
     public MessageSender(ClientServerRelation clientServerRelation) {
@@ -283,14 +306,29 @@ class MessageSender implements Runnable {
         toBeSentMessages.add(msg);
     }
 
+    public void updater() {
+
+
+        Message t = new UpdateMessage(Cli.getInstance().me.username, InputProcessor.game.mission.level, InputProcessor.game.getFarm().getCurrentMoney());
+        Cli.getInstance().messageSender.sendMessage(t);
+        new Thread(() -> {
+            InputProcessor.game.getFarm().getMap().threads.add(new Thread(this::updater));
+        });
+
+    }
+
 
     @Override
     public synchronized void run() {
+        if (InputProcessor.game != null) {
+            updater();
+        }
+
         while (true) {
             Message msg = toBeSentMessages.peek();
             if (msg != null) {
                 try {
-                    OutputStream outputStream = socket.getOutputStream();
+                    OutputStream outputStream = clientServerRelation.socket.getOutputStream();
                     ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
                     objectOutputStream.writeObject(msg);
                     toBeSentMessages.remove(msg);
@@ -305,10 +343,10 @@ class MessageSender implements Runnable {
 }
 
 
-class MessageReciever implements Runnable {
+class MessageReceiever implements Runnable {
     ClientServerRelation clientServerRelation;
 
-    public MessageReciever(ClientServerRelation clientServerRelation) {
+    public MessageReceiever(ClientServerRelation clientServerRelation) {
         this.clientServerRelation = clientServerRelation;
     }
 
@@ -318,8 +356,8 @@ class MessageReciever implements Runnable {
         ObjectInputStream ois = null;
         try {
             inputStream = clientServerRelation.socket.getInputStream();
-            ois = new ObjectInputStream(inputStream);
             while (true) {
+                ois = new ObjectInputStream(inputStream);
                 Message mesasge = null;
 
                 mesasge = (Message) ois.readObject();
@@ -340,7 +378,7 @@ class MessageReciever implements Runnable {
     }
 }
 
-abstract class Message {
+abstract class Message implements Serializable {
     String sender;
 
     public Message(String sender) {
@@ -351,7 +389,7 @@ abstract class Message {
 }
 
 
-class StartMessage extends Message {
+class StartMessage extends Message implements Serializable {
     ClientServerRelation clientServerRelation;
     String clientName;
     int Level;
@@ -395,6 +433,12 @@ class StartMessage extends Message {
         } else {
             Server.Client cl = new Server.Client(this, clientServerRelation);
             Server.getInstance().clients.put(clientName, cl);
+            Message msg = new ClientAddedToServer(Server.getInstance().serverClient.username, clientName, clientName, CurrentMoney, Level);
+            for (Map.Entry<String, Server.Client> entry : Server.getInstance().clients.entrySet()) {
+                if (!entry.getKey().equals(clientName)) {
+                    entry.getValue().sendMessage(msg);
+                }
+            }
             Server.getInstance().chatRoom.update(cl);
         }
     }
@@ -419,49 +463,46 @@ class ClientNameUsedMessage extends Message {
 }
 
 class LeaderBoard {
+    VBox content;
+    String sortType;
 
-    public void update(String sortType) {
+    boolean isServer;
+    boolean isShown;
+
+    public LeaderBoard(boolean isServer) {
+        this.isServer = isServer;
+    }
+
+    public void update(String sortType, Stage stage) {
+        this.sortType = sortType;
+
 
         if (sortType.equals("Level")) {
             ArrayList<Server.Client> list = new ArrayList<>(Server.getInstance().clients.values());
-            list.sort((client, t1) -> {
-                if (client.getCurrentMoney() == t1.getCurrentMoney()) {
-                    return 0;
-                } else if (client.getCurrentMoney() > t1.getCurrentMoney()) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-
-            });
-            show(list);
+            list.sort(Comparator.comparingInt(Server.Client::getCurrentMoney));
+            show(list, stage);
 
 
         } else {
             ArrayList<Server.Client> list = new ArrayList<>(Server.getInstance().clients.values());
-            list.sort((client, t1) -> {
-                if (client.getLevel() == t1.getLevel()) {
-                    return 0;
-                } else if (client.getLevel() > t1.getLevel()) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-
-            });
-            show(list);
+            list.sort(Comparator.comparingInt(Server.Client::getLevel));
+            show(list, stage);
 
         }
+
     }
 
 
-    public void show(ArrayList<Server.Client> clients) {
+    public void show(ArrayList<Server.Client> clients, Stage primaryStage) {
         final Random rng = new Random();
-        Stage primaryStage = new Stage();
-        VBox content = new VBox(5);
+        primaryStage.setOnCloseRequest(windowEvent -> content = null);
+        content = new VBox(5);
         ScrollPane scroller = new ScrollPane(content);
         scroller.setFitToWidth(true);
         Button addButton = new Button("Add");
+        isShown = true;
+        new Thread(() -> this.reSort(content));
+        primaryStage.setOnCloseRequest(windowEvent -> isShown = false);
         for (Server.Client client : clients) {
             AnchorPane anchorPane = new AnchorPane();
             String style = String.format("-fx-background: rgb(%d, %d, %d);" +
@@ -470,7 +511,8 @@ class LeaderBoard {
                     rng.nextInt(256),
                     rng.nextInt(256));
             anchorPane.setStyle(style);
-            Label label = new Label(client.getUserName());
+            anchorPane.setUserData(client);
+            Label label = new Label(client.username);
             AnchorPane.setLeftAnchor(label, 5.0);
             AnchorPane.setTopAnchor(label, 5.0);
             Button button = new Button("Profile");
@@ -492,10 +534,28 @@ class LeaderBoard {
                         stage = new Stage();
                         stage.setOnCloseRequest(windowEvent -> flag = false);
                         stage.setOnShown(windowEvent -> flag = true);
-                        stage.setTitle("Message To " + /*client.getUserName()*/ "Asghar");
+                        stage.setTitle("Message To " + client.username);
                         GridPane gridPane = new GridPane();
                         TextField textField = new TextField();
                         textField.setOnAction(actionEvent1 -> {
+                            if (isServer) {
+                                Message msg = new PvMessageToClient(Server.getInstance().serverClient.username, Server.getInstance().serverClient.username, textField.getCharacters().toString());
+                                Server.getInstance().clients.get(client.username).sendMessage(msg);
+                            } else {
+                                Message msg = new PvMessageToServer(Cli.getInstance().me.username, textField.getCharacters().toString(), client.username);
+                                Cli.getInstance().messageSender.sendMessage(msg);
+
+                            }
+
+
+                            //dsfhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiii
+                            ///
+                            //
+                            //
+                            //
+                            //
+                            //
+
                             stage.close();
                             flag = false;
                         });
@@ -540,6 +600,51 @@ class LeaderBoard {
 
     }
 
+    private void reSort(VBox content) {
+        Object object = new Object();
+
+        while (isShown) {
+            if (sortType.equals("Level")) {
+
+                content.getChildren().sort((client, t1) -> {
+                    if (((Server.Client) client.getUserData()).getLevel() == ((Server.Client) t1.getUserData()).getLevel()) {
+                        return 0;
+                    } else if (((Server.Client) client.getUserData()).getLevel() > ((Server.Client) t1.getUserData()).getLevel()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+
+                });
+            } else {
+
+                content.getChildren().sort((client, t1) -> {
+                    if (((Server.Client) client.getUserData()).getCurrentMoney() == ((Server.Client) t1.getUserData()).getCurrentMoney()) {
+                        return 0;
+                    } else if (((Server.Client) client.getUserData()).getCurrentMoney() > ((Server.Client) t1.getUserData()).getCurrentMoney()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+
+                });
+
+
+                synchronized (object) {
+                    try {
+                        object.wait(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+        }
+
+
+    }
+
 
 }
 
@@ -555,17 +660,14 @@ abstract class ChatMessage extends Message {
 
 
 class ChatRoom {
+    public boolean isShown;
     boolean inServer;
+    ArrayList<ChatMessage> mesasges = new ArrayList<>(0);
+    VBox content;
 
     public ChatRoom(boolean inServer) {
         this.inServer = inServer;
     }
-
-    public boolean isShown;
-    ArrayList<ChatMessage> mesasges = new ArrayList<>(0);
-
-    VBox content;
-
 
     public void ChatRoom() {
 
@@ -592,8 +694,8 @@ class ChatRoom {
             /*button.setOnAction(evt -> content.getChildren().remove(anchorPane));
             AnchorPane.setRightAnchor(button, 5.0);
             AnchorPane.setTopAnchor(button, 5.0);
-            AnchorPane.setBottomAnchor(button, 5.0);
-            anchorPane.getChildren().addAll(label, button);*/
+            AnchorPane.setBottomAnchor(button, 5.0);*/
+            anchorPane.getChildren().addAll(label, label1);
             content.getChildren().add(anchorPane);
         }
 
@@ -616,7 +718,7 @@ class ChatRoom {
             Stage stage1 = new Stage();
             GridPane gp = new GridPane();
             TextField textField = new TextField("msg");
-            gp.add(textField,0,0);
+            gp.add(textField, 0, 0);
             stage1.setScene(new Scene(gp));
             stage1.show();
             textField.setOnAction(event1 -> {
@@ -624,15 +726,15 @@ class ChatRoom {
 
                 String sender;
                 if (inServer) {
-                    sender =  Server.getInstance().serverClient.username;
-                    for (Map.Entry<String, Server.Client> entry:Server.getInstance().clients.entrySet()){
-                        ChatMsgToClients chatMsgToClients =new ChatMsgToClients(Server.getInstance().serverClient.username,textField.getCharacters().toString(),Server.getInstance().serverClient.username);
+                    sender = Server.getInstance().serverClient.username;
+                    ChatMsgToClients chatMsgToClients = new ChatMsgToClients(Server.getInstance().serverClient.username, textField.getCharacters().toString(), Server.getInstance().serverClient.username);
+                    for (Map.Entry<String, Server.Client> entry : Server.getInstance().clients.entrySet()) {
                         entry.getValue().sendMessage(chatMsgToClients);
                         mesasges.add(chatMsgToClients);
                     }
                 } else {
                     sender = Cli.getInstance().me.username;
-                    ChatMessageToServer chatMessageToServer =new ChatMessageToServer(Cli.getInstance().me.username,textField.getCharacters().toString());
+                    ChatMessageToServer chatMessageToServer = new ChatMessageToServer(Cli.getInstance().me.username, textField.getCharacters().toString());
                     Cli.getInstance().messageSender.sendMessage(chatMessageToServer);
                     mesasges.add(chatMessageToServer);
 
@@ -655,7 +757,7 @@ class ChatRoom {
             AnchorPane.setRightAnchor(button, 5.0);
             AnchorPane.setTopAnchor(button, 5.0);
             AnchorPane.setBottomAnchor(button, 5.0);*/
-            anchorPane.getChildren().addAll(label, label1);
+                anchorPane.getChildren().addAll(label, label1);
                 content.getChildren().add(anchorPane);
                 stage1.close();
 
@@ -733,8 +835,11 @@ class ChatRoom {
         Label label1 = new Label(message.message);
         AnchorPane.setTopAnchor(label1, 30.0);
         AnchorPane.setRightAnchor(label1, 5.0);
-        content.getChildren().add(anchorPane);
+        anchorPane.getChildren().addAll(label, label1);
+        if (content != null) {
+            Platform.runLater(() -> content.getChildren().add(anchorPane));
 
+        }
 
       /*  for (Server.Client client : Server.getInstance().clients) {
             client.sendMessage(message);
@@ -751,14 +856,15 @@ class ChatRoom {
 }
 
 class Market {
-    private static Market ourInstance = new Market();
     ArrayList<SellMessage> sellMessages = new ArrayList<>();
     VBox content;
+    boolean isServer;
 
-
-    public static Market getInstance() {
-        return ourInstance;
+    public Market(boolean b) {
+        isServer = b;
     }
+
+
 
     public void buyItem(String seller, String itemName) {
         Iterator<SellMessage> sellMessageIterator = sellMessages.iterator();
@@ -766,10 +872,27 @@ class Market {
             SellMessage sellMessage = sellMessageIterator.next();
             if (sellMessage.item.getItemInfo().getItemName().equals(itemName) && sellMessage.seller.equals(seller)) {
                 sellMessageIterator.remove();
+                Platform.runLater(() ->{
+                    ContentMaking();
+                    if (scroller!=null){
+
+                        scroller.setContent(content);
+                    }
+                });
+
                 break;
             }
         }
         //Server.getInstance().clients.get(msg.sender).sendMessage(new BuyMessageToServer(msg.getItem()));
+    }
+    ScrollPane scroller;
+
+
+    {
+        sellMessages = new ArrayList<>();
+        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Egg")));
+        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Egg")));
+        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Horn")));
     }
 
     private void removeMessage(SellMessage msg) {
@@ -784,19 +907,36 @@ class Market {
         Stage stage = new Stage();
 
 
+
         final Random rng = new Random();
         if (content == null) {
             this.ContentMaking();
         }
-        ScrollPane scroller = new ScrollPane(content);
+        scroller = new ScrollPane(content);
         scroller.setFitToWidth(true);
 
         Button addButton = new Button("Add");
+        if (InputProcessor.game == null) {
+            addButton.setDisable(true);
+        }
         addButton.setOnAction(event -> {
             Stage stage1 = new Stage();
             GridPane gridPane = new GridPane();
             TextField item = new TextField("ItemName");
-            List<Item> items = InputProcessor.game.getFarm().getWarehouse().getItems();
+            List<Item> items;
+            if (InputProcessor.game == null) {
+                items = new ArrayList<>();
+            } else {
+
+                items = InputProcessor.game.getFarm().getWarehouse().getItems();
+            }
+            //just for debugging now
+            items = new ArrayList<>();
+            items.add(Item.getInstance("Egg"));
+            items.add(Item.getInstance("Egg"));
+            items.add(Item.getInstance("Egg"));
+            items.add(Item.getInstance("Egg"));
+
 
             Item flag = null;
             for (Item item1 : items) {
@@ -845,6 +985,7 @@ class Market {
     }
 
     private void ContentMaking() {
+
         Random rng = new Random();
         content = new VBox(5);
         for (SellMessage message : sellMessages) {
@@ -860,13 +1001,29 @@ class Market {
             AnchorPane.setTopAnchor(label, 5.0);
             Label label1 = new Label("Seller = " + message.seller);
             AnchorPane.setTopAnchor(label1, 30.0);
-            AnchorPane.setRightAnchor(label1, 5.0);
+            AnchorPane.setRightAnchor(label1, 95.0);
+            anchorPane.getChildren().addAll(label,label1);
+            Button button = new Button("Buy");
 
-            /*button.setOnAction(evt -> content.getChildren().remove(anchorPane));
+            if (isServer){
+                button.setOnAction(event -> {
+                        BoughtMessageToClients boughtMessageToClients = new BoughtMessageToClients(Server.getInstance().serverClient.username, message.item.getItemInfo().getItemName(), Server.getInstance().serverClient.username, message.seller);
+                for (Map.Entry<String, Server.Client> entry : Server.getInstance().clients.entrySet()) {
+                    entry.getValue().sendMessage(boughtMessageToClients);
+                }
+                content.getChildren().remove(anchorPane);
+                });
+            }else {
+                button.setOnAction(event -> {
+                    Cli.getInstance().messageSender.sendMessage(new BuyMessageToServer(Cli.getInstance().me.username, message.seller, message.item, Cli.getInstance().me.username));
+                    sellMessages.remove(message);
+                    content.getChildren().remove(anchorPane);
+                });
+            }
             AnchorPane.setRightAnchor(button, 5.0);
             AnchorPane.setTopAnchor(button, 5.0);
             AnchorPane.setBottomAnchor(button, 5.0);
-            anchorPane.getChildren().addAll(label, button);*/
+            anchorPane.getChildren().addAll( button);
             content.getChildren().add(anchorPane);
         }
 
@@ -907,6 +1064,7 @@ class BoughtMessageToClients extends Message {
 
     @Override
     public void process() {
+        System.out.println("Boght Message Recied");
         if (Cli.getInstance().me.username.equals(seller)) {
             InputProcessor.game.getFarm().setCurrentMoney(InputProcessor.game.getFarm().getCurrentMoney() + Item.getInstance(itemName).getItemInfo().getSaleCost());
             InputProcessor.game.getFarm().getWarehouse().removeItem(itemName);
@@ -916,7 +1074,7 @@ class BoughtMessageToClients extends Message {
     }
 }
 
-class PvMessageToClient extends Message {
+class PvMessageToClient extends Message implements Serializable {
     String sender;
     String msgString;
 
@@ -928,12 +1086,15 @@ class PvMessageToClient extends Message {
 
     @Override
     public void process() {
-        Stage stage = new Stage();
-        stage.setTitle("Message From " + sender);
-        GridPane gridPane = new GridPane();
-        gridPane.add(new Label(msgString), 0, 0);
-        stage.setScene(new Scene(gridPane));
-        stage.show();
+        Platform.runLater(() -> {
+            Stage stage = new Stage();
+            stage.setTitle("Message From " + sender);
+            GridPane gridPane = new GridPane();
+            gridPane.add(new Label(msgString), 0, 0);
+            stage.setScene(new Scene(gridPane));
+            stage.show();
+        });
+
     }
 }
 
@@ -979,7 +1140,7 @@ class SellMessageToServer extends SellMessage {
 
     @Override
     public void process() {
-        Market.getInstance().addItemToSell(this);
+        Server.getInstance().market.addItemToSell(this);
 
     }
 }
@@ -1014,29 +1175,7 @@ class BuyMessageToServer extends Message {
 }
 
 
-class UpdateMessage {
-    int Level;
-    int CurrentMoney;
-
-    public int getLevel() {
-        return Level;
-    }
-
-    public void setLevel(int level) {
-        Level = level;
-    }
-
-    public int getCurrentMoney() {
-        return CurrentMoney;
-    }
-
-    public void setCurrentMoney(int currentMoney) {
-        CurrentMoney = currentMoney;
-    }
-}
-
-
-class ChatMessageToServer extends ChatMessage {
+class ChatMessageToServer extends ChatMessage implements Serializable {
 
     public ChatMessageToServer(String client, String msg) {
         super(client, msg);
@@ -1044,15 +1183,17 @@ class ChatMessageToServer extends ChatMessage {
 
     @Override
     public void process() {
+        System.out.println("Client  = " + sender);
+        System.out.println("msg = " + message);
         Server.getInstance().chatRoom.addMessage(this);
-        for (Map.Entry<String, Server.Client> entry:Server.getInstance().clients.entrySet()){
-            entry.getValue().sendMessage(new ChatMsgToClients(Server.getInstance().serverClient.username,message,sender));
+        for (Map.Entry<String, Server.Client> entry : Server.getInstance().clients.entrySet()) {
+            entry.getValue().sendMessage(new ChatMsgToClients(Server.getInstance().serverClient.username, message, sender));
         }
 
     }
 }
 
-class ChatMsgToClients extends ChatMessage {
+class ChatMsgToClients extends ChatMessage implements Serializable {
     String Owner;
 
     public ChatMsgToClients(String sender, String message, String owner) {
@@ -1062,6 +1203,7 @@ class ChatMsgToClients extends ChatMessage {
 
     @Override
     public void process() {
+        System.out.println("I recieved it");
         Cli.getInstance().chatRoom.addMessage(this);
         //Cli.getInstance().chatRoom.updateContent(this);
 
@@ -1108,28 +1250,109 @@ class GiftToServer extends Message {
     @Override
     public void process() {
         for (Item item : items) {
-            Market.getInstance().addItemToSell(new SellMessageToServer(Server.getInstance().serverClient.username, item));
+            Server.getInstance().market.addItemToSell(new SellMessageToServer(Server.getInstance().serverClient.username, item));
 
         }
     }
 }
 
-class ClientAddedToServer extends Message {
+class ClientAddedToServer extends Message implements Serializable {
     String Addedclient;
     String realName;
     int money;
     int level;
 
-    public ClientAddedToServer(String sender, String addedclient, String realName, int money) {
+    public ClientAddedToServer(String sender, String addedclient, String realName, int money, int level) {
         super(sender);
         Addedclient = addedclient;
         this.realName = realName;
         this.money = money;
+        this.level = level;
     }
 
     @Override
     public void process() {
         Cli.getInstance().knownClientHashMap.put(Addedclient, new Cli.Client(Addedclient, realName, level, money));
+        if (Cli.getInstance().leaderBoard.isShown) {
+            final Random rng = new Random();
+            VBox content = Cli.getInstance().leaderBoard.content;
+            if (content != null) {
+                AnchorPane anchorPane = new AnchorPane();
+                String style = String.format("-fx-background: rgb(%d, %d, %d);" +
+                                "-fx-background-color: -fx-background;",
+                        rng.nextInt(256),
+                        rng.nextInt(256),
+                        rng.nextInt(256));
+                anchorPane.setStyle(style);
+                anchorPane.setUserData(Cli.getInstance().knownClientHashMap.get(Addedclient));
+                Label label = new Label(Addedclient);
+                AnchorPane.setLeftAnchor(label, 5.0);
+                AnchorPane.setTopAnchor(label, 5.0);
+                Button button = new Button("Profile");
+                Label nameLabel = new Label(Cli.getInstance().knownClientHashMap.get(Addedclient).username);
+
+
+                Label teamGames = new Label("Games = " + Cli.getInstance().knownClientHashMap.get(Addedclient).getNumOfTeamGames());
+                Label Deals = new Label("Deals = " + Cli.getInstance().knownClientHashMap.get(Addedclient).getNumOfDeals());
+                Button pv = new Button("Message");
+                AnchorPane.setTopAnchor(pv, 30.0);
+                AnchorPane.setRightAnchor(pv, 5.0);
+                pv.setOnAction(new EventHandler<ActionEvent>() {
+                    boolean flag;
+                    Stage stage;
+
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        if (!flag) {
+                            stage = new Stage();
+                            stage.setOnCloseRequest(windowEvent -> flag = false);
+                            stage.setOnShown(windowEvent -> flag = true);
+                            stage.setTitle("Message To " + Cli.getInstance().knownClientHashMap.get(Addedclient).username);
+                            GridPane gridPane = new GridPane();
+                            TextField textField = new TextField();
+                            textField.setOnAction(actionEvent1 -> {
+                                Message msg = new PvMessageToServer(Cli.getInstance().me.username, textField.getCharacters().toString(), Cli.getInstance().knownClientHashMap.get(Addedclient).username);
+                                Cli.getInstance().messageSender.sendMessage(msg);
+
+                                stage.close();
+                                flag = false;
+                            });
+                            gridPane.add(textField, 0, 0);
+                            Scene scene = new Scene(gridPane);
+                            stage.setScene(scene);
+                            stage.show();
+                        }
+                    }
+                });
+
+                AnchorPane.setTopAnchor(teamGames, 30.0);
+                AnchorPane.setTopAnchor(Deals, 30.0);
+                AnchorPane.setTopAnchor(nameLabel, 30.0);
+                AnchorPane.setLeftAnchor(nameLabel, 5.0);
+                AnchorPane.setLeftAnchor(teamGames, 105.0);
+                AnchorPane.setLeftAnchor(Deals, 205.0);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    boolean flag;
+
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        if (flag == false) {
+                            anchorPane.getChildren().addAll(nameLabel, teamGames, Deals, pv);
+                            flag = true;
+                        } else {
+                            anchorPane.getChildren().removeAll(nameLabel, teamGames, Deals, pv);
+                            flag = false;
+                        }
+                    }
+                });
+                AnchorPane.setRightAnchor(button, 5.0);
+                AnchorPane.setTopAnchor(button, 5.0);
+
+
+                anchorPane.getChildren().addAll(label, button);
+                content.getChildren().add(anchorPane);
+            }
+        }
     }
 }
 
@@ -1392,5 +1615,211 @@ class FriendShipRejected extends Message {
             entry.getValue().sendMessage(mesasge);
         }
     }
+
+}*/
+class UpdateMessage extends Message {
+    int level;
+    int money;
+
+    public UpdateMessage(String sender, int level, int money) {
+        super(sender);
+        this.level = level;
+        this.money = money;
+    }
+
+    @Override
+    public void process() {
+        Server.Client client = Server.getInstance().clients.get(sender);
+        client.level = level;
+        client.currentMoney = money;
+    }
+
+}
+
+
+class CliLeaderboard {
+    boolean isShown;
+    boolean isServer = false;
+    VBox content;
+    private String sortType;
+
+    public void update(String sortType, Stage stage) {
+        this.sortType = sortType;
+
+        if (sortType.equals("Level")) {
+            ArrayList<Cli.Client> list = new ArrayList<>(Cli.getInstance().knownClientHashMap.values());
+            list.sort(Comparator.comparingInt(client -> client.Money));
+            show(list, stage);
+
+
+        } else {
+            ArrayList<Cli.Client> list = new ArrayList<>(Cli.getInstance().knownClientHashMap.values());
+            list.sort(Comparator.comparingInt(client -> client.Level));
+            show(list, stage);
+
+        }
+
+    }
+
+
+    public void show(ArrayList<Cli.Client> clients, Stage primaryStage) {
+        final Random rng = new Random();
+        primaryStage.setOnCloseRequest(windowEvent -> content = null);
+        content = new VBox(5);
+        ScrollPane scroller = new ScrollPane(content);
+        scroller.setFitToWidth(true);
+        Button addButton = new Button("Add");
+        isShown = true;
+        new Thread(() -> this.reSort(content));
+        primaryStage.setOnCloseRequest(windowEvent -> isShown = false);
+        for (Cli.Client client : clients) {
+            AnchorPane anchorPane = new AnchorPane();
+            String style = String.format("-fx-background: rgb(%d, %d, %d);" +
+                            "-fx-background-color: -fx-background;",
+                    rng.nextInt(256),
+                    rng.nextInt(256),
+                    rng.nextInt(256));
+            anchorPane.setStyle(style);
+            anchorPane.setUserData(client);
+            Label label = new Label(client.username);
+            AnchorPane.setLeftAnchor(label, 5.0);
+            AnchorPane.setTopAnchor(label, 5.0);
+            Button button = new Button("Profile");
+            Label nameLabel = new Label(client.username);
+
+
+            Label teamGames = new Label("Games = " + client.getNumOfTeamGames());
+            Label Deals = new Label("Deals = " + client.getNumOfDeals());
+            Button pv = new Button("Message");
+            AnchorPane.setTopAnchor(pv, 30.0);
+            AnchorPane.setRightAnchor(pv, 5.0);
+            pv.setOnAction(new EventHandler<ActionEvent>() {
+                boolean flag;
+                Stage stage;
+
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    if (!flag) {
+                        stage = new Stage();
+                        stage.setOnCloseRequest(windowEvent -> flag = false);
+                        stage.setOnShown(windowEvent -> flag = true);
+                        stage.setTitle("Message To " + client.username);
+                        GridPane gridPane = new GridPane();
+                        TextField textField = new TextField();
+                        textField.setOnAction(actionEvent1 -> {
+                            if (isServer) {
+                                Message msg = new PvMessageToClient(Server.getInstance().serverClient.username, Server.getInstance().serverClient.username, textField.getCharacters().toString());
+                                Server.getInstance().clients.get(client.username).sendMessage(msg);
+                            } else {
+                                Message msg = new PvMessageToServer(Cli.getInstance().me.username, textField.getCharacters().toString(), client.username);
+                                Cli.getInstance().messageSender.sendMessage(msg);
+
+                            }
+
+
+                            //dsfhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhiiiiiiiiiiiiiii
+                            ///
+                            //
+                            //
+                            //
+                            //
+                            //
+
+                            stage.close();
+                            flag = false;
+                        });
+                        gridPane.add(textField, 0, 0);
+                        Scene scene = new Scene(gridPane);
+                        stage.setScene(scene);
+                        stage.show();
+                    }
+                }
+            });
+
+            AnchorPane.setTopAnchor(teamGames, 30.0);
+            AnchorPane.setTopAnchor(Deals, 30.0);
+            AnchorPane.setTopAnchor(nameLabel, 30.0);
+            AnchorPane.setLeftAnchor(nameLabel, 5.0);
+            AnchorPane.setLeftAnchor(teamGames, 105.0);
+            AnchorPane.setLeftAnchor(Deals, 205.0);
+            button.setOnAction(new EventHandler<ActionEvent>() {
+                boolean flag;
+
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    if (!flag) {
+                        anchorPane.getChildren().addAll(nameLabel, teamGames, Deals, pv);
+                        flag = true;
+                    } else {
+                        anchorPane.getChildren().removeAll(nameLabel, teamGames, Deals, pv);
+                        flag = false;
+                    }
+                }
+            });
+            AnchorPane.setRightAnchor(button, 5.0);
+            AnchorPane.setTopAnchor(button, 5.0);
+
+
+            anchorPane.getChildren().addAll(label, button);
+            content.getChildren().add(anchorPane);
+        }
+        Scene scene = new Scene(new BorderPane(scroller, null, null, addButton, null), 400, 400);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+    }
+
+
+    private void reSort(VBox content) {
+        Object object = new Object();
+
+        while (isShown) {
+            if (sortType.equals("Level")) {
+
+                content.getChildren().sort((client, t1) -> {
+                    if (((Cli.Client) client.getUserData()).Level == ((Cli.Client) t1.getUserData()).Level) {
+                        return 0;
+                    } else if (((Cli.Client) client.getUserData()).Level > ((Cli.Client) t1.getUserData()).Level) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+
+                });
+            } else {
+
+                content.getChildren().sort((client, t1) -> {
+                    if (((Cli.Client) client.getUserData()).Money == ((Cli.Client) t1.getUserData()).Money) {
+                        return 0;
+                    } else if (((Cli.Client) client.getUserData()).Money > ((Cli.Client) t1.getUserData()).Money) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+
+                });
+
+
+                synchronized (object) {
+                    try {
+                        object.wait(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+        }
+
+
+    }
+
+
+}
+/*
+class BuyMessageToClients extends Message{
+    Item item;
+    String buyer;
 
 }*/

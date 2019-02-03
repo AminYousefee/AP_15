@@ -8,9 +8,14 @@ import Model.Upgradable;
 import controller.ImageViewSprite;
 import controller.InputProcessor;
 import controller.Main;
+import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -806,8 +811,8 @@ public abstract class Animal extends Item implements Upgradable {
         int y = Math.abs(random.nextInt());
         x = x % /*Map.Num_Of_CELLS_IN_COLOUM*/3;
         y = y % /*Map.Num_Of_CELLS_IN_ROW*/3;
-        x += ((MapPosition) getPosition()).getX()-1;
-        y += ((MapPosition) getPosition()).getY()-1;
+        x += ((MapPosition) getPosition()).getX() - 1;
+        y += ((MapPosition) getPosition()).getY() - 1;
         if (x >= Map.Num_Of_CELLS_IN_ROW) {
             x = Map.Num_Of_CELLS_IN_ROW - 1;
         } else if (x < 0) {
@@ -880,8 +885,8 @@ public abstract class Animal extends Item implements Upgradable {
     public boolean moveToPosition(MapPosition position) {
         Cell goalCell = map.getCell(position);
         Cell CurrentCell = map.getCell((MapPosition) this.getPosition());
-        System.out.println("Current = " +CurrentCell.getMapPosition().getX()+"  " +CurrentCell.getMapPosition().getY());
-        System.out.println("Goal = " +goalCell.getMapPosition().getX()+"  " +goalCell.getMapPosition().getY());
+        System.out.println("Current = " + CurrentCell.getMapPosition().getX() + "  " + CurrentCell.getMapPosition().getY());
+        System.out.println("Goal = " + goalCell.getMapPosition().getX() + "  " + goalCell.getMapPosition().getY());
 
         //maybe there we'll be a better way of organizing it
         if (goalCell == CurrentCell) {
@@ -941,7 +946,7 @@ public abstract class Animal extends Item implements Upgradable {
                     }
             );
             sprite = new ImageViewSprite(imageView, keepHashMap.get(state));
-        }else {
+        } else {
             //imageView.setX(InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).getX());
             //imageView.setY(InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).getY());
 
@@ -1007,6 +1012,20 @@ public abstract class Animal extends Item implements Upgradable {
         }else {
         }*/
 
+        Path path = new Path();
+        double x = InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).getX();
+        double y = InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).getY();
+        path.getElements().add(new MoveTo(x, y));
+        path.getElements().add(new LineTo(x+sprite.deltaX*30, y+sprite.deltaY*30));
+        PathTransition movement = new PathTransition();
+        movement.setPath(path);
+        movement.setCycleCount(1);
+//        movement.setOrientation(PathTransition.OrientationType.NONE);
+        movement.setDuration(getTurnDuration());
+        movement.setNode(imageView);
+
+        movement.play();
+
         sprite.start();
         Object object = new Object();
         synchronized (object) {
@@ -1040,6 +1059,13 @@ public abstract class Animal extends Item implements Upgradable {
             }
         }).start();*/
 
+
+    }
+
+    private Duration getTurnDuration() {
+//        return new Duration(InputProcessor.getSpeed()*10);
+        System.out.println(InputProcessor.getSpeed());
+        return Duration.millis(InputProcessor.getSpeed() * 10);
 
     }
 

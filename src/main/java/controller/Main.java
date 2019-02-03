@@ -222,6 +222,7 @@ public class Main extends Application {
                 enter.setOnAction(event2 -> {
                     server.serverClient = new Server.ServerClient(username.getCharacters().toString(),realname.getCharacters().toString(),0,0);
                     server.clients.put(server.serverClient.getUsername(), server.serverClient);
+                    server.port = Integer.parseInt(tx.getCharacters().toString());
                     new Thread(server).start();
                     server.show();
 
@@ -234,6 +235,9 @@ public class Main extends Application {
             stage.setScene(new Scene(pane1));
         });
         Button clientButton = new Button("Client");
+        clientButton.setOnAction(event -> {
+            Cli.ClientMenu();
+        });
         Button backButton = new Button("Back");
         backButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
