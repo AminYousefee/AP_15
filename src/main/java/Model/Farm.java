@@ -280,6 +280,7 @@ public class Farm {
         truck.show();
         helicopter.show();
         warehouse.show();
+        bucket.show();
 
         for (int i = 0; i < 6; i++) {
             if (factories[i] != null) {

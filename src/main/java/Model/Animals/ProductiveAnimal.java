@@ -6,6 +6,8 @@ import Model.Map;
 import Model.Positions.MapPosition;
 import Model.Positions.NonMapPosition;
 import controller.InputProcessor;
+import controller.Main;
+import javafx.application.Platform;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -137,9 +139,17 @@ public class ProductiveAnimal extends NonWildAnimal {
             InputProcessor.game.getFarm().getMap().getCellByPosition((MapPosition) this.position).removeItem(this);
             new Thread(() -> {
                 this.show(itemInfo.getItemName() + "Death");
-                //Main.pane.getChildren().remove(this.imageView);
+                Object object = new Object();
+                synchronized (object){
+                    try {
+                        object.wait(InputProcessor.getSpeed()*10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Platform.runLater(() -> Main.pane.getChildren().remove(this.imageView));
 
-            });
+            }).start();
             System.out.println(itemInfo.getItemName() + " in cell " + ((MapPosition) this.getPosition()).getX() + " " + ((MapPosition) this.getPosition()).getY() + " died.");
 
             return true;//well this bad smell I should do it

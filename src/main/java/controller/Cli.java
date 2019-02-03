@@ -24,7 +24,7 @@ public class Cli {
     ClientServerRelation clientServerRelation;
     public MessageSender messageSender;
     ChatRoom chatRoom = new ChatRoom(false);
-    Market market;
+    Market market = new Market(false);
     MessageReceiever messageReceiever;
     HashMap<String, Client> knownClientHashMap = new HashMap<>();
     ArrayList<Client> allies = new ArrayList<>();
@@ -115,6 +115,14 @@ public class Cli {
         Button leaderboard = new Button("LeaderBoard");
         Button people = new Button("People");
         Button market = new Button("Market");
+        market.setOnAction(event -> Cli.getInstance().market.show());
+        Button play = new Button("Play");
+        play.setOnAction(event -> {
+            InputProcessor.process( "run empty");
+            InputProcessor.game.show();
+            Main.pane.getChildren().addAll(chatroom,leaderboard,people,market);
+
+        });
         chatroom.setOnAction(event -> Cli.getInstance().chatRoom.show());
         leaderboard.setOnAction(event -> {
             Stage stage1 = new Stage();
@@ -132,7 +140,7 @@ public class Cli {
             stage1.setScene(new Scene(gridPane));
             stage1.show();
         });
-        gp.addRow(3,chatroom,leaderboard,people,market);
+        gp.addRow(3,chatroom,leaderboard,people,market,play);
         stage.setScene(new Scene(gp));
     }
 

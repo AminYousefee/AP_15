@@ -77,10 +77,10 @@ public class ImageViewSprite extends AnimationTimer {
             }
 
             imageView.setViewport(new Rectangle2D(currentCol * frameWidth, currentRow * frameHeight, frameWidth, frameHeight));
-            //imageView.setY( imageView.getX() + 5);
-            imageView.setX(imageView.getX() + deltaX);
-            imageView.setY(imageView.getY() + deltaY);
-            //imageView.setX( imageView.getY() + 5);
+//            imageView.setY( imageView.getX() + 5);
+  //          imageView.setX(imageView.getX() + deltaX);
+//            imageView.setY(imageView.getY() + deltaY);
+//            imageView.setX( imageView.getY() + 5);
 
         }
     }

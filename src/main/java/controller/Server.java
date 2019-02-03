@@ -27,7 +27,7 @@ public class Server implements Runnable {
     HashMap<String, Client> clients = new HashMap<>();
     Listener listener;
     int port;
-    Market market = new Market();
+    Market market = new Market(true);
     ChatRoom chatRoom = new ChatRoom(true);
     LeaderBoard leaderBoard = new LeaderBoard(true);
 
@@ -53,10 +53,21 @@ public class Server implements Runnable {
         Button leaderboard = new Button("leaderboard");
         Button market = new Button("market");
         Button people = new Button("people");
+        Button play = new Button("Play");
+        play.setOnAction(event -> {
+            InputProcessor.process( "run empty");
+            InputProcessor.game.show();
+            VBox vBox = new VBox();
+            vBox.getChildren().addAll(chatroom,leaderboard,people,market);
+            AnchorPane.setTopAnchor(vBox,100.0);
+            Main.pane.getChildren().addAll(vBox);
+
+        });
         gp.add(chatroom, 0, 0);
         gp.add(leaderboard, 0, 1);
         gp.add(market, 0, 2);
         gp.add(people, 0, 3);
+        gp.add(play,0,4);
         chatroom.setOnAction(event -> {
             Server.getInstance().chatRoom.show();
         });
@@ -845,15 +856,15 @@ class ChatRoom {
 }
 
 class Market {
-    private static Market ourInstance = new Market();
     ArrayList<SellMessage> sellMessages = new ArrayList<>();
     VBox content;
     boolean isServer;
 
-
-    public static Market getInstance() {
-        return ourInstance;
+    public Market(boolean b) {
+        isServer = b;
     }
+
+
 
     public void buyItem(String seller, String itemName) {
         Iterator<SellMessage> sellMessageIterator = sellMessages.iterator();
@@ -861,10 +872,27 @@ class Market {
             SellMessage sellMessage = sellMessageIterator.next();
             if (sellMessage.item.getItemInfo().getItemName().equals(itemName) && sellMessage.seller.equals(seller)) {
                 sellMessageIterator.remove();
+                Platform.runLater(() ->{
+                    ContentMaking();
+                    if (scroller!=null){
+
+                        scroller.setContent(content);
+                    }
+                });
+
                 break;
             }
         }
         //Server.getInstance().clients.get(msg.sender).sendMessage(new BuyMessageToServer(msg.getItem()));
+    }
+    ScrollPane scroller;
+
+
+    {
+        sellMessages = new ArrayList<>();
+        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Egg")));
+        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Egg")));
+        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Horn")));
     }
 
     private void removeMessage(SellMessage msg) {
@@ -879,11 +907,12 @@ class Market {
         Stage stage = new Stage();
 
 
+
         final Random rng = new Random();
         if (content == null) {
             this.ContentMaking();
         }
-        ScrollPane scroller = new ScrollPane(content);
+        scroller = new ScrollPane(content);
         scroller.setFitToWidth(true);
 
         Button addButton = new Button("Add");
@@ -956,10 +985,7 @@ class Market {
     }
 
     private void ContentMaking() {
-        ArrayList<SellMessage> sellMessages = new ArrayList<>();
-        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Egg")));
-        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Egg")));
-        sellMessages.add(new SellMessageToServer("Asghar",Item.getInstance("Horn")));
+
         Random rng = new Random();
         content = new VBox(5);
         for (SellMessage message : sellMessages) {
@@ -980,12 +1006,13 @@ class Market {
             Button button = new Button("Buy");
 
             if (isServer){
-                button.setOnAction(evt -> content.getChildren().remove(anchorPane));
-                BoughtMessageToClients boughtMessageToClients = new BoughtMessageToClients(Server.getInstance().serverClient.username,message.item.getItemInfo().getItemName(),Server.getInstance().serverClient.username,message.seller);
-                for (Map.Entry<String, Server.Client> entry : Server.getInstance().clients.entrySet()){
+                button.setOnAction(event -> {
+                        BoughtMessageToClients boughtMessageToClients = new BoughtMessageToClients(Server.getInstance().serverClient.username, message.item.getItemInfo().getItemName(), Server.getInstance().serverClient.username, message.seller);
+                for (Map.Entry<String, Server.Client> entry : Server.getInstance().clients.entrySet()) {
                     entry.getValue().sendMessage(boughtMessageToClients);
                 }
                 content.getChildren().remove(anchorPane);
+                });
             }else {
                 button.setOnAction(event -> {
                     Cli.getInstance().messageSender.sendMessage(new BuyMessageToServer(Cli.getInstance().me.username, message.seller, message.item, Cli.getInstance().me.username));
@@ -1037,6 +1064,7 @@ class BoughtMessageToClients extends Message {
 
     @Override
     public void process() {
+        System.out.println("Boght Message Recied");
         if (Cli.getInstance().me.username.equals(seller)) {
             InputProcessor.game.getFarm().setCurrentMoney(InputProcessor.game.getFarm().getCurrentMoney() + Item.getInstance(itemName).getItemInfo().getSaleCost());
             InputProcessor.game.getFarm().getWarehouse().removeItem(itemName);
@@ -1112,7 +1140,7 @@ class SellMessageToServer extends SellMessage {
 
     @Override
     public void process() {
-        Market.getInstance().addItemToSell(this);
+        Server.getInstance().market.addItemToSell(this);
 
     }
 }
@@ -1222,7 +1250,7 @@ class GiftToServer extends Message {
     @Override
     public void process() {
         for (Item item : items) {
-            Market.getInstance().addItemToSell(new SellMessageToServer(Server.getInstance().serverClient.username, item));
+            Server.getInstance().market.addItemToSell(new SellMessageToServer(Server.getInstance().serverClient.username, item));
 
         }
     }
